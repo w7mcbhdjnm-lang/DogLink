@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DogLink — Rejoignez le réseau</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<!-- ============================================================
+  🔑 SUPABASE — REMPLACEZ CES DEUX VALEURS PAR LES VÔTRES
+     (voir GUIDE-Supabase.md étape 4)
+============================================================ -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL  = 'https://mxvzgngtgjovrzfktfhw.supabase.co';       // ex: https://xxxx.supabase.co
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU';  // longue clé anon/public
+
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function inscrire(email) {
+    if (!email || !email.includes('@')) {
+      return { ok: false, msg: 'Veuillez entrer un email valide.' };
+    }
+    const { error } = await db.from('waitlist').insert({ email, city: 'Paris' });
+    if (error) {
+      if (error.code === '23505') return { ok: false, msg: 'Cet email est déjà inscrit !' };
+      return { ok: false, msg: 'Une erreur est survenue. Réessayez.' };
+    }
+    return { ok: true };
+  }
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F5F0E8; --dark: #1A1208; --green: #1C3A2F;
+    --gold: #C8852A; --gold-light: #F0C060; --coral: #D95F2B;
+    --cream: #FAF7F2; --muted: #7A7060; --border: #E0D8CC;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--dark); overflow-x: hidden; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 18px 48px; display: flex; justify-content: space-between; align-items: center;
+    background: rgba(245,240,232,.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; letter-spacing: -.5px; }
+  .logo span { color: var(--coral); }
+  .nav-cta {
+    background: var(--green); color: white; padding: 10px 24px; border-radius: 50px;
+    font-weight: 600; font-size: 14px; text-decoration: none; transition: all .2s;
+  }
+  .nav-cta:hover { background: var(--coral); transform: translateY(-1px); }
+
+  .hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 120px 48px 80px; position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(200,133,42,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(28,58,47,.08) 0%, transparent 60%);
+  }
+  .hero-dots {
+    position: absolute; inset: 0; z-index: 0;
+    background-image: radial-gradient(circle, rgba(28,58,47,.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 680px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(200,133,42,.12); color: var(--gold); border: 1px solid rgba(200,133,42,.3);
+    padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; letter-spacing: .8px;
+    margin-bottom: 28px; animation: fadeUp .6s ease forwards;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif; font-size: clamp(44px,6vw,72px); font-weight: 300;
+    line-height: 1.08; letter-spacing: -2px; margin-bottom: 24px;
+    animation: fadeUp .6s .1s ease both;
+  }
+  .hero h1 em { font-style: italic; color: var(--coral); }
+  .hero p {
+    font-size: 18px; line-height: 1.75; color: var(--muted); max-width: 500px;
+    margin-bottom: 40px; font-weight: 300; animation: fadeUp .6s .2s ease both;
+  }
+  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; animation: fadeUp .6s .3s ease both; }
+  .btn-primary {
+    background: var(--green); color: white; padding: 15px 32px; border-radius: 50px;
+    font-weight: 600; font-size: 15px; text-decoration: none; transition: all .25s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--coral); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(217,95,43,.3); }
+  .btn-secondary {
+    background: transparent; color: var(--dark); padding: 15px 32px; border-radius: 50px;
+    font-weight: 600; font-size: 15px; text-decoration: none; transition: all .25s;
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--green); color: var(--green); }
+
+  .hero-float {
+    position: absolute; right: 6%; top: 50%; transform: translateY(-50%);
+    z-index: 1; display: flex; flex-direction: column; gap: 16px;
+    animation: fadeUp .6s .4s ease both;
+  }
+  .float-card {
+    background: white; border-radius: 20px; padding: 18px 22px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.1); border: 1px solid var(--border); min-width: 220px;
+  }
+  .float-card .fc-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .5px; margin-bottom: 4px; }
+  .float-card .fc-val { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; color: var(--green); }
+  .float-card .fc-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  section { padding: 100px 48px; }
+  .section-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--coral); text-transform: uppercase; margin-bottom: 14px; }
+  .section-title { font-family: 'Fraunces', serif; font-size: clamp(32px,4vw,52px); font-weight: 300; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
+  .section-sub { font-size: 17px; color: var(--muted); line-height: 1.75; font-weight: 300; max-width: 540px; }
+
+  .gains { background: var(--cream); }
+  .gains-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; max-width: 1100px; margin: 0 auto; }
+  .gains-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .gain-card { background: white; border-radius: 20px; padding: 24px; border: 1px solid var(--border); transition: all .25s; }
+  .gain-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,.08); }
+  .gain-icon { font-size: 32px; margin-bottom: 12px; }
+  .gain-val { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; color: var(--green); }
+  .gain-label { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+  .how { background: var(--green); color: white; }
+  .how .section-title { color: white; }
+  .how .section-sub { color: rgba(255,255,255,.6); }
+  .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 32px; margin-top: 56px; max-width: 1100px; }
+  .step { position: relative; }
+  .step-num { font-family: 'Fraunces', serif; font-size: 64px; font-weight: 600; color: rgba(255,255,255,.08); line-height: 1; margin-bottom: -12px; }
+  .step-icon { font-size: 32px; margin-bottom: 14px; }
+  .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step p { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,.55); }
+  .step-line { position: absolute; top: 32px; right: -16px; width: 32px; height: 1px; background: rgba(255,255,255,.15); }
+
+  .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; max-width: 1100px; }
+  .feat-card { background: white; border-radius: 24px; padding: 32px; border: 1px solid var(--border); transition: all .25s; position: relative; overflow: hidden; }
+  .feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg,var(--gold),var(--coral)); transform:scaleX(0); transform-origin:left; transition:transform .3s ease; }
+  .feat-card:hover::before { transform: scaleX(1); }
+  .feat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.08); }
+  .feat-icon { font-size: 36px; margin-bottom: 18px; }
+  .feat-card h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; margin-bottom: 10px; }
+  .feat-card p { font-size: 14px; color: var(--muted); line-height: 1.75; }
+
+  .testimonials { background: var(--cream); }
+  .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 56px; max-width: 1100px; }
+  .testi-card { background: white; border-radius: 24px; padding: 28px 30px; border: 1px solid var(--border); }
+  .stars { color: var(--gold-light); font-size: 14px; margin-bottom: 14px; }
+  .testi-text { font-size: 15px; line-height: 1.8; color: #444; font-style: italic; margin-bottom: 20px; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .testi-name { font-weight: 700; font-size: 14px; }
+  .testi-role { font-size: 12px; color: var(--muted); }
+  .testi-earn { margin-left: auto; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--green); }
+
+  .faq-list { max-width: 700px; margin-top: 56px; }
+  .faq-item { border-bottom: 1px solid var(--border); padding: 24px 0; cursor: pointer; }
+  .faq-q { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 16px; }
+  .faq-q .icon { font-size: 20px; color: var(--muted); transition: transform .25s; }
+  .faq-a { font-size: 14px; color: var(--muted); line-height: 1.8; margin-top: 14px; display: none; }
+  .faq-item.open .faq-a { display: block; }
+  .faq-item.open .icon { transform: rotate(45deg); color: var(--coral); }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    background: var(--dark); color: white; text-align: center;
+    padding: 120px 48px; position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 100%, rgba(200,133,42,.15) 0%, transparent 70%);
+  }
+  .cta-section h2 {
+    font-family: 'Fraunces', serif; font-size: clamp(36px,5vw,64px);
+    font-weight: 300; letter-spacing: -2px; line-height: 1.1;
+    margin-bottom: 20px; position: relative;
+  }
+  .cta-section h2 em { font-style: italic; color: var(--gold-light); }
+  .cta-section > p {
+    font-size: 17px; color: rgba(255,255,255,.55); margin-bottom: 44px;
+    max-width: 480px; margin-left: auto; margin-right: auto; position: relative;
+  }
+
+  /* ── FORM ── */
+  .cta-form { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+  .cta-input {
+    padding: 16px 22px; border-radius: 50px; border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.07); color: white; font-size: 15px; width: 300px;
+    font-family: inherit; outline: none; transition: border .2s;
+  }
+  .cta-input::placeholder { color: rgba(255,255,255,.35); }
+  .cta-input:focus { border-color: var(--gold-light); }
+  .cta-btn {
+    background: linear-gradient(135deg,var(--gold),var(--coral)); color: white;
+    padding: 16px 32px; border-radius: 50px; border: none; font-weight: 700;
+    font-size: 15px; cursor: pointer; font-family: inherit; transition: all .25s;
+    position: relative;
+  }
+  .cta-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(200,133,42,.4); }
+  .cta-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .cta-note { font-size: 12px; color: rgba(255,255,255,.3); margin-top: 16px; position: relative; }
+
+  /* ── FEEDBACK MESSAGE ── */
+  .form-feedback {
+    margin-top: 18px; font-size: 14px; font-weight: 600; position: relative;
+    min-height: 22px; transition: all .3s;
+  }
+  .form-feedback.success { color: #3DD68C; }
+  .form-feedback.error   { color: #FF6B4A; }
+
+  /* ── COUNTER ── */
+  .counter-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50px; padding: 8px 18px; font-size: 13px;
+    color: rgba(255,255,255,.6); margin-bottom: 32px; position: relative;
+  }
+  .counter-pill strong { color: var(--gold-light); font-family: 'Fraunces', serif; font-size: 18px; }
+  .counter-dot { width: 8px; height: 8px; border-radius: 50%; background: #3DD68C; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+  .ticker-wrap { background: var(--green); overflow: hidden; padding: 14px 0; }
+  .ticker { display: flex; white-space: nowrap; animation: ticker 22s linear infinite; }
+  .ticker span { padding: 0 40px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.7); letter-spacing: .3px; }
+  .ticker span em { color: var(--gold-light); font-style: normal; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    section { padding: 72px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-float { display: none; }
+    .gains-grid,.steps,.features-grid,.testi-grid { grid-template-columns: 1fr; }
+    .gains-cards { grid-template-columns: 1fr 1fr; }
+    footer { padding: 24px; }
+    .cta-input { width: 100%; }
+    .cta-form { flex-direction: column; align-items: center; }
+  }
+</style>
+
+</head>
+<body>
+
+<nav>
+  <div class="logo">Dog<span>Link</span></div>
+  <a href="#rejoindre" class="nav-cta">Rejoindre gratuitement →</a>
+</nav>
+
+<div style="padding-top:65px">
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span>🐾 Gagnez jusqu'à <em>2 400€/mois</em></span>
+      <span>📅 Choisissez vos propres horaires</span>
+      <span>✦ Badge Premium vérifié</span>
+      <span>📡 Suivi GPS intégré</span>
+      <span>💬 Messagerie directe avec les clients</span>
+      <span>⭐ Profil noté visible sur la carte</span>
+      <span>🐾 Gagnez jusqu'à <em>2 400€/mois</em></span>
+      <span>📅 Choisissez vos propres horaires</span>
+      <span>✦ Badge Premium vérifié</span>
+      <span>📡 Suivi GPS intégré</span>
+      <span>💬 Messagerie directe avec les clients</span>
+      <span>⭐ Profil noté visible sur la carte</span>
+    </div>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-dots"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🐾 Lancement Paris · Rejoignez les premiers</div>
+    <h1>Transformez votre<br/>amour des chiens en<br/><em>revenus réels.</em></h1>
+    <p>DogLink connecte les propriétaires de chiens avec des petsitteurs de confiance à Paris. Créez votre profil, fixez vos tarifs, choisissez vos clients.</p>
+    <div class="hero-btns">
+      <a href="#rejoindre" class="btn-primary">Créer mon profil gratuitement →</a>
+      <a href="#comment" class="btn-secondary">Comment ça marche</a>
+    </div>
+  </div>
+  <div class="hero-float">
+    <div class="float-card">
+      <div class="fc-label">REVENUS MOYENS / MOIS</div>
+      <div class="fc-val">860€</div>
+      <div class="fc-sub">pour un petsitteur actif</div>
+    </div>
+    <div class="float-card">
+      <div class="fc-label">PROCHAINE RÉSERVATION</div>
+      <div class="fc-val" style="font-size:20px;color:var(--coral)">Rex · 9 mai</div>
+      <div class="fc-sub">Garde à domicile · 50€</div>
+    </div>
+    <div class="float-card">
+      <div class="fc-label">VOTRE NOTE</div>
+      <div class="fc-val">4.9 ★</div>
+      <div class="fc-sub">87 avis vérifiés</div>
+    </div>
+  </div>
+</section>
+
+<section class="gains">
+  <div class="gains-grid">
+    <div>
+      <div class="section-tag">POURQUOI DOGLINK</div>
+      <h2 class="section-title reveal">Vous aimez les chiens.<br/>Autant en vivre.</h2>
+      <p class="section-sub reveal">Gardez des chiens près de chez vous à vos horaires, fixez vos propres tarifs, et construisez une clientèle fidèle grâce à votre profil noté.</p>
+      <a href="#rejoindre" class="btn-primary reveal" style="margin-top:32px;display:inline-flex">Commencer maintenant →</a>
+    </div>
+    <div class="gains-cards">
+      <div class="gain-card reveal"><div class="gain-icon">💰</div><div class="gain-val">25€</div><div class="gain-label">tarif moyen par jour de garde</div></div>
+      <div class="gain-card reveal" style="transition-delay:.1s"><div class="gain-icon">🗓️</div><div class="gain-val">100%</div><div class="gain-label">liberté de choisir vos disponibilités</div></div>
+      <div class="gain-card reveal" style="transition-delay:.2s"><div class="gain-icon">⭐</div><div class="gain-val">4.8/5</div><div class="gain-label">note moyenne des petsitteurs DogLink</div></div>
+      <div class="gain-card reveal" style="transition-delay:.3s"><div class="gain-icon">🏙️</div><div class="gain-val">Paris</div><div class="gain-label">lancement dans votre ville dès maintenant</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="comment">
+  <div class="section-tag" style="color:var(--gold-light)">EN 4 ÉTAPES</div>
+  <h2 class="section-title reveal">Comment ça fonctionne</h2>
+  <p class="section-sub reveal">De votre inscription à votre première réservation, tout est simple et rapide.</p>
+  <div class="steps">
+    <div class="step reveal"><div class="step-num">01</div><div class="step-icon">📝</div><h3>Créez votre profil</h3><p>Photo, tarifs, disponibilités, races acceptées. 5 minutes suffisent.</p><div class="step-line"></div></div>
+    <div class="step reveal" style="transition-delay:.1s"><div class="step-num">02</div><div class="step-icon">✦</div><h3>Obtenez le badge Premium</h3><p>Vérification d'identité. Vous apparaissez en priorité dans les recherches.</p><div class="step-line"></div></div>
+    <div class="step reveal" style="transition-delay:.2s"><div class="step-num">03</div><div class="step-icon">📬</div><h3>Recevez des demandes</h3><p>Les propriétaires vous contactent directement via la messagerie intégrée.</p><div class="step-line"></div></div>
+    <div class="step reveal" style="transition-delay:.3s"><div class="step-num">04</div><div class="step-icon">💸</div><h3>Soyez payé</h3><p>Paiement sécurisé par carte. Virement sur votre compte sous 48h.</p></div>
+  </div>
+</section>
+
+<section style="background:var(--bg)">
+  <div class="section-tag">OUTILS INCLUS</div>
+  <h2 class="section-title reveal">Tout ce dont vous avez besoin</h2>
+  <p class="section-sub reveal">DogLink vous donne les outils pour gérer votre activité comme un pro.</p>
+  <div class="features-grid">
+    <div class="feat-card reveal"><div class="feat-icon">📡</div><h3>Suivi GPS Live</h3><p>Partagez la position du chien en temps réel. Un outil qui rassure et renforce la confiance.</p></div>
+    <div class="feat-card reveal" style="transition-delay:.1s"><div class="feat-icon">💬</div><h3>Messagerie intégrée</h3><p>Discutez directement avec les propriétaires, envoyez des photos sans quitter l'app.</p></div>
+    <div class="feat-card reveal" style="transition-delay:.2s"><div class="feat-icon">📊</div><h3>Dashboard Analytics</h3><p>Suivez vos revenus et réservations mois par mois. Pilotez votre activité.</p></div>
+    <div class="feat-card reveal" style="transition-delay:.3s"><div class="feat-icon">⭐</div><h3>Avis vérifiés</h3><p>Chaque avis vient d'un vrai client. Votre réputation se construit réservation après réservation.</p></div>
+    <div class="feat-card reveal" style="transition-delay:.4s"><div class="feat-icon">🗺️</div><h3>Visibilité sur la carte</h3><p>Votre profil apparaît sur la carte de Paris. Les propriétaires près de chez vous vous trouvent.</p></div>
+    <div class="feat-card reveal" style="transition-delay:.5s"><div class="feat-icon">🛍️</div><h3>Boutique intégrée</h3><p>Vendez des produits personnalisés : photos de Rex, carnet de bord, souvenirs.</p></div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="section-tag">ILS NOUS FONT CONFIANCE</div>
+  <h2 class="section-title reveal">Ce que disent nos petsitteurs</h2>
+  <div class="testi-grid">
+    <div class="testi-card reveal"><div class="stars">★★★★★</div><p class="testi-text">"J'ai créé mon profil un vendredi soir. Dès le lundi j'avais ma première réservation. En trois mois, DogLink est devenu ma principale source de revenus."</p><div class="testi-author"><div class="testi-avatar">🧑‍🦱</div><div><div class="testi-name">Sophie M.</div><div class="testi-role">Paris 11e · Petsitteur depuis 6 mois</div></div><div class="testi-earn">860€/mois</div></div></div>
+    <div class="testi-card reveal" style="transition-delay:.1s"><div class="stars">★★★★★</div><p class="testi-text">"Le suivi GPS a tout changé. Les propriétaires sont rassurés, ils me font confiance, et ils reviennent à chaque fois. Ma note est à 4.9."</p><div class="testi-author"><div class="testi-avatar">🧔</div><div><div class="testi-name">Julien P.</div><div class="testi-role">Paris 9e · Petsitteur depuis 8 mois</div></div><div class="testi-earn">660€/mois</div></div></div>
+    <div class="testi-card reveal" style="transition-delay:.2s"><div class="stars">★★★★★</div><p class="testi-text">"En tant que vétérinaire, DogLink m'a permis de monétiser mes compétences différemment. Le badge Premium m'a apporté des clients qui paient bien."</p><div class="testi-author"><div class="testi-avatar">👩</div><div><div class="testi-name">Emma D.</div><div class="testi-role">Paris 15e · Vétérinaire & Petsitteur</div></div><div class="testi-earn">1 200€/mois</div></div></div>
+  </div>
+</section>
+
+<section style="background:var(--bg)">
+  <div class="section-tag">FAQ</div>
+  <h2 class="section-title reveal">Questions fréquentes</h2>
+  <div class="faq-list">
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Est-ce gratuit de s'inscrire ?<span class="icon">+</span></div><div class="faq-a">Oui, l'inscription est totalement gratuite. DogLink prend une commission uniquement sur les réservations confirmées. Pas de frais fixes, pas d'abonnement obligatoire.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Comment suis-je payé ?<span class="icon">+</span></div><div class="faq-a">Le paiement est sécurisé via Stripe. Dès qu'une réservation est confirmée, le montant est bloqué et versé sous 48h après la fin de la prestation.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">À quoi sert le badge Premium ?<span class="icon">+</span></div><div class="faq-a">Le badge Premium certifie votre identité et votre sérieux. Vous apparaissez en tête des résultats, et les petsitteurs Premium gagnent en moyenne 40% de plus.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Puis-je fixer mes propres tarifs ?<span class="icon">+</span></div><div class="faq-a">Absolument. Vous êtes libre de fixer vos tarifs pour chaque type de prestation et de les modifier à tout moment depuis votre tableau de bord.</div></div>
+  </div>
+</section>
+
+<!-- ── CTA + FORMULAIRE SUPABASE ── -->
+
+<section class="cta-section" id="rejoindre">
+  <div class="counter-pill">
+    <span class="counter-dot"></span>
+    <span><strong id="counter">--</strong> petsitteurs inscrits sur DogLink</span>
+  </div>
+  <h2 class="reveal">Prêt à <em>gagner</em><br/>avec vos pattes ?</h2>
+  <p class="reveal">Rejoignez les premiers petsitteurs DogLink à Paris et commencez à recevoir des réservations dès cette semaine.</p>
+
+  <div class="cta-form reveal">
+    <input class="cta-input" id="emailInput" type="email" placeholder="Votre adresse email"/>
+    <button class="cta-btn" id="submitBtn" onclick="handleSubmit()">
+      Je rejoins DogLink →
+    </button>
+  </div>
+  <div class="form-feedback" id="feedback"></div>
+  <div class="cta-note">Gratuit · Sans engagement · Première réservation en moins de 7 jours</div>
+</section>
+
+<footer style="background:#1A1208;color:rgba(255,255,255,.4);padding:32px 48px;text-align:center;font-size:13px;border-top:1px solid rgba(255,255,255,.06)">
+  <p><strong style="color:rgba(255,255,255,.7)">DogLink</strong> · Paris, France · 2026 ·
+    <a href="#" style="color:rgba(255,255,255,.4)">Mentions légales</a> ·
+    <a href="#" style="color:rgba(255,255,255,.4)">Confidentialité</a>
+  </p>
+</footer>
+
+<script>
+  /* ── SCROLL REVEAL ── */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
+
+  /* ── FAQ ── */
+  function toggleFaq(el) {
+    const open = el.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+    if (!open) el.classList.add('open');
+  }
+
+  /* ── COMPTEUR EN DIRECT (depuis Supabase) ── */
+  async function loadCounter() {
+    try {
+      const { count } = await db.from('waitlist').select('*', { count: 'exact', head: true });
+      document.getElementById('counter').textContent = count ?? '0';
+    } catch (e) {
+      document.getElementById('counter').textContent = '0';
+    }
+  }
+  loadCounter();
+
+  /* ── FORMULAIRE D'INSCRIPTION ── */
+  async function handleSubmit() {
+    const btn      = document.getElementById('submitBtn');
+    const input    = document.getElementById('emailInput');
+    const feedback = document.getElementById('feedback');
+    const email    = input.value.trim();
+
+    btn.disabled   = true;
+    btn.textContent = 'Inscription en cours…';
+    feedback.className = 'form-feedback';
+    feedback.textContent = '';
+
+    const result = await inscrire(email);
+
+    if (result.ok) {
+      feedback.className   = 'form-feedback success';
+      feedback.textContent = '🎉 Bienvenue sur DogLink ! Vous serez parmi les premiers à être contactés.';
+      input.value = '';
+      btn.textContent = '✓ Inscrit !';
+      btn.style.background = '#3DD68C';
+      loadCounter(); // mise à jour du compteur
+    } else {
+      feedback.className   = 'form-feedback error';
+      feedback.textContent = result.msg;
+      btn.disabled = false;
+      btn.textContent = 'Je rejoins DogLink →';
+    }
+  }
+
+  /* Soumettre avec la touche Entrée */
+  document.getElementById('emailInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSubmit();
+  });
+</script>
+
+</body>
+</html>
