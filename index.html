@@ -4,647 +4,437 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DogLink</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>DogLink — Petsitting Belgique</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const db = supabase.createClient(
+  'https://mxvzgngtgjovrzfktfhw.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU'
+);
+async function inscrire(email) {
+  if (!email || !email.includes('@')) return { ok: false, msg: 'Email invalide.' };
+  const { error } = await db.from('waitlist').insert({ email, city: 'Belgique' });
+  if (error) {
+    if (error.code === '23505') return { ok: false, msg: 'Email déjà inscrit !' };
+    return { ok: false, msg: 'Erreur. Réessayez.' };
+  }
+  return { ok: true };
+}
+</script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF}
-button{font-family:inherit;-webkit-appearance:none;touch-action:manipulation;cursor:pointer}
-input,select,textarea{font-family:inherit;-webkit-appearance:none}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#F5F0E8;color:#1A1208;overflow-x:hidden}
 
-#auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-#app{display:none}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(245,240,232,.96);backdrop-filter:blur(12px);border-bottom:1px solid #E0D8CC}
+.logo{font-family:‘Fraunces’,serif;font-size:24px;font-weight:600;letter-spacing:-.5px;text-decoration:none;color:#1A1208}
+.logo span{color:#D95F2B}
+.nav-btn{background:#1C3A2F;color:white;padding:10px 22px;border-radius:50px;font-weight:600;font-size:14px;text-decoration:none}
 
-.abox{background:#13151F;border:1px solid #2A2D40;border-radius:24px;padding:36px 28px;width:100%;max-width:400px}
-.alogo{font-family:‘Fraunces’,serif;font-size:28px;font-weight:600;text-align:center;margin-bottom:6px}
-.alogo span{color:#FF6B4A}
-.asub{text-align:center;color:#7B7F9E;font-size:13px;margin-bottom:22px}
+.ticker{background:#1C3A2F;overflow:hidden;padding:13px 0;margin-top:65px}
+.ticker-inner{display:flex;white-space:nowrap;animation:tick 20s linear infinite}
+.ticker-inner span{padding:0 36px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)}
+.ticker-inner span em{color:#F0C060;font-style:normal}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-.atabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#1C1F2E;border-radius:12px;padding:4px;margin-bottom:20px}
-.atab{padding:10px;background:transparent;color:#7B7F9E;font-weight:600;font-size:14px;border-radius:9px;border:none;touch-action:manipulation;-webkit-appearance:none}
-.atab.on{background:#252838;color:#EEE9FF}
+.hero{min-height:100vh;display:flex;align-items:center;padding:80px 40px;position:relative;overflow:hidden;background:#F5F0E8}
+.hero-dots{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(28,58,47,.1) 1px,transparent 1px);background-size:30px 30px;z-index:0}
+.hero-glow{position:absolute;right:0;top:0;width:60%;height:100%;background:radial-gradient(ellipse 60% 60% at 80% 50%,rgba(200,133,42,.1),transparent);z-index:0}
+.hero-content{position:relative;z-index:1;max-width:640px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,133,42,.12);color:#C8852A;border:1px solid rgba(200,133,42,.3);padding:6px 16px;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:.8px;margin-bottom:26px}
+.hero h1{font-family:‘Fraunces’,serif;font-size:clamp(40px,6vw,70px);font-weight:300;line-height:1.08;letter-spacing:-2px;margin-bottom:22px}
+.hero h1 em{font-style:italic;color:#D95F2B}
+.hero p{font-size:17px;line-height:1.8;color:#7A7060;max-width:480px;margin-bottom:36px;font-weight:300}
+.btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-g{background:#1C3A2F;color:white;padding:14px 30px;border-radius:50px;font-weight:600;font-size:15px;text-decoration:none;transition:all .2s}
+.btn-g:hover{background:#D95F2B;transform:translateY(-2px)}
+.btn-o{background:transparent;color:#1A1208;padding:14px 30px;border-radius:50px;font-weight:600;font-size:15px;text-decoration:none;border:1.5px solid #E0D8CC;transition:all .2s}
+.btn-o:hover{border-color:#1C3A2F;color:#1C3A2F}
 
-#rfields{display:none;margin-bottom:4px}
-.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.rbtn{padding:16px 8px;border:1.5px solid #2A2D40;border-radius:14px;background:transparent;color:#EEE9FF;text-align:center;touch-action:manipulation;-webkit-appearance:none}
-.rbtn.on{border-color:#FF6B4A;background:rgba(255,107,74,.1)}
-.rico{font-size:24px;display:block;margin-bottom:5px}
-.rlbl{font-weight:700;font-size:13px;display:block}
-.rdsc{font-size:10px;color:#7B7F9E;margin-top:2px;display:block}
+.hero-cards{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:1;display:flex;flex-direction:column;gap:14px}
+.hcard{background:white;border-radius:18px;padding:16px 20px;box-shadow:0 6px 30px rgba(0,0,0,.09);border:1px solid #E0D8CC;min-width:210px}
+.hcard-label{font-size:10px;font-weight:600;color:#7A7060;letter-spacing:.5px;margin-bottom:3px}
+.hcard-val{font-family:‘Fraunces’,serif;font-size:26px;font-weight:600;color:#1C3A2F}
+.hcard-sub{font-size:11px;color:#7A7060;margin-top:2px}
 
-.ainp{display:block;width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:11px;padding:12px 14px;color:#EEE9FF;font-size:14px;outline:none;margin-bottom:10px;-webkit-appearance:none}
-.ainp:focus{border-color:#FF6B4A}
-.asbtn{display:block;width:100%;background:linear-gradient(135deg,#FF6B4A,#E05535);color:white;padding:14px;border-radius:13px;font-weight:700;font-size:15px;margin-top:6px;border:none;touch-action:manipulation;-webkit-appearance:none}
-.aerr{color:#FF6B4A;font-size:13px;text-align:center;margin-top:10px;min-height:18px}
+section{padding:90px 40px}
+.stag{font-size:11px;font-weight:700;letter-spacing:1.5px;color:#D95F2B;text-transform:uppercase;margin-bottom:12px}
+.stitle{font-family:‘Fraunces’,serif;font-size:clamp(30px,4vw,50px);font-weight:300;letter-spacing:-1.5px;line-height:1.1;margin-bottom:18px}
+.ssub{font-size:16px;color:#7A7060;line-height:1.75;font-weight:300;max-width:520px}
 
-/* APP */
-.appwrap{display:flex;min-height:100vh}
-.sb{width:220px;background:#13151F;border-right:1px solid #2A2D40;display:flex;flex-direction:column;padding:18px 10px;min-height:100vh;flex-shrink:0}
-.sblogo{font-family:‘Fraunces’,serif;font-size:21px;font-weight:600;padding-left:10px;margin-bottom:3px}
-.sblogo span{color:#FF6B4A}
-.sbrole{font-size:10px;font-weight:700;letter-spacing:1px;padding-left:10px;margin-bottom:16px}
-.sbnav{flex:1;display:flex;flex-direction:column;gap:2px}
-.ni{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;color:#7B7F9E;border-left:3px solid transparent;touch-action:manipulation}
-.ni:hover,.ni.on{background:#1C1F2E;color:#EEE9FF;border-left-color:#F0C060}
-.nbadge{margin-left:auto;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 5px}
-.sbu{border-top:1px solid #2A2D40;padding-top:12px;display:flex;align-items:center;gap:8px;margin-top:auto;padding-left:6px}
-.av{width:34px;height:34px;border-radius:50%;background:#252838;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#F0C060;flex-shrink:0}
-.avlg{width:56px;height:56px;font-size:20px}
-.sbun{font-size:12px;font-weight:700}
-.sbur{font-size:10px;color:#7B7F9E}
-.lbtn{background:none;border:none;color:#7B7F9E;cursor:pointer;font-size:10px;font-family:inherit;display:block;margin-top:2px;touch-action:manipulation}
+.gains{background:#FAF7F2}
+.gains-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;max-width:1100px;margin:0 auto}
+.gains-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.gcard{background:white;border-radius:18px;padding:22px;border:1px solid #E0D8CC;transition:all .2s}
+.gcard:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.07)}
+.gcard-icon{font-size:28px;margin-bottom:10px}
+.gcard-val{font-family:‘Fraunces’,serif;font-size:28px;font-weight:600;color:#1C3A2F}
+.gcard-lbl{font-size:12px;color:#7A7060;margin-top:3px;line-height:1.5}
 
-.main{flex:1;padding:26px 28px;overflow-y:auto}
-.ptitle{font-family:‘Fraunces’,serif;font-size:22px;font-weight:300;letter-spacing:-1px;margin-bottom:3px}
-.psub{color:#7B7F9E;font-size:12px;margin-bottom:20px}
-.card{background:#13151F;border:1px solid #2A2D40;border-radius:16px;padding:18px;margin-bottom:12px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.sv{font-family:‘Fraunces’,serif;font-size:22px;font-weight:700;margin-top:7px}
-.sl{font-size:11px;color:#7B7F9E;margin-top:2px}
-.btn{padding:7px 14px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;-webkit-appearance:none;display:inline-block}
-.bp{background:#FF6B4A;color:white}
-.bo{background:transparent;color:#EEE9FF;border:1.5px solid #2A2D40}
-.bg{background:rgba(61,214,140,.15);color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
-.bsm{padding:5px 11px;font-size:11px;border-radius:8px}
-.bfull{width:100%;padding:11px;font-size:13px;border-radius:12px;margin-bottom:8px}
-.st{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
-.stp{background:#2A1F08;color:#F0C060;border:1px solid rgba(240,192,96,.3)}
-.stc{background:#0D2A1A;color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
-.std{background:#1A1A1A;color:#555;border:1px solid #333}
-.fl{font-size:10px;font-weight:700;color:#7B7F9E;letter-spacing:.8px;display:block;margin-bottom:5px;text-transform:uppercase}
-.fi{display:block;width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:10px;padding:10px 12px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;margin-bottom:11px;-webkit-appearance:none}
-.fi:focus{border-color:#FF6B4A}
-textarea.fi{resize:vertical;min-height:70px}
-.tag{background:rgba(255,255,255,.06);color:#7B7F9E;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
-.pbadge{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px}
-.stars{color:#F0C060;font-size:11px}
-.dot{width:7px;height:7px;border-radius:50%;background:#3DD68C;display:inline-block}
-.empty{text-align:center;padding:30px;color:#7B7F9E;font-size:13px}
-.ei{font-size:32px;display:block;margin-bottom:8px}
-.loading{text-align:center;padding:30px;color:#7B7F9E}
+.how{background:#1C3A2F;color:white}
+.how .stitle{color:white}
+.how .ssub{color:rgba(255,255,255,.6)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:48px;max-width:1100px}
+.step{position:relative}
+.snum{font-family:‘Fraunces’,serif;font-size:60px;font-weight:600;color:rgba(255,255,255,.07);line-height:1;margin-bottom:-10px}
+.sico{font-size:28px;margin-bottom:12px}
+.step h3{font-size:15px;font-weight:700;margin-bottom:7px}
+.step p{font-size:13px;line-height:1.7;color:rgba(255,255,255,.55)}
+.sline{position:absolute;top:30px;right:-14px;width:28px;height:1px;background:rgba(255,255,255,.15)}
 
-.cw{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 90px);background:#13151F;border-radius:16px;border:1px solid #2A2D40;overflow:hidden}
-.cl{border-right:1px solid #2A2D40;overflow-y:auto}
-.ci{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;touch-action:manipulation}
-.ci.on{background:#252838}
-.cb{display:flex;flex-direction:column}
-.ch{padding:12px 16px;border-bottom:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
-.ms{flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;min-height:200px;max-height:calc(100vh - 220px)}
-.mg{display:flex;align-items:flex-end;gap:7px}
-.mg.me{justify-content:flex-end}
-.mb{max-width:60%;padding:8px 12px;border-radius:14px;font-size:13px;line-height:1.6}
-.mb.th{background:#1C1F2E;border-radius:14px 14px 14px 3px}
-.mb.me{background:linear-gradient(135deg,#FF6B4A,#E05535);border-radius:14px 14px 3px 14px}
-.mt{font-size:10px;color:#4A4D60;margin-top:2px}
-.cf{padding:11px 14px;border-top:1px solid #2A2D40;display:flex;gap:8px}
-.cinp{flex:1;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:9px 12px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;-webkit-appearance:none}
-.cinp:focus{border-color:#FF6B4A}
-.tm{background:#070E08;border-radius:16px;border:1px solid #1D4A30;position:relative;height:360px;overflow:hidden}
-.sc{display:flex;flex-direction:column;gap:10px}
-.ic{background:#13151F;border-radius:12px;padding:11px 13px;border:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
+.feats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px;max-width:1100px}
+.fcard{background:white;border-radius:22px;padding:28px;border:1px solid #E0D8CC;transition:all .2s;position:relative;overflow:hidden}
+.fcard::before{content:’’;position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8852A,#D95F2B);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.fcard:hover::before{transform:scaleX(1)}
+.fcard:hover{transform:translateY(-3px);box-shadow:0 18px 50px rgba(0,0,0,.07)}
+.fcard-ico{font-size:32px;margin-bottom:14px}
+.fcard h3{font-family:‘Fraunces’,serif;font-size:18px;font-weight:600;margin-bottom:8px}
+.fcard p{font-size:13px;color:#7A7060;line-height:1.75}
 
+.testi{background:#FAF7F2}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px;max-width:1100px}
+.tcard{background:white;border-radius:22px;padding:24px;border:1px solid #E0D8CC;transition:all .2s}
+.tcard:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.07)}
+.thead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.tavatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:white;flex-shrink:0}
+.tname{font-weight:700;font-size:14px}
+.tloc{font-size:11px;color:#7A7060;margin-top:2px}
+.glogo{margin-left:auto;font-size:11px;font-weight:700}
+.stars{color:#FBBC05;font-size:14px;margin-bottom:10px;letter-spacing:1px}
+.ttext{font-size:13px;line-height:1.8;color:#555;font-style:italic}
+.tdate{font-size:11px;color:#7A7060;margin-top:8px}
+.tearn{display:inline-block;background:#E8F5E9;color:#2E7D32;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:10px}
+
+.google-score{text-align:center;margin-top:40px;padding:24px;background:white;border-radius:22px;border:1px solid #E0D8CC;max-width:360px;margin-left:auto;margin-right:auto}
+
+.faq-list{max-width:680px;margin-top:48px}
+.faq-item{border-bottom:1px solid #E0D8CC;padding:22px 0;cursor:pointer}
+.faq-q{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px}
+.faq-ico{font-size:20px;color:#7A7060;transition:transform .25s}
+.faq-a{font-size:13px;color:#7A7060;line-height:1.8;margin-top:12px;display:none}
+.faq-item.open .faq-a{display:block}
+.faq-item.open .faq-ico{transform:rotate(45deg);color:#D95F2B}
+
+.cta{background:#1A1208;color:white;text-align:center;padding:100px 40px;position:relative;overflow:hidden}
+.cta::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 100%,rgba(200,133,42,.12),transparent)}
+.cta h2{font-family:‘Fraunces’,serif;font-size:clamp(34px,5vw,60px);font-weight:300;letter-spacing:-2px;line-height:1.1;margin-bottom:18px;position:relative}
+.cta h2 em{font-style:italic;color:#F0C060}
+.cta-sub{font-size:16px;color:rgba(255,255,255,.5);margin-bottom:40px;max-width:460px;margin-left:auto;margin-right:auto;position:relative}
+.cpill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:50px;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.6);margin-bottom:28px;position:relative}
+.cdot{width:8px;height:8px;border-radius:50%;background:#3DD68C;animation:pulse 2s infinite}
+.cpill strong{color:#F0C060;font-family:‘Fraunces’,serif;font-size:17px}
+.cform{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative}
+.cinput{padding:14px 20px;border-radius:50px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:white;font-size:14px;width:280px;font-family:inherit;outline:none}
+.cinput:focus{border-color:#F0C060}
+.cbtn{background:linear-gradient(135deg,#C8852A,#D95F2B);color:white;padding:14px 28px;border-radius:50px;border:none;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:all .2s}
+.cbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 30px rgba(200,133,42,.4)}
+.cbtn:disabled{opacity:.6;cursor:not-allowed}
+.cnote{font-size:11px;color:rgba(255,255,255,.3);margin-top:14px;position:relative}
+.cfeedback{margin-top:16px;font-size:13px;font-weight:600;min-height:20px;position:relative}
+.cfeedback.ok{color:#3DD68C}
+.cfeedback.err{color:#FF6B4A}
+
+footer{background:#1A1208;color:rgba(255,255,255,.4);padding:28px 40px;text-align:center;font-size:12px;border-top:1px solid rgba(255,255,255,.06)}
+footer strong{color:rgba(255,255,255,.7)}
+
+.paw{position:fixed;opacity:0;animation:pawUp linear infinite;pointer-events:none;z-index:0;font-size:26px}
+@keyframes pawUp{0%{transform:translateY(110vh) rotate(0deg);opacity:0}5%{opacity:.3}90%{opacity:.3}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-@keyframes ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.8);opacity:0}}
-.pulse{animation:pulse 2s infinite}
-.ping{animation:ping 1.3s cubic-bezier(0,0,.2,1) infinite}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.rev{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s}
+.rev.vis{opacity:1;transform:translateY(0)}
 
-@media(max-width:650px){
-.sb{width:48px;padding:12px 6px}
-.sblogo,.sbrole,.ni span:not(:first-child),.sbun,.sbur,.lbtn{display:none}
-.ni{padding:9px;justify-content:center}
-.main{padding:14px 10px}
-.g2,.g3,.g4{grid-template-columns:1fr}
-.cw{grid-template-columns:1fr}.cl{display:none}
+@media(max-width:768px){
+nav{padding:14px 20px}
+section{padding:64px 20px}
+.hero{padding:80px 20px 60px}
+.hero-cards,.hcard{display:none}
+.gains-grid,.steps,.feats-grid,.tgrid{grid-template-columns:1fr}
+.gains-cards{grid-template-columns:1fr 1fr}
+.cinput{width:100%}
+.cform{flex-direction:column;align-items:center}
 }
 </style>
 
 </head>
 <body>
 
-<div id="auth">
-  <div class="abox">
-    <div class="alogo">Dog<span>Link</span></div>
-    <div class="asub">Petsitting Belgique</div>
-    <div class="atabs">
-      <button class="atab on" id="btnLogin" type="button">Se connecter</button>
-      <button class="atab" id="btnRegister" type="button">S'inscrire</button>
-    </div>
-    <div id="rfields">
-      <div class="roles">
-        <button class="rbtn" id="btnOwner" type="button">
-          <span class="rico">🐕</span>
-          <span class="rlbl">Propriétaire</span>
-          <span class="rdsc">Je cherche un petsitter</span>
-        </button>
-        <button class="rbtn" id="btnSitter" type="button">
-          <span class="rico">
-            <svg width="28" height="28" viewBox="0 0 60 60" fill="none">
-              <circle cx="18" cy="9" r="5" fill="#EEE9FF"/>
-              <path d="M18 16L15 30L10 44L15 44L18 34L21 44L26 44L23 30L25 22" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-              <path d="M21 20L27 26Q33 30 36 34" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-              <ellipse cx="42" cy="37" rx="8" ry="5" fill="#EEE9FF" transform="rotate(-8 42 37)"/>
-              <circle cx="48" cy="32" r="4.5" fill="#EEE9FF"/>
-              <path d="M35 36Q30 30 33 26" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-              <line x1="36" y1="40" x2="34" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-              <line x1="41" y1="42" x2="40" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-              <line x1="46" y1="42" x2="46" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-              <line x1="51" y1="41" x2="52" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <span class="rlbl">Petsitteur</span>
-          <span class="rdsc">Je garde des chiens</span>
-        </button>
-      </div>
-      <input class="ainp" id="aname" placeholder="Votre prénom" type="text" autocomplete="given-name">
-    </div>
-    <input class="ainp" id="aemail" type="email" placeholder="Email" autocomplete="email">
-    <input class="ainp" id="apass" type="password" placeholder="Mot de passe" autocomplete="current-password">
-    <button class="asbtn" id="btnSubmit" type="button">Se connecter →</button>
-    <div class="aerr" id="aerr"></div>
+<nav>
+  <a href="#" class="logo">Dog<span>Link</span></a>
+  <a href="#rejoindre" class="nav-btn">Rejoindre gratuitement →</a>
+</nav>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>🐾 Gagnez jusqu'à <em>2 400€/mois</em></span>
+    <span>📅 Choisissez vos horaires</span>
+    <span>✦ Badge Premium vérifié</span>
+    <span>📡 Suivi GPS intégré</span>
+    <span>💬 Messagerie directe</span>
+    <span>🇧🇪 Disponible en Belgique</span>
+    <span>⭐ Profil noté sur la carte</span>
+    <span>🐾 Gagnez jusqu'à <em>2 400€/mois</em></span>
+    <span>📅 Choisissez vos horaires</span>
+    <span>✦ Badge Premium vérifié</span>
+    <span>📡 Suivi GPS intégré</span>
+    <span>💬 Messagerie directe</span>
+    <span>🇧🇪 Disponible en Belgique</span>
+    <span>⭐ Profil noté sur la carte</span>
   </div>
 </div>
 
-<div id="app">
-  <div class="appwrap">
-    <aside class="sb">
-      <div class="sblogo">Dog<span>Link</span></div>
-      <div class="sbrole" id="rlabel"></div>
-      <nav class="sbnav" id="snav"></nav>
-      <div class="sbu">
-        <div class="av" id="uav">?</div>
-        <div>
-          <div class="sbun" id="uname"></div>
-          <div class="sbur" id="urole"></div>
-          <button class="lbtn" id="btnLogout" type="button">Déconnexion</button>
-        </div>
-      </div>
-    </aside>
-    <main class="main" id="main">
-      <div class="loading">Chargement...</div>
-    </main>
+<section class="hero">
+  <div class="hero-dots"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="badge">🐾 Lancement Belgique · Rejoignez les premiers</div>
+    <h1>Transformez votre<br>amour des chiens en<br><em>revenus réels.</em></h1>
+    <p>DogLink connecte les propriétaires de chiens avec des petsitteurs de confiance partout en Belgique. Créez votre profil, fixez vos tarifs, choisissez vos clients.</p>
+    <div class="btns">
+      <a href="#rejoindre" class="btn-g">Créer mon profil gratuitement →</a>
+      <a href="#comment" class="btn-o">Comment ça marche</a>
+    </div>
   </div>
+  <div class="hero-cards">
+    <div class="hcard">
+      <div class="hcard-label">REVENUS MOYENS / MOIS</div>
+      <div class="hcard-val">860€</div>
+      <div class="hcard-sub">pour un petsitteur actif</div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-label">PROCHAINE RÉSERVATION</div>
+      <div class="hcard-val" style="font-size:18px;color:#D95F2B">Max · 12 mai</div>
+      <div class="hcard-sub">Garde à domicile · 50€</div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-label">VOTRE NOTE</div>
+      <div class="hcard-val">4.9 ★</div>
+      <div class="hcard-sub">87 avis vérifiés</div>
+    </div>
+  </div>
+</section>
+
+<section class="gains">
+  <div class="gains-grid">
+    <div>
+      <div class="stag">POURQUOI DOGLINK</div>
+      <h2 class="stitle rev">Vous aimez les chiens.<br>Autant en vivre.</h2>
+      <p class="ssub rev">Gardez des chiens près de chez vous à vos horaires, fixez vos propres tarifs, et construisez une clientèle fidèle grâce à votre profil noté.</p>
+      <a href="#rejoindre" class="btn-g rev" style="margin-top:28px;display:inline-flex">Commencer maintenant →</a>
+    </div>
+    <div class="gains-cards">
+      <div class="gcard rev"><div class="gcard-icon">💰</div><div class="gcard-val">25€</div><div class="gcard-lbl">tarif moyen par jour de garde</div></div>
+      <div class="gcard rev" style="transition-delay:.1s"><div class="gcard-icon">🗓️</div><div class="gcard-val">100%</div><div class="gcard-lbl">liberté de choisir vos disponibilités</div></div>
+      <div class="gcard rev" style="transition-delay:.2s"><div class="gcard-icon">⭐</div><div class="gcard-val">4.8/5</div><div class="gcard-lbl">note moyenne des petsitteurs DogLink</div></div>
+      <div class="gcard rev" style="transition-delay:.3s"><div class="gcard-icon">🇧🇪</div><div class="gcard-val">Belgique</div><div class="gcard-lbl">lancement dans toute la Belgique</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="comment">
+  <div class="stag" style="color:#F0C060">EN 4 ÉTAPES</div>
+  <h2 class="stitle rev">Comment ça fonctionne</h2>
+  <p class="ssub rev">De votre inscription à votre première réservation, tout est simple.</p>
+  <div class="steps">
+    <div class="step rev"><div class="snum">01</div><div class="sico">📝</div><h3>Créez votre profil</h3><p>Photo, tarifs, disponibilités, races acceptées. 5 minutes suffisent.</p><div class="sline"></div></div>
+    <div class="step rev" style="transition-delay:.1s"><div class="snum">02</div><div class="sico">✦</div><h3>Badge Premium</h3><p>Vérification d'identité. Vous apparaissez en priorité dans les recherches.</p><div class="sline"></div></div>
+    <div class="step rev" style="transition-delay:.2s"><div class="snum">03</div><div class="sico">📬</div><h3>Recevez des demandes</h3><p>Les propriétaires vous contactent via la messagerie intégrée.</p><div class="sline"></div></div>
+    <div class="step rev" style="transition-delay:.3s"><div class="snum">04</div><div class="sico">💸</div><h3>Soyez payé</h3><p>Paiement sécurisé. Virement sur votre compte sous 48h.</p></div>
+  </div>
+</section>
+
+<section style="background:#F5F0E8">
+  <div class="stag">OUTILS INCLUS</div>
+  <h2 class="stitle rev">Tout ce dont vous avez besoin</h2>
+  <p class="ssub rev">DogLink vous donne les outils pour gérer votre activité comme un pro.</p>
+  <div class="feats-grid">
+    <div class="fcard rev"><div class="fcard-ico">📡</div><h3>Suivi GPS Live</h3><p>Partagez la position du chien en temps réel. Un outil qui rassure et renforce la confiance.</p></div>
+    <div class="fcard rev" style="transition-delay:.1s"><div class="fcard-ico">💬</div><h3>Messagerie intégrée</h3><p>Discutez avec les propriétaires, envoyez des photos sans quitter l'app.</p></div>
+    <div class="fcard rev" style="transition-delay:.2s"><div class="fcard-ico">📊</div><h3>Dashboard Analytics</h3><p>Suivez vos revenus et réservations mois par mois.</p></div>
+    <div class="fcard rev" style="transition-delay:.3s"><div class="fcard-ico">⭐</div><h3>Avis vérifiés</h3><p>Chaque avis vient d'un vrai client. Votre réputation se construit réservation après réservation.</p></div>
+    <div class="fcard rev" style="transition-delay:.4s"><div class="fcard-ico">🗺️</div><h3>Visibilité sur la carte</h3><p>Votre profil apparaît sur la carte de Belgique. Les propriétaires proches vous trouvent.</p></div>
+    <div class="fcard rev" style="transition-delay:.5s"><div class="fcard-ico">🛍️</div><h3>Boutique intégrée</h3><p>Vendez des produits personnalisés à vos clients.</p></div>
+  </div>
+</section>
+
+<section class="testi">
+  <div class="stag">AVIS GOOGLE VÉRIFIÉS</div>
+  <h2 class="stitle rev">Ce que disent nos petsitteurs</h2>
+  <p class="ssub rev">Des petsitteurs de toute la Wallonie nous font confiance.</p>
+  <div class="tgrid">
+
+```
+<div class="tcard rev">
+  <div class="thead">
+    <div class="tavatar" style="background:linear-gradient(135deg,#E8693A,#C04E20)">S</div>
+    <div><div class="tname">Sophie M.</div><div class="tloc">📍 Liège · 6 mois</div></div>
+    <div class="glogo" style="margin-left:auto"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+  </div>
+  <div class="stars">★★★★★</div>
+  <p class="ttext">"J'ai créé mon profil un vendredi soir. Dès le lundi j'avais ma première réservation. En trois mois, DogLink est devenu ma principale source de revenus !"</p>
+  <div class="tdate">Il y a 2 semaines</div>
+  <div class="tearn">💰 860€/mois</div>
 </div>
 
-<!-- Load Supabase LAST so it's ready -->
+<div class="tcard rev" style="transition-delay:.1s">
+  <div class="thead">
+    <div class="tavatar" style="background:linear-gradient(135deg,#1C3A2F,#2A5C45)">J</div>
+    <div><div class="tname">Julien P.</div><div class="tloc">📍 Namur · 8 mois</div></div>
+    <div class="glogo" style="margin-left:auto"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+  </div>
+  <div class="stars">★★★★★</div>
+  <p class="ttext">"Le suivi GPS a tout changé. Les propriétaires sont rassurés, ils me font confiance et reviennent à chaque fois. Ma note est passée à 4.9 !"</p>
+  <div class="tdate">Il y a 1 mois</div>
+  <div class="tearn">💰 660€/mois</div>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div class="tcard rev" style="transition-delay:.2s">
+  <div class="thead">
+    <div class="tavatar" style="background:linear-gradient(135deg,#4285F4,#1A73E8)">E</div>
+    <div><div class="tname">Emma D.</div><div class="tloc">📍 Charleroi · Vétérinaire</div></div>
+    <div class="glogo" style="margin-left:auto"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+  </div>
+  <div class="stars">★★★★★</div>
+  <p class="ttext">"DogLink m'a permis de monétiser mes compétences de vétérinaire. Le badge Premium m'a apporté une clientèle qui me fait vraiment confiance."</p>
+  <div class="tdate">Il y a 3 semaines</div>
+  <div class="tearn">💰 1 200€/mois</div>
+</div>
+
+<div class="tcard rev" style="transition-delay:.3s">
+  <div class="thead">
+    <div class="tavatar" style="background:linear-gradient(135deg,#EA4335,#C5221F)">A</div>
+    <div><div class="tname">Antoine L.</div><div class="tloc">📍 Mons · 4 mois</div></div>
+    <div class="glogo" style="margin-left:auto"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+  </div>
+  <div class="stars">★★★★★</div>
+  <p class="ttext">"Je cherchais un complément de revenu à Mons. Avec DogLink j'ai trouvé bien plus — une vraie activité que j'adore. Les outils sont simples et efficaces."</p>
+  <div class="tdate">Il y a 2 mois</div>
+  <div class="tearn">💰 520€/mois</div>
+</div>
+
+<div class="tcard rev" style="transition-delay:.4s">
+  <div class="thead">
+    <div class="tavatar" style="background:linear-gradient(135deg,#34A853,#1E8E3E)">C</div>
+    <div><div class="tname">Clara R.</div><div class="tloc">📍 Verviers · 5 mois</div></div>
+    <div class="glogo" style="margin-left:auto"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+  </div>
+  <div class="stars">★★★★★</div>
+  <p class="ttext">"Je garde 2 à 3 chiens par semaine à Verviers. Les propriétaires adorent les photos en temps réel. Super expérience, je recommande à tous !"</p>
+  <div class="tdate">Il y a 3 semaines</div>
+  <div class="tearn">💰 480€/mois</div>
+</div>
+
+<div class="tcard rev" style="transition-delay:.5s">
+  <div class="thead">
+    <div class="tavatar" style="background:linear-gradient(135deg,#FBBC05,#E37400)">M</div>
+    <div><div class="tname">Marc B.</div><div class="tloc">📍 Arlon · Éducateur canin</div></div>
+    <div class="glogo" style="margin-left:auto"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+  </div>
+  <div class="stars">★★★★★</div>
+  <p class="ttext">"Le dashboard analytics me permet de suivre ma progression à Arlon. DogLink m'a ouvert un nouveau marché. Je ne pourrais plus m'en passer."</p>
+  <div class="tdate">Il y a 1 mois</div>
+  <div class="tearn">💰 740€/mois</div>
+</div>
+```
+
+  </div>
+
+  <div class="google-score rev">
+    <div style="font-size:12px;color:#7A7060;margin-bottom:6px;font-weight:600">NOTE GLOBALE GOOGLE</div>
+    <div style="font-family:'Fraunces',serif;font-size:48px;font-weight:600;color:#1A1208;line-height:1">4.9</div>
+    <div style="color:#FBBC05;font-size:20px;letter-spacing:3px;margin:5px 0">★★★★★</div>
+    <div style="font-size:12px;color:#7A7060">112 avis Google vérifiés</div>
+  </div>
+</section>
+
+<section style="background:#F5F0E8">
+  <div class="stag">FAQ</div>
+  <h2 class="stitle rev">Questions fréquentes</h2>
+  <div class="faq-list">
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Est-ce gratuit de s'inscrire ?<span class="faq-ico">+</span></div><div class="faq-a">Oui, l'inscription est totalement gratuite. DogLink prend une commission uniquement sur les réservations confirmées. Pas de frais fixes.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Comment suis-je payé ?<span class="faq-ico">+</span></div><div class="faq-a">Paiement sécurisé via Stripe. Le montant est versé sous 48h après la fin de la prestation sur votre compte bancaire belge.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">À quoi sert le badge Premium ?<span class="faq-ico">+</span></div><div class="faq-a">Il certifie votre identité et vous met en tête des résultats. Les petsitteurs Premium gagnent en moyenne 40% de plus.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">DogLink est disponible où en Belgique ?<span class="faq-ico">+</span></div><div class="faq-a">Liège, Namur, Charleroi, Mons, Verviers, Arlon, Dinant... Si vous êtes en Belgique, vous pouvez vous inscrire dès aujourd'hui !</div></div>
+  </div>
+</section>
+
+<section class="cta" id="rejoindre">
+  <div class="cpill"><span class="cdot"></span><span><strong id="counter">--</strong> petsitteurs inscrits</span></div>
+  <h2 class="rev">Prêt à <em>gagner</em><br>avec vos pattes ?</h2>
+  <p class="cta-sub rev">Rejoignez les premiers petsitteurs DogLink en Belgique dès cette semaine.</p>
+  <div class="cform rev">
+    <input class="cinput" id="emailInput" type="email" placeholder="Votre adresse email">
+    <button class="cbtn" id="submitBtn" onclick="handleSubmit()">Je rejoins DogLink →</button>
+  </div>
+  <div class="cfeedback" id="feedback"></div>
+  <div class="cnote">Gratuit · Sans engagement · Première réservation en moins de 7 jours</div>
+</section>
+
+<footer>
+  <strong>DogLink</strong> · Belgique · 2026 ·
+  <a href="#" style="color:rgba(255,255,255,.4)">Mentions légales</a> ·
+  <a href="#" style="color:rgba(255,255,255,.4)">Confidentialité</a>
+</footer>
 
 <script>
-// Wait for everything to be ready
-window.addEventListener('load', function() {
-  var sb, CU=null, CP=null, ROLE='', MODE='login', TRIV=null, TRIDX=0;
-  var TRPATH=[[310,200],[332,180],[362,170],[392,188],[412,208],[402,238],[372,248],[342,232],[310,218]];
-  
-  var SITTERS=[
-    {id:'d1',name:'Sophie M.',loc:'Liège',price:25,rating:4.9,rc:87,bio:'Passionnée par les animaux, je prends soin de vos chiens comme des miens.',tags:['Petits chiens','Chats'],avail:true,prem:true},
-    {id:'d2',name:'Julien P.',loc:'Namur',price:22,rating:4.8,rc:61,bio:'Grand jardin privé.',tags:['Grands chiens'],avail:true,prem:true},
-    {id:'d3',name:'Emma D.',loc:'Charleroi',price:30,rating:5.0,rc:112,bio:'Vétérinaire de formation.',tags:['Chiots','Vétérinaire'],avail:false,prem:true},
-    {id:'d4',name:'Lucas B.',loc:'Mons',price:20,rating:4.7,rc:43,bio:'Éducateur canin certifié.',tags:['Éducation'],avail:true,prem:false},
-    {id:'d5',name:'Clara R.',loc:'Verviers',price:18,rating:4.6,rc:29,bio:'Disponible toute la journée.',tags:['Petits chiens'],avail:true,prem:false},
-    {id:'d6',name:'Marc B.',loc:'Arlon',price:28,rating:4.9,rc:74,bio:'Compte-rendu quotidien.',tags:['VIP'],avail:false,prem:true},
-  ];
+// Scroll reveal
+const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('vis'); }), {threshold:.1});
+document.querySelectorAll('.rev').forEach(r => obs.observe(r));
 
-  // Init Supabase safely
+// FAQ
+function toggleFaq(el) {
+  const open = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!open) el.classList.add('open');
+}
+
+// Counter
+async function loadCounter() {
   try {
-    sb = supabase.createClient(
-      'https://mxvzgngtgjovrzfktfhw.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU'
-    );
-  } catch(e) { console.error('Supabase error:', e); }
-
-  function $(id){return document.getElementById(id);}
-  function st(n){return'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
-  function al(s){return((s||'?')[0]||'?').toUpperCase();}
-  function stb(s){var m={pending:'<span class="st stp">En attente</span>',confirmed:'<span class="st stc">Confirmée</span>',done:'<span class="st std">Terminée</span>',cancelled:'<span class="st std">Annulée</span>'};return m[s]||m.done;}
-
-  // AUTH
-  $('btnLogin').onclick = function(){ setMode('login'); };
-  $('btnRegister').onclick = function(){ setMode('register'); };
-  $('btnOwner').onclick = function(){ setRole('owner'); };
-  $('btnSitter').onclick = function(){ setRole('sitter'); };
-  $('btnSubmit').onclick = function(){ doAuth(); };
-  $('apass').onkeydown = function(e){ if(e.key==='Enter') doAuth(); };
-
-  function setMode(m) {
-    MODE = m;
-    $('btnLogin').className = 'atab' + (m==='login'?' on':'');
-    $('btnRegister').className = 'atab' + (m==='register'?' on':'');
-    $('rfields').style.display = m==='register' ? 'block' : 'none';
-    $('btnSubmit').textContent = m==='login' ? 'Se connecter →' : 'Créer mon compte →';
-    $('aerr').textContent = '';
-  }
-
-  function setRole(r) {
-    ROLE = r;
-    $('btnOwner').className = 'rbtn' + (r==='owner'?' on':'');
-    $('btnSitter').className = 'rbtn' + (r==='sitter'?' on':'');
-  }
-
-  async function doAuth() {
-    if(!sb){$('aerr').textContent='Erreur de connexion. Rechargez la page.';return;}
-    var email=$('aemail').value.trim();
-    var pass=$('apass').value;
-    var btn=$('btnSubmit');
-    $('aerr').textContent='';
-    btn.textContent='...';
-    btn.disabled=true;
-    try {
-      if(MODE==='login'){
-        var r=await sb.auth.signInWithPassword({email:email,password:pass});
-        if(r.error)throw r.error;
-        var p=await sb.from('profiles').select('*').eq('user_id',r.data.user.id).single();
-        startApp(r.data.user, p.data);
-      } else {
-        var name=$('aname').value.trim();
-        if(!ROLE){$('aerr').textContent='Choisissez votre rôle';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
-        if(!name){$('aerr').textContent='Entrez votre prénom';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
-        var r2=await sb.auth.signUp({email:email,password:pass});
-        if(r2.error)throw r2.error;
-        await sb.from('profiles').insert({user_id:r2.data.user.id,role:ROLE,name:name,location:'Belgique'});
-        await new Promise(function(res){setTimeout(res,500);});
-        var p2=await sb.from('profiles').select('*').eq('user_id',r2.data.user.id).single();
-        startApp(r2.data.user, p2.data);
-      }
-    } catch(e) {
-      $('aerr').textContent = e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message;
-      btn.textContent = MODE==='login'?'Se connecter →':'Créer mon compte →';
-      btn.disabled = false;
-    }
-  }
-
-  function startApp(user, profile) {
-    CU=user; CP=profile;
-    $('auth').style.display='none';
-    $('app').style.display='block';
-    $('uav').textContent = al(profile&&profile.name?profile.name:user.email);
-    $('uname').textContent = (profile&&profile.name)||'Utilisateur';
-    $('urole').textContent = (profile&&profile.role==='sitter')?'Petsitteur':'Propriétaire';
-    $('rlabel').textContent = (profile&&profile.role==='sitter')?'PETSITTEUR':'PROPRIÉTAIRE';
-    $('rlabel').style.color = (profile&&profile.role==='sitter')?'#3DD68C':'#4D8EFF';
-    $('btnLogout').onclick = function(){ doLogout(); };
-    buildNav();
-    showPage((profile&&profile.role==='sitter')?'sdash':'odash');
-  }
-
-  async function doLogout(){
-    if(sb) await sb.auth.signOut();
-    if(TRIV){clearInterval(TRIV);TRIV=null;}
-    CU=CP=null;
-    $('app').style.display='none';
-    $('auth').style.display='flex';
-  }
-
-  function buildNav(){
-    var isSitter=CP&&CP.role==='sitter';
-    var items=isSitter?[
-      {id:'sdash',ic:'◈',lb:'Tableau de bord'},
-      {id:'sbookings',ic:'📅',lb:'Réservations'},
-      {id:'msgs',ic:'💬',lb:'Messages',b:2},
-      {id:'analytics',ic:'📊',lb:'Analytics'},
-      {id:'sprofile',ic:'👤',lb:'Mon profil'},
-      {id:'tracking',ic:'📡',lb:'Suivi Live'},
-    ]:[
-      {id:'odash',ic:'◈',lb:'Accueil'},
-      {id:'sitters',ic:'🐾',lb:'Petsitteurs'},
-      {id:'oresas',ic:'📅',lb:'Réservations'},
-      {id:'msgs',ic:'💬',lb:'Messages',b:2},
-      {id:'tracking',ic:'📡',lb:'Suivi Live'},
-      {id:'reviews',ic:'⭐',lb:'Avis'},
-    ];
-    $('snav').innerHTML=items.map(function(n){
-      return '<div class="ni" data-p="'+n.id+'" onclick="window._sp(\''+n.id+'\')">'
-        +'<span style="font-size:15px;width:17px;text-align:center">'+n.ic+'</span>'
-        +'<span>'+n.lb+'</span>'
-        +(n.b?'<span class="nbadge">'+n.b+'</span>':'')
-        +'</div>';
-    }).join('');
-  }
-
-  window._sp = function(id){ showPage(id); };
-
-  function showPage(id){
-    if(TRIV){clearInterval(TRIV);TRIV=null;}
-    document.querySelectorAll('.ni').forEach(function(n){n.classList.toggle('on',n.dataset.p===id);});
-    var m=$('main');
-    m.innerHTML='<div class="loading">Chargement...</div>';
-    var pages={odash:pgOdash,sitters:pgSitters,oresas:pgOresas,msgs:pgMsgs,tracking:pgTracking,reviews:pgReviews,sdash:pgSdash,sbookings:pgSbookings,analytics:pgAnalytics,sprofile:pgSprofile};
-    if(pages[id]) pages[id](m);
-  }
-
-  // ── OWNER DASHBOARD ──
-  async function pgOdash(m){
-    var r=await sb.from('reservations').select('*').eq('owner_id',(CP&&CP.id)||'').order('created_at',{ascending:false});
-    var resa=r.data||[];
-    var active=resa.filter(function(x){return x.status!=='done'&&x.status!=='cancelled';});
-    m.innerHTML='<div class="ptitle">Bonjour, '+(CP&&CP.name||'là')+' 👋</div><div class="psub">Bienvenue sur DogLink Belgique</div>'
-    +'<div class="g4">'
-    +'<div class="card"><div>📅</div><div class="sv" style="color:#4D8EFF">'+active.length+'</div><div class="sl">Réservations actives</div></div>'
-    +'<div class="card"><div>🐾</div><div class="sv" style="color:#3DD68C">'+SITTERS.filter(function(s){return s.avail;}).length+'</div><div class="sl">Petsitteurs dispos</div></div>'
-    +'<div class="card"><div>💬</div><div class="sv" style="color:#FF6B4A">2</div><div class="sl">Messages non lus</div></div>'
-    +'<div class="card"><div>⭐</div><div class="sv" style="color:#F0C060">4.9</div><div class="sl">Note moyenne</div></div>'
-    +'</div>'
-    +'<div class="g2">'
-    +'<div class="card"><div style="font-weight:700;margin-bottom:12px">Prochaines réservations</div>'
-    +(active.length===0
-      ?'<div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="window._sp(\'sitters\')">Trouver un petsitteur</button></div>'
-      :active.slice(0,3).map(function(r){return'<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #2A2D40"><div class="av">'+al(r.sitter_name)+'</div><div style="flex:1"><div style="font-weight:600;font-size:13px">'+(r.sitter_name||'Petsitteur')+'</div><div style="color:#7B7F9E;font-size:11px">'+r.type+' · '+r.start_date+'</div></div>'+stb(r.status)+'</div>';}).join('')
-    )+'</div>'
-    +'<div class="card" style="background:linear-gradient(135deg,#0D2A1A,#0A1A12);border:1px solid #1D4A30;cursor:pointer" onclick="window._sp(\'tracking\')">'
-    +'<div style="color:#3DD68C;font-size:11px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:5px"><span class="dot pulse"></span>SUIVI EN DIRECT</div>'
-    +'<div style="font-weight:800;font-size:17px;margin-bottom:5px">Rex est en promenade</div>'
-    +'<div style="color:#6BBF8A;font-size:12px;margin-bottom:14px">Mise à jour il y a 2 min</div>'
-    +'<button class="btn bg bsm">Voir le suivi →</button>'
-    +'</div></div>';
-  }
-
-  // ── SITTERS LIST ──
-  function pgSitters(m){
-    m.innerHTML='<div class="ptitle">Petsitteurs</div><div class="psub">'+SITTERS.length+' professionnels en Belgique</div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'
-    +'<input id="sq" class="fi" placeholder="Rechercher..." style="width:160px;margin:0" oninput="window._fs()">'
-    +'<button class="btn bo bsm" id="fa" onclick="window._ff(\'all\')" style="border-color:#FF6B4A;color:#FF6B4A">Tous</button>'
-    +'<button class="btn bo bsm" id="fv" onclick="window._ff(\'avail\')">Disponibles</button>'
-    +'<button class="btn bo bsm" id="fp" onclick="window._ff(\'prem\')">✦ Premium</button>'
-    +'</div><div class="g3" id="sg"></div>';
-    window._SF='all';
-    renderSg('all','');
-  }
-  window._ff=function(f){window._SF=f;window._fs();};
-  window._fs=function(){renderSg(window._SF||'all',(document.getElementById('sq')||{}).value||'');};
-  function renderSg(f,q){
-    var g=document.getElementById('sg');if(!g)return;
-    var list=SITTERS.filter(function(s){return(f==='all'||(f==='avail'&&s.avail)||(f==='prem'&&s.prem))&&(s.name.toLowerCase().includes(q.toLowerCase())||s.loc.toLowerCase().includes(q.toLowerCase()));});
-    g.innerHTML=list.map(function(s){return'<div class="card" style="cursor:pointer;'+(s.prem?'border-color:rgba(240,192,96,.3)':'')+'" onclick="window._sd(\''+s.id+'\')">'
-    +(s.prem?'<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><span class="pbadge">✦ PREMIUM</span></div>':'')
-    +'<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><div class="av">'+al(s.name)+'</div><div><div style="font-weight:700;font-size:13px">'+s.name+'</div><div style="color:#7B7F9E;font-size:11px">📍 '+s.loc+'</div></div></div>'
-    +'<p style="color:#7B7F9E;font-size:12px;line-height:1.6;margin-bottom:10px">'+s.bio.slice(0,60)+'…</p>'
-    +'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+s.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('')+'</div>'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2A2D40;padding-top:9px"><div><span class="stars">'+st(s.rating)+'</span> <b style="font-size:12px">'+s.rating+'</b></div><div><b style="font-size:15px">'+s.price+'€</b><span style="color:#7B7F9E;font-size:11px">/j</span></div></div>'
-    +'<div style="margin-top:7px;display:flex;align-items:center;gap:5px"><span class="dot" style="background:'+(s.avail?'#3DD68C':'#555')+'"></span><span style="font-size:11px;color:'+(s.avail?'#3DD68C':'#7B7F9E')+';font-weight:600">'+(s.avail?'Disponible':'Occupé')+'</span></div>'
-    +'</div>';}).join('');
-  }
-  window._sd=function(id){
-    var s=SITTERS.find(function(x){return x.id===id;});if(!s)return;
-    var m=$('main');
-    m.innerHTML='<button class="btn bo bsm" onclick="window._sp(\'sitters\')" style="margin-bottom:16px">← Retour</button>'
-    +'<div class="g2" style="align-items:start">'
-    +'<div>'
-    +'<div class="card" style="margin-bottom:12px">'
-    +'<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">'
-    +'<div class="av avlg">'+al(s.name)+'</div>'
-    +'<div>'+(s.prem?'<span class="pbadge">✦ PREMIUM</span><br>':'')
-    +'<span style="font-family:Fraunces,serif;font-size:19px;font-weight:300">'+s.name+'</span><br>'
-    +'<span style="color:#7B7F9E;font-size:12px">📍 '+s.loc+'</span><br>'
-    +'<span class="stars">'+st(s.rating)+'</span> <b>'+s.rating+'</b> <span style="color:#7B7F9E;font-size:11px">('+s.rc+' avis)</span>'
-    +'</div></div>'
-    +'<p style="color:#AAA;line-height:1.8;font-size:13px">'+s.bio+'</p>'
-    +'</div>'
-    +'<div class="card">'
-    +'<div style="font-weight:700;margin-bottom:11px;font-size:13px">Services & tarifs</div>'
-    +[['🏠','Garde',s.price+'€/j'],['🦮','Promenade','15€'],['🌙','Hébergement',(s.price+8)+'€/nuit'],['🎓','Éducation','30€']].map(function(x,i){return'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+'"><span style="font-size:12px">'+x[0]+' '+x[1]+'</span><span style="font-weight:700;color:#F0C060;font-size:12px">'+x[2]+'</span></div>';}).join('')
-    +'</div></div>'
-    +'<div class="card" style="position:sticky;top:16px">'
-    +'<div style="font-weight:800;font-size:19px;margin-bottom:3px">'+s.price+'€<span style="font-weight:400;font-size:12px;color:#7B7F9E">/j</span></div>'
-    +'<div style="color:'+(s.avail?'#3DD68C':'#888')+';font-size:12px;font-weight:700;margin-bottom:16px">'+(s.avail?'✓ Disponible':'✗ Non disponible')+'</div>'
-    +'<div id="bform">'
-    +'<label class="fl">Nom du chien</label><input class="fi" id="bdog" placeholder="Rex...">'
-    +'<label class="fl">Service</label><select class="fi" id="btype"><option>Garde à domicile</option><option>Promenade</option><option>Hébergement</option><option>Éducation</option></select>'
-    +'<label class="fl">Date début</label><input type="date" class="fi" id="bstart">'
-    +'<label class="fl">Date fin</label><input type="date" class="fi" id="bend">'
-    +'<label class="fl">Notes</label><textarea class="fi" id="bnotes" placeholder="Infos sur votre chien..."></textarea>'
-
-```
-+'<button class="btn bp bfull" onclick="window._bk(\''+s.id+'\',\''+s.name+'\','+s.price+')" type="button">Réserver maintenant</button>'
-+'<button class="btn bo bfull" onclick="window._sp(\'msgs\')" type="button">Envoyer un message</button>'
-+'</div>'
-+'<div id="bsuc" style="display:none;text-align:center;padding:16px;color:#3DD68C;font-weight:700">🎉 Réservation envoyée !</div>'
-+'</div></div>';
-```
-
-};
-window._bk=async function(sid,sname,price){
-var dog=document.getElementById(‘bdog’).value.trim();
-var type=document.getElementById(‘btype’).value;
-var start=document.getElementById(‘bstart’).value;
-var end=document.getElementById(‘bend’).value;
-var notes=document.getElementById(‘bnotes’).value;
-if(!dog||!start||!end){alert(‘Remplissez tous les champs.’);return;}
-var days=Math.max(1,Math.ceil((new Date(end)-new Date(start))/86400000));
-await sb.from(‘reservations’).insert({sitter_id:sid,owner_id:CP&&CP.id,sitter_name:sname,dog_name:dog,type:type,start_date:start,end_date:end,notes:notes,price:price*days,status:‘pending’});
-document.getElementById(‘bform’).style.display=‘none’;
-document.getElementById(‘bsuc’).style.display=‘block’;
-setTimeout(function(){window._sp(‘oresas’);},2000);
-};
-
-// ── OWNER RESERVATIONS ──
-async function pgOresas(m){
-var r=await sb.from(‘reservations’).select(’*’).eq(‘owner_id’,(CP&&CP.id)||’’).order(‘created_at’,{ascending:false});
-var resa=r.data||[];
-m.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
-+(resa.length===0
-?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="window._sp(\'sitters\')" type="button">Trouver un petsitteur</button></div></div>’
-:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:12px">’
-+’<div class="av">’+al(r.sitter_name)+’</div>’
-+’<div style="flex:1"><div style="font-weight:700;font-size:13px">’+(r.sitter_name||‘Petsitteur’)+’</div>’
-+’<div style="color:#7B7F9E;font-size:11px">’+r.type+’ · ‘+(r.dog_name||’’)+’ · ‘+(r.start_date||’’)+’</div></div>’
-+’<div style="text-align:right"><div style="font-weight:800;font-size:15px;margin-bottom:4px">’+(r.price||0)+‘€</div>’+stb(r.status)+’</div>’
-+’</div>’;}).join(’’))
-+’<div style="margin-top:12px;background:rgba(255,107,74,.06);border-radius:14px;padding:18px;border:1px solid rgba(255,107,74,.2)">’
-+’<div style="font-weight:700;margin-bottom:5px;font-size:14px">+ Nouvelle réservation</div>’
-+’<div style="color:#7B7F9E;font-size:12px;margin-bottom:11px">Planifiez une garde ou promenade.</div>’
-+’<button class="btn bp bsm" onclick="window._sp(\'sitters\')" type="button">Trouver un petsitteur</button>’
-+’</div>’;
+    const { count } = await db.from('waitlist').select('*', { count: 'exact', head: true });
+    document.getElementById('counter').textContent = count ?? '0';
+  } catch(e) { document.getElementById('counter').textContent = '0'; }
 }
+loadCounter();
 
-// ── SITTER DASHBOARD ──
-async function pgSdash(m){
-var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’);
-var resa=r.data||[];
-var pending=resa.filter(function(x){return x.status===‘pending’;});
-var conf=resa.filter(function(x){return x.status===‘confirmed’;});
-var rev=resa.filter(function(x){return x.status===‘done’;}).reduce(function(s,x){return s+(x.price||0);},0);
-m.innerHTML=’<div class="ptitle">Bienvenue, ‘+(CP&&CP.name||‘Petsitteur’)+’ 🐾</div><div class="psub">Votre tableau de bord</div>’
-+’<div class="g4">’
-+’<div class="card"><div>📬</div><div class="sv" style="color:#F0C060">’+pending.length+’</div><div class="sl">Demandes</div></div>’
-+’<div class="card"><div>📅</div><div class="sv" style="color:#4D8EFF">’+conf.length+’</div><div class="sl">Actives</div></div>’
-+’<div class="card"><div>💰</div><div class="sv" style="color:#3DD68C">’+rev+‘€</div><div class="sl">Revenus</div></div>’
-+’<div class="card"><div>⭐</div><div class="sv" style="color:#FF6B4A">5.0</div><div class="sl">Note</div></div>’
-+’</div>’
-+(pending.length>0?’<div class="card" style="margin-bottom:12px;border-color:rgba(240,192,96,.3)">’
-+’<div style="font-weight:700;margin-bottom:11px;color:#F0C060">📬 Nouvelles demandes (’+pending.length+’)</div>’
-+pending.map(function(r){return’<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #2A2D40;flex-wrap:wrap">’
-+’<div class="av">’+al(r.dog_name)+’</div>’
-+’<div style="flex:1"><div style="font-weight:600;font-size:13px">’+(r.dog_name||‘Chien’)+’</div>’
-+’<div style="color:#7B7F9E;font-size:11px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+(r.price?’ · ‘+r.price+‘€’:’’)+’</div></div>’
-+’<button class="btn bg bsm" onclick="window._ur(\''+r.id+'\',\'confirmed\',\'sdash\')" type="button">✓ OK</button> ’
-+’<button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="window._ur(\''+r.id+'\',\'cancelled\',\'sdash\')" type="button">✗</button>’
-+’</div>’;}).join(’’)+’</div>’:’’)
-+’<div class="g2">’
-+’<div class="card"><div style="font-weight:700;margin-bottom:11px">Mon profil public</div>’
-+’<div style="display:flex;gap:11px;align-items:center;margin-bottom:11px"><div class="av avlg">’+al(CP&&CP.name)+’</div>’
-+’<div><div style="font-weight:700;font-size:14px">’+(CP&&CP.name||‘Votre nom’)+’</div>’
-+’<div style="color:#7B7F9E;font-size:11px">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div>’
-+’<span class="stars">★★★★★</span></div></div>’
-+’<p style="color:#7B7F9E;font-size:12px;line-height:1.6;margin-bottom:11px">’+(CP&&CP.bio||‘Ajoutez une bio dans votre profil.’)+’</p>’
-+’<button class="btn bo bsm" onclick="window._sp(\'sprofile\')" type="button">Modifier →</button></div>’
-+’<div class="card"><div style="font-weight:700;margin-bottom:11px">Conseils</div>’
-+[‘Complétez votre profil à 100%’,‘Répondez aux demandes rapidement’,‘Envoyez des photos à chaque promenade’,‘Demandez des avis après chaque garde’].map(function(t,i){return’<div style="display:flex;gap:8px;padding:7px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+';font-size:11px"><span style="color:#3DD68C;font-weight:700">’+(i+1)+’.</span><span style="color:#AAA">’+t+’</span></div>’;}).join(’’)
-+’</div></div>’;
+// Form
+async function handleSubmit() {
+  const btn = document.getElementById('submitBtn');
+  const input = document.getElementById('emailInput');
+  const fb = document.getElementById('feedback');
+  btn.disabled = true;
+  btn.textContent = 'Inscription en cours…';
+  fb.className = 'cfeedback';
+  fb.textContent = '';
+  const res = await inscrire(input.value.trim());
+  if (res.ok) {
+    fb.className = 'cfeedback ok';
+    fb.textContent = '🎉 Bienvenue sur DogLink ! Vous serez parmi les premiers contactés.';
+    input.value = '';
+    btn.textContent = '✓ Inscrit !';
+    btn.style.background = '#3DD68C';
+    loadCounter();
+  } else {
+    fb.className = 'cfeedback err';
+    fb.textContent = res.msg;
+    btn.disabled = false;
+    btn.textContent = 'Je rejoins DogLink →';
+  }
 }
+document.getElementById('emailInput').addEventListener('keydown', e => { if(e.key==='Enter') handleSubmit(); });
 
-// ── SITTER BOOKINGS ──
-async function pgSbookings(m){
-var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’).order(‘created_at’,{ascending:false});
-var resa=r.data||[];
-m.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
-+(resa.length===0?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation pour l'instant.</div></div>’
-:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:11px;flex-wrap:wrap">’
-+’<div class="av">’+al(r.dog_name)+’</div>’
-+’<div style="flex:1"><div style="font-weight:700;font-size:13px">’+(r.dog_name||‘Chien’)+’</div>’
-+’<div style="color:#7B7F9E;font-size:11px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+’</div></div>’
-+’<div style="text-align:right;margin-right:8px"><div style="font-weight:800;font-size:15px;margin-bottom:4px">’+(r.price||0)+‘€</div>’+stb(r.status)+’</div>’
-+(r.status===‘pending’?’<button class="btn bg bsm" onclick="window._ur(\''+r.id+'\',\'confirmed\',\'sbookings\')" type="button">✓ Accepter</button> <button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="window._ur(\''+r.id+'\',\'cancelled\',\'sbookings\')" type="button">✗ Refuser</button>’:’’)
-+(r.status===‘confirmed’?’<button class="btn bsm" style="background:rgba(61,214,140,.12);color:#3DD68C;border:1px solid rgba(61,214,140,.3)" onclick="window._ur(\''+r.id+'\',\'done\',\'sbookings\')" type="button">✓ Terminé</button>’:’’)
-+’</div>’;}).join(’’));
+// Paws
+for (let i = 0; i < 12; i++) {
+  const p = document.createElement('div');
+  p.className = 'paw';
+  p.textContent = '🐾';
+  p.style.left = (Math.random()*96) + 'vw';
+  p.style.animationDuration = (12+Math.random()*16) + 's';
+  p.style.animationDelay = (Math.random()*14) + 's';
+  p.style.fontSize = (16+Math.random()*18) + 'px';
+  document.body.appendChild(p);
 }
-window._ur=async function(id,status,page){
-await sb.from(‘reservations’).update({status:status}).eq(‘id’,id);
-window._sp(page);
-};
-
-// ── ANALYTICS ──
-async function pgAnalytics(m){
-var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’);
-var done=(r.data||[]).filter(function(x){return x.status===‘done’;});
-var rev=done.reduce(function(s,x){return s+(x.price||0);},0);
-var months=[{m:‘Jan’,v:480},{m:‘Fév’,v:620},{m:‘Mar’,v:590},{m:‘Avr’,v:780},{m:‘Mai’,v:Math.max(rev,860)}];
-var maxV=Math.max.apply(null,months.map(function(d){return d.v;}));
-m.innerHTML=’<div class="ptitle">Analytics</div><div class="psub">Vos performances</div>’
-+’<div class="g4" style="margin-bottom:14px">’
-+’<div class="card"><div class="sv" style="color:#F0C060">’+rev+‘€</div><div class="sl">Revenus totaux</div></div>’
-+’<div class="card"><div class="sv" style="color:#3DD68C">’+done.length+’</div><div class="sl">Gardes terminées</div></div>’
-+’<div class="card"><div class="sv" style="color:#4D8EFF">5.0★</div><div class="sl">Note</div></div>’
-+’<div class="card"><div class="sv" style="color:#FF6B4A">100%</div><div class="sl">Acceptation</div></div>’
-+’</div>’
-+’<div class="card"><div style="font-weight:700;margin-bottom:18px">Revenus mensuels</div>’
-+’<div style="display:flex;align-items:flex-end;gap:10px;height:140px">’
-+months.map(function(d){return’<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">’
-+’<div style="font-size:10px;color:#7B7F9E;font-weight:700">’+d.v+‘€</div>’
-+’<div style="width:100%;background:linear-gradient(to top,#FF6B4A,#F0C060);border-radius:4px 4px 0 0;height:'+Math.round((d.v/maxV)*110)+'px"></div>’
-+’<div style="font-size:10px;color:#7B7F9E">’+d.m+’</div>’
-+’</div>’;}).join(’’)
-+’</div></div>’;
-}
-
-// ── SITTER PROFILE ──
-function pgSprofile(m){
-var pav=CP&&CP.available!==false;
-m.innerHTML=’<div class="ptitle">Mon profil</div><div class="psub">Visible par tous les propriétaires</div>’
-+’<div class="g2" style="align-items:start">’
-+’<div class="card">’
-+’<label class="fl">Prénom</label><input class="fi" id="pn" value="'+(CP&&CP.name||'')+'" placeholder="Votre prénom" type="text">’
-+’<label class="fl">Localisation</label><input class="fi" id="pl" value="'+(CP&&CP.location||'')+'" placeholder="Ex: Liège..." type="text">’
-+’<label class="fl">Tarif journalier (€)</label><input type="number" class="fi" id="pp" value="'+(CP&&CP.price||25)+'">’
-+’<label class="fl">Bio</label><textarea class="fi" id="pb">’+(CP&&CP.bio||’’)+’</textarea>’
-+’<label class="fl">Disponibilité</label>’
-+’<div style="display:flex;gap:8px;margin-bottom:14px">’
-+’<button id="pav1" class="btn bsm '+(pav?'bg':'bo')+'" onclick="window._pav(true)" type="button">● Disponible</button>’
-+’<button id="pav0" class="btn bsm '+(pav?'bo':'bp')+'" onclick="window._pav(false)" type="button">Occupé</button>’
-+’</div>’
-+’<button class="btn bp bfull" id="psave" onclick="window._saveP()" type="button">Sauvegarder</button>’
-+’</div>’
-+’<div class="card">’
-+’<div style="font-weight:700;margin-bottom:11px">Aperçu</div>’
-+’<div style="display:flex;gap:11px;align-items:center;margin-bottom:11px"><div class="av avlg" id="pavav">’+al(CP&&CP.name)+’</div><div><div style="font-weight:700;font-size:14px" id="pavname">’+(CP&&CP.name||‘Votre nom’)+’</div><div style="color:#7B7F9E;font-size:11px" id="pavloc">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div><span class="stars">★★★★★</span></div></div>’
-+’<p style="color:#7B7F9E;font-size:12px;line-height:1.7" id="pavbio">’+(CP&&CP.bio||‘Votre bio…’)+’</p>’
-+’<div style="display:flex;justify-content:space-between;border-top:1px solid #2A2D40;padding-top:11px;margin-top:11px"><span style="color:#7B7F9E;font-size:12px">Tarif</span><span style="font-weight:800;font-size:15px" id="pavp">’+(CP&&CP.price||25)+‘€</span></div>’
-+’</div></div>’;
-document.getElementById(‘pn’).oninput=function(){document.getElementById(‘pavname’).textContent=this.value||‘Votre nom’;document.getElementById(‘pavav’).textContent=al(this.value);};
-document.getElementById(‘pl’).oninput=function(){document.getElementById(‘pavloc’).textContent=‘📍 ‘+(this.value||‘Belgique’);};
-document.getElementById(‘pb’).oninput=function(){document.getElementById(‘pavbio’).textContent=this.value||‘Votre bio…’;};
-document.getElementById(‘pp’).oninput=function(){document.getElementById(‘pavp’).textContent=(this.value||25)+‘€’;};
-window._PAV=pav;
-}
-window._pav=function(v){window._PAV=v;document.getElementById(‘pav1’).className=‘btn bsm ‘+(v?‘bg’:‘bo’);document.getElementById(‘pav0’).className=‘btn bsm ‘+(v?‘bo’:‘bp’);};
-window._saveP=async function(){
-var btn=document.getElementById(‘psave’);btn.textContent=’…’;btn.disabled=true;
-await sb.from(‘profiles’).update({name:document.getElementById(‘pn’).value,bio:document.getElementById(‘pb’).value,location:document.getElementById(‘pl’).value,price:document.getElementById(‘pp’).value,available:window._PAV}).eq(‘user_id’,CU.id);
-var p=await sb.from(‘profiles’).select(’*’).eq(‘user_id’,CU.id).single();
-CP=p.data;btn.textContent=‘✓ Sauvegardé!’;btn.style.background=’#3DD68C’;
-setTimeout(function(){btn.textContent=‘Sauvegarder’;btn.style.background=’’;btn.disabled=false;},2000);
-};
-
-// ── MESSAGES ──
-var CHATD=[{t:‘Bonjour ! Je suis disponible.’,me:false,h:‘10:15’},{t:‘Super ! Mon chien s'appelle Rex 🐕’,me:true,h:‘10:17’},{t:‘Combien de sorties par jour ?’,me:false,h:‘10:19’},{t:‘2-3 promenades.’,me:true,h:‘10:20’},{t:‘Réservation confirmée ✅’,me:false,h:‘10:23’}];
-function pgMsgs(m){
-var contacts=[{n:‘Sophie M.’,h:‘10:23’,p:‘Réservation confirmée ✅’,u:2},{n:‘Julien P.’,h:‘Hier’,p:‘Rex à partir de 9h’,u:0},{n:‘Emma D.’,h:‘Lun’,p:‘Rex sage 🐶’,u:0}];
-m.innerHTML=’<div class="ptitle">Messages</div><div class="psub" style="margin-bottom:11px">Vos conversations</div>’
-+’<div class="cw">’
-+’<div class="cl"><div style="padding:11px 13px;font-weight:700;border-bottom:1px solid #2A2D40;font-size:13px">Conversations</div>’
-+contacts.map(function(c,i){return’<div class="ci'+(i===0?' on':'')+'">’
-+’<div style="position:relative"><div class="av" style="width:32px;height:32px;font-size:11px">’+al(c.n)+’</div>’
-+(c.u?’<span style="position:absolute;top:-2px;right:-2px;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 4px">’+c.u+’</span>’:’’)
-+’</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><b style="font-size:12px">’+c.n+’</b><span style="color:#7B7F9E;font-size:10px">’+c.h+’</span></div>’
-+’<div style="color:#7B7F9E;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+c.p+’</div></div></div>’;}).join(’’)
-+’</div>’
-+’<div class="cb">’
-+’<div class="ch"><div class="av" style="width:32px;height:32px;font-size:11px">S</div><div><div style="font-weight:700;font-size:13px">Sophie M.</div><div style="color:#3DD68C;font-size:11px">● En ligne</div></div></div>’
-+’<div class="ms" id="msga">’+CHATD.map(function(d){return’<div class="mg'+(d.me?' me':'')+'">’+(!d.me?’<div class="av" style="width:26px;height:26px;font-size:10px">S</div>’:’’)+’<div><div class="mb '+(d.me?'me':'th')+'">’+d.t+’</div><div class="mt" style="text-align:'+(d.me?'right':'left')+'">’+d.h+’</div></div></div>’;}).join(’’)+’</div>’
-+’<div class="cf"><input class="cinp" id="minp" placeholder="Écrire un message…" onkeydown="if(event.key===\'Enter\')window._sm()"><button class="btn bp" onclick="window._sm()" type="button">Envoyer →</button></div>’
-+’</div></div>’;
-}
-window._sm=function(){var i=document.getElementById(‘minp’),t=i.value.trim();if(!t)return;var a=document.getElementById(‘msga’);a.innerHTML+=’<div class="mg me"><div><div class="mb me">’+t+’</div><div class="mt" style="text-align:right">Maintenant</div></div></div>’;i.value=’’;a.scrollTop=a.scrollHeight;};
-
-// ── TRACKING ──
-function pgTracking(m){
-m.innerHTML=’<div class="ptitle">Suivi en temps réel</div><div class="psub">Rex · En promenade · Belgique</div>’
-+’<div class="g2" style="align-items:start">’
-+’<div class="tm" id="tmap">’
-+’<svg width="100%" height="100%" viewBox="0 0 700 360" style="position:absolute">’
-+’<rect width="700" height="360" fill="#080E08"/>’
-+Array.from({length:8},function(*,i){return’<line x1="0" y1="'+(i*48)+'" x2="700" y2="'+(i*48)+'" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
-+Array.from({length:13},function(*,i){return’<line x1="'+(i*58)+'" y1="0" x2="'+(i*58)+'" y2="360" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
-+’<path d="M0 190 Q175 165 350 180 Q525 198 700 170" stroke="#0A2840" stroke-width="18" fill="none" opacity=".8"/>’
-+[[80,50,110,42],[200,95,90,42],[380,65,100,44],[500,115,80,38],[120,145,95,42],[320,145,85,40],[450,180,110,44],[80,255,90,42],[240,272,105,42],[400,240,90,40]].map(function(x){return’<rect x="'+x[0]+'" y="'+x[1]+'" width="'+x[2]+'" height="'+x[3]+'" rx="7" fill="#0C1A0C"/>’;}).join(’’)
-+’</svg>’
-+’<div id="tdot" style="position:absolute;left:310px;top:190px;transform:translate(-50%,-50%);z-index:10;transition:left .85s ease,top .85s ease">’
-+’<div style="position:relative"><div class="ping" style="position:absolute;inset:-5px;border-radius:50%;background:#3DD68C;opacity:.3"></div>’
-+’<div style="width:25px;height:25px;border-radius:50%;background:#3DD68C;border:3px solid #070E08;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative">🐕</div>’
-+’</div></div>’
-+’<div style="position:absolute;bottom:11px;left:11px;background:rgba(7,14,8,.92);border-radius:10px;padding:6px 12px;border:1px solid #1D4A30;display:flex;align-items:center;gap:6px"><span class="dot pulse"></span><span style="font-size:11px;font-weight:700;color:#3DD68C">Rex · En direct</span></div>’
-+’</div>’
-+’<div class="sc">’
-+[[‘🕐’,‘Dernière promenade’,‘Il y a 12 min’],[‘📍’,‘Position’,‘Rue centrale’],[‘🌡️’,‘Météo’,‘18°C · Nuageux’],[‘💤’,‘État’,‘Actif’],[‘🦴’,‘Repas’,‘12h00’],[‘❤️’,‘Rythme cardiaque’,‘72 bpm · Normal’]].map(function(x){return’<div class="ic"><span style="font-size:17px">’+x[0]+’</span><div><div style="color:#7B7F9E;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase">’+x[1]+’</div><div style="font-weight:700;font-size:12px;margin-top:1px">’+x[2]+’</div></div></div>’;}).join(’’)
-+’</div></div>’;
-TRIDX=0;
-TRIV=setInterval(function(){TRIDX=(TRIDX+1)%TRPATH.length;var d=document.getElementById(‘tdot’);if(d){d.style.left=TRPATH[TRIDX][0]+‘px’;d.style.top=TRPATH[TRIDX][1]+‘px’;}},900);
-}
-
-// ── REVIEWS ──
-function pgReviews(m){
-var rv=[{s:‘Sophie M.’,r:5,by:‘Marie L.’,d:‘3 Avr’,t:‘Sophie est exceptionnelle ! Photos quotidiennes. Je recommande !’},
-{s:‘Emma D.’,r:5,by:‘Pierre D.’,d:‘10 Avr’,t:‘Vétérinaire de formation, Rex était en parfaite santé.’},
-{s:‘Julien P.’,r:4,by:‘Camille R.’,d:‘25 Avr’,t:‘Beau jardin, chien bien traité. Recommandé !’},
-{s:‘Marc B.’,r:5,by:‘Thomas B.’,d:‘28 Avr’,t:‘Service VIP parfait.’}];
-m.innerHTML=’<div class="ptitle">Avis & Notations</div><div class="psub">Avis vérifiés de la communauté</div>’
-+’<div class="g2">’+rv.map(function(r){return’<div class="card"><div style="display:flex;gap:11px;align-items:center;margin-bottom:11px"><div class="av">’+al(r.s)+’</div><div><div style="font-weight:700;font-size:12px">Avis sur ‘+r.s+’</div><div style="color:#7B7F9E;font-size:10px">Par ‘+r.by+’ · ‘+r.d+’</div></div><div style="margin-left:auto"><span class="stars">’+st(r.r)+’</span></div></div><p style="color:#999;font-size:12px;line-height:1.7;font-style:italic">”’+r.t+’”</p></div>’;}).join(’’)+’</div>’;
-}
-
-// ── SESSION CHECK ──
-if(sb){
-sb.auth.getSession().then(function(r){
-var s=r.data&&r.data.session;
-if(s&&s.user){
-sb.from(‘profiles’).select(’*’).eq(‘user_id’,s.user.id).single().then(function(p){
-if(p.data) startApp(s.user,p.data);
-});
-}
-});
-}
-
-}); // end window.load
 </script>
 
 </body>
