@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0} button,a,[onclick]{cursor:pointer!important;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2A2D40;border-radius:4px}
 .hidden{display:none!important}
@@ -136,21 +136,41 @@ textarea.form-inp{resize:vertical;min-height:80px}
 
 <div id="auth-screen">
   <div class="auth-box">
-    <div class="auth-logo">Dog<span>Link</span> 🐾</div>
+    <div class="auth-logo">Dog<span>Link</span></div>
     <div class="auth-sub">Petsitting Belgique</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="setMode('login')">Se connecter</button>
-      <button class="auth-tab" onclick="setMode('register')">S'inscrire</button>
+      <button class="auth-tab active" id="tab-login">Se connecter</button>
+      <button class="auth-tab" id="tab-register">S'inscrire</button>
     </div>
     <div id="register-fields" class="hidden">
       <div class="role-grid">
-        <button class="role-btn" id="role-owner" onclick="selectRole('owner')">
+        <button class="role-btn" id="role-owner">
           <span class="role-icon">🐕</span>
           <span class="role-label">Propriétaire</span>
           <span class="role-desc">Je cherche un petsitter</span>
         </button>
-        <button class="role-btn" id="role-sitter" onclick="selectRole('sitter')">
-          <span class="role-icon">🐾</span>
+        <button class="role-btn" id="role-sitter">
+          <span class="role-icon">
+            <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Personne -->
+              <circle cx="22" cy="10" r="6" fill="#EEE9FF"/>
+              <path d="M22 18 L18 36 L12 52 L18 52 L22 40 L26 52 L32 52 L28 36 L30 26" stroke="#EEE9FF" stroke-width="3" stroke-linecap="round" fill="none"/>
+              <path d="M22 22 L30 30" stroke="#EEE9FF" stroke-width="3" stroke-linecap="round"/>
+              <!-- Laisse -->
+              <path d="M30 30 Q38 34 42 38" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <!-- Chien -->
+              <ellipse cx="47" cy="42" rx="9" ry="5" fill="#EEE9FF" transform="rotate(-10 47 42)"/>
+              <circle cx="54" cy="37" r="5" fill="#EEE9FF"/>
+              <path d="M52 32 Q50 28 53 27" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <path d="M56 32 Q58 28 56 27" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <path d="M40 44 L38 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M45 46 L44 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M50 46 L50 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M55 45 L56 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Queue -->
+              <path d="M39 40 Q34 34 37 30" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+          </span>
           <span class="role-label">Petsitteur</span>
           <span class="role-desc">Je garde des chiens</span>
         </button>
@@ -159,7 +179,7 @@ textarea.form-inp{resize:vertical;min-height:80px}
     </div>
     <input class="inp" id="auth-email" type="email" placeholder="Email">
     <input class="inp" id="auth-password" type="password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doAuth()">
-    <button class="auth-btn" id="auth-submit-btn" onclick="doAuth()">Se connecter →</button>
+    <button class="auth-btn" id="auth-submit-btn">Se connecter →</button>
     <div class="auth-err hidden" id="auth-err"></div>
   </div>
 </div>
@@ -654,6 +674,13 @@ el.innerHTML=` <div class="page-title">Avis & Notations</div> <div class="page-s
 }
 
 // ── INIT ──────────────────────────────────────
+// iOS Safari fix - use addEventListener instead of onclick
+document.getElementById(‘tab-login’).addEventListener(‘click’, function(){ setMode(‘login’); });
+document.getElementById(‘tab-register’).addEventListener(‘click’, function(){ setMode(‘register’); });
+document.getElementById(‘role-owner’).addEventListener(‘click’, function(){ selectRole(‘owner’); });
+document.getElementById(‘role-sitter’).addEventListener(‘click’, function(){ selectRole(‘sitter’); });
+document.getElementById(‘auth-submit-btn’).addEventListener(‘click’, function(){ doAuth(); });
+
 sb.auth.getSession().then(({data:{session}})=>{
 if(session?.user){
 sb.from(‘profiles’).select(’*’).eq(‘user_id’,session.user.id).single()
