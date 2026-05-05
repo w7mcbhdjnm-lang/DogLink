@@ -3,112 +3,118 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DogLink</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF;overflow-x:hidden}
-button{cursor:pointer;font-family:inherit;border:none;-webkit-appearance:none;touch-action:manipulation}
+html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF}
+button{font-family:inherit;-webkit-appearance:none;touch-action:manipulation;cursor:pointer}
 input,select,textarea{font-family:inherit;-webkit-appearance:none}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2A2D40;border-radius:4px}
 
-/* ── AUTH ── */
-#auth{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;background:#0D0F18}
-.abox{background:#13151F;border:1px solid #2A2D40;border-radius:24px;padding:36px 32px;width:100%;max-width:400px}
+#auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+#app{display:none}
+
+.abox{background:#13151F;border:1px solid #2A2D40;border-radius:24px;padding:36px 28px;width:100%;max-width:400px}
 .alogo{font-family:‘Fraunces’,serif;font-size:28px;font-weight:600;text-align:center;margin-bottom:6px}
 .alogo span{color:#FF6B4A}
-.asub{text-align:center;color:#7B7F9E;font-size:13px;margin-bottom:24px}
-.atabs{display:flex;background:#1C1F2E;border-radius:12px;padding:4px;margin-bottom:22px;gap:4px}
-.atab{flex:1;padding:10px 8px;background:transparent;color:#7B7F9E;font-weight:600;font-size:14px;border-radius:9px;border:none;transition:all .2s;touch-action:manipulation;-webkit-appearance:none;cursor:pointer}
+.asub{text-align:center;color:#7B7F9E;font-size:13px;margin-bottom:22px}
+
+.atabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#1C1F2E;border-radius:12px;padding:4px;margin-bottom:20px}
+.atab{padding:10px;background:transparent;color:#7B7F9E;font-weight:600;font-size:14px;border-radius:9px;border:none;touch-action:manipulation;-webkit-appearance:none}
 .atab.on{background:#252838;color:#EEE9FF}
-.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
-.rbtn{padding:16px 10px;border:1.5px solid #2A2D40;border-radius:14px;background:transparent;color:#EEE9FF;text-align:center;touch-action:manipulation;-webkit-appearance:none;cursor:pointer;transition:all .2s;border:1.5px solid #2A2D40}
+
+#rfields{display:none;margin-bottom:4px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.rbtn{padding:16px 8px;border:1.5px solid #2A2D40;border-radius:14px;background:transparent;color:#EEE9FF;text-align:center;touch-action:manipulation;-webkit-appearance:none}
 .rbtn.on{border-color:#FF6B4A;background:rgba(255,107,74,.1)}
-.rico{font-size:26px;display:block;margin-bottom:5px}
+.rico{font-size:24px;display:block;margin-bottom:5px}
 .rlbl{font-weight:700;font-size:13px;display:block}
-.rdsc{font-size:11px;color:#7B7F9E;margin-top:2px;display:block}
-.ainp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:11px;padding:12px 14px;color:#EEE9FF;font-size:14px;outline:none;margin-bottom:11px;-webkit-appearance:none}
+.rdsc{font-size:10px;color:#7B7F9E;margin-top:2px;display:block}
+
+.ainp{display:block;width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:11px;padding:12px 14px;color:#EEE9FF;font-size:14px;outline:none;margin-bottom:10px;-webkit-appearance:none}
 .ainp:focus{border-color:#FF6B4A}
-.asbtn{width:100%;background:linear-gradient(135deg,#FF6B4A,#E05535);color:white;padding:14px;border-radius:13px;font-weight:700;font-size:15px;margin-top:4px;touch-action:manipulation;-webkit-appearance:none;cursor:pointer;border:none}
-.aerr{color:#FF6B4A;font-size:13px;text-align:center;margin-top:10px;min-height:20px}
+.asbtn{display:block;width:100%;background:linear-gradient(135deg,#FF6B4A,#E05535);color:white;padding:14px;border-radius:13px;font-weight:700;font-size:15px;margin-top:6px;border:none;touch-action:manipulation;-webkit-appearance:none}
+.aerr{color:#FF6B4A;font-size:13px;text-align:center;margin-top:10px;min-height:18px}
 
-/* ── APP ── */
-#app{position:fixed;inset:0;display:none;flex-direction:row}
-.sb{width:230px;background:#13151F;border-right:1px solid #2A2D40;display:flex;flex-direction:column;padding:20px 10px;flex-shrink:0;overflow-y:auto}
-.sblogo{font-family:‘Fraunces’,serif;font-size:22px;font-weight:600;padding-left:10px;margin-bottom:3px}
+/* APP */
+.appwrap{display:flex;min-height:100vh}
+.sb{width:220px;background:#13151F;border-right:1px solid #2A2D40;display:flex;flex-direction:column;padding:18px 10px;min-height:100vh;flex-shrink:0}
+.sblogo{font-family:‘Fraunces’,serif;font-size:21px;font-weight:600;padding-left:10px;margin-bottom:3px}
 .sblogo span{color:#FF6B4A}
-.sbrole{font-size:10px;font-weight:700;letter-spacing:1px;padding-left:10px;margin-bottom:18px}
+.sbrole{font-size:10px;font-weight:700;letter-spacing:1px;padding-left:10px;margin-bottom:16px}
 .sbnav{flex:1;display:flex;flex-direction:column;gap:2px}
-.ni{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:11px;cursor:pointer;font-size:13px;font-weight:600;color:#7B7F9E;border-left:3px solid transparent;touch-action:manipulation}
+.ni{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;color:#7B7F9E;border-left:3px solid transparent;touch-action:manipulation}
 .ni:hover,.ni.on{background:#1C1F2E;color:#EEE9FF;border-left-color:#F0C060}
-.nbadge{margin-left:auto;background:#FF6B4A;color:white;border-radius:20px;font-size:10px;font-weight:800;padding:1px 6px}
-.sbu{border-top:1px solid #2A2D40;padding-top:12px;display:flex;align-items:center;gap:9px;padding-left:6px;margin-top:auto}
-.av{width:36px;height:36px;border-radius:50%;background:#252838;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#F0C060;flex-shrink:0}
-.avlg{width:60px;height:60px;font-size:22px}
-.sbun{font-size:13px;font-weight:700}
-.sbur{font-size:11px;color:#7B7F9E}
-.lbtn{background:none;border:none;color:#7B7F9E;cursor:pointer;font-size:11px;font-family:inherit;touch-action:manipulation;padding:2px 0}
-.main{flex:1;overflow-y:auto;padding:28px 32px}
+.nbadge{margin-left:auto;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 5px}
+.sbu{border-top:1px solid #2A2D40;padding-top:12px;display:flex;align-items:center;gap:8px;margin-top:auto;padding-left:6px}
+.av{width:34px;height:34px;border-radius:50%;background:#252838;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#F0C060;flex-shrink:0}
+.avlg{width:56px;height:56px;font-size:20px}
+.sbun{font-size:12px;font-weight:700}
+.sbur{font-size:10px;color:#7B7F9E}
+.lbtn{background:none;border:none;color:#7B7F9E;cursor:pointer;font-size:10px;font-family:inherit;display:block;margin-top:2px;touch-action:manipulation}
 
-/* ── COMPONENTS ── */
-.ptitle{font-family:‘Fraunces’,serif;font-size:24px;font-weight:300;letter-spacing:-1px;margin-bottom:3px}
-.psub{color:#7B7F9E;font-size:12px;margin-bottom:22px}
-.card{background:#13151F;border:1px solid #2A2D40;border-radius:18px;padding:20px;margin-bottom:14px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.sv{font-family:‘Fraunces’,serif;font-size:24px;font-weight:700;margin-top:8px}
-.sl{font-size:11px;color:#7B7F9E;margin-top:3px}
-.btn{padding:8px 16px;border-radius:11px;font-weight:700;font-size:12px;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;-webkit-appearance:none}
+.main{flex:1;padding:26px 28px;overflow-y:auto}
+.ptitle{font-family:‘Fraunces’,serif;font-size:22px;font-weight:300;letter-spacing:-1px;margin-bottom:3px}
+.psub{color:#7B7F9E;font-size:12px;margin-bottom:20px}
+.card{background:#13151F;border:1px solid #2A2D40;border-radius:16px;padding:18px;margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.sv{font-family:‘Fraunces’,serif;font-size:22px;font-weight:700;margin-top:7px}
+.sl{font-size:11px;color:#7B7F9E;margin-top:2px}
+.btn{padding:7px 14px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;-webkit-appearance:none;display:inline-block}
 .bp{background:#FF6B4A;color:white}
 .bo{background:transparent;color:#EEE9FF;border:1.5px solid #2A2D40}
 .bg{background:rgba(61,214,140,.15);color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
-.bsm{padding:6px 12px;font-size:11px;border-radius:9px}
-.bfull{width:100%;padding:12px;font-size:13px;border-radius:13px;margin-bottom:9px}
-.st{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+.bsm{padding:5px 11px;font-size:11px;border-radius:8px}
+.bfull{width:100%;padding:11px;font-size:13px;border-radius:12px;margin-bottom:8px}
+.st{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
 .stp{background:#2A1F08;color:#F0C060;border:1px solid rgba(240,192,96,.3)}
 .stc{background:#0D2A1A;color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
 .std{background:#1A1A1A;color:#555;border:1px solid #333}
-.fl{font-size:11px;font-weight:700;color:#7B7F9E;letter-spacing:.8px;display:block;margin-bottom:5px;text-transform:uppercase}
-.fi{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:11px;padding:10px 13px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;margin-bottom:12px;-webkit-appearance:none}
+.fl{font-size:10px;font-weight:700;color:#7B7F9E;letter-spacing:.8px;display:block;margin-bottom:5px;text-transform:uppercase}
+.fi{display:block;width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:10px;padding:10px 12px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;margin-bottom:11px;-webkit-appearance:none}
 .fi:focus{border-color:#FF6B4A}
-textarea.fi{resize:vertical;min-height:75px}
-.tag{background:rgba(255,255,255,.06);color:#7B7F9E;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
-.pbadge{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px}
-.stars{color:#F0C060;font-size:12px}
+textarea.fi{resize:vertical;min-height:70px}
+.tag{background:rgba(255,255,255,.06);color:#7B7F9E;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
+.pbadge{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px}
+.stars{color:#F0C060;font-size:11px}
 .dot{width:7px;height:7px;border-radius:50%;background:#3DD68C;display:inline-block}
-.cw{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 100px);background:#13151F;border-radius:18px;border:1px solid #2A2D40;overflow:hidden}
+.empty{text-align:center;padding:30px;color:#7B7F9E;font-size:13px}
+.ei{font-size:32px;display:block;margin-bottom:8px}
+.loading{text-align:center;padding:30px;color:#7B7F9E}
+
+.cw{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 90px);background:#13151F;border-radius:16px;border:1px solid #2A2D40;overflow:hidden}
 .cl{border-right:1px solid #2A2D40;overflow-y:auto}
-.ci{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;touch-action:manipulation}
+.ci{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;touch-action:manipulation}
 .ci.on{background:#252838}
-.cb{display:flex;flex-direction:column;height:100%}
-.ch{padding:13px 18px;border-bottom:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
-.ms{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-.mg{display:flex;align-items:flex-end;gap:8px}
+.cb{display:flex;flex-direction:column}
+.ch{padding:12px 16px;border-bottom:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
+.ms{flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;min-height:200px;max-height:calc(100vh - 220px)}
+.mg{display:flex;align-items:flex-end;gap:7px}
 .mg.me{justify-content:flex-end}
-.mb{max-width:60%;padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.6}
-.mb.th{background:#1C1F2E;border-radius:16px 16px 16px 3px}
-.mb.me{background:linear-gradient(135deg,#FF6B4A,#E05535);border-radius:16px 16px 3px 16px}
+.mb{max-width:60%;padding:8px 12px;border-radius:14px;font-size:13px;line-height:1.6}
+.mb.th{background:#1C1F2E;border-radius:14px 14px 14px 3px}
+.mb.me{background:linear-gradient(135deg,#FF6B4A,#E05535);border-radius:14px 14px 3px 14px}
 .mt{font-size:10px;color:#4A4D60;margin-top:2px}
-.cf{padding:12px 16px;border-top:1px solid #2A2D40;display:flex;gap:8px}
-.ci2{flex:1;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:13px;padding:9px 13px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;-webkit-appearance:none}
-.ci2:focus{border-color:#FF6B4A}
-.tm{background:#070E08;border-radius:18px;border:1px solid #1D4A30;position:relative;height:380px;overflow:hidden}
+.cf{padding:11px 14px;border-top:1px solid #2A2D40;display:flex;gap:8px}
+.cinp{flex:1;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:9px 12px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;-webkit-appearance:none}
+.cinp:focus{border-color:#FF6B4A}
+.tm{background:#070E08;border-radius:16px;border:1px solid #1D4A30;position:relative;height:360px;overflow:hidden}
 .sc{display:flex;flex-direction:column;gap:10px}
-.ic{background:#13151F;border-radius:13px;padding:12px 14px;border:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
-.empty{text-align:center;padding:36px;color:#7B7F9E;font-size:13px}
-.ei{font-size:34px;display:block;margin-bottom:9px}
+.ic{background:#13151F;border-radius:12px;padding:11px 13px;border:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
+
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 @keyframes ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.8);opacity:0}}
 .pulse{animation:pulse 2s infinite}
 .ping{animation:ping 1.3s cubic-bezier(0,0,.2,1) infinite}
-@media(max-width:680px){
-.sb{width:50px;padding:12px 6px}
+
+@media(max-width:650px){
+.sb{width:48px;padding:12px 6px}
 .sblogo,.sbrole,.ni span:not(:first-child),.sbun,.sbur,.lbtn{display:none}
-.ni{padding:10px;justify-content:center}
-.main{padding:16px 12px}
+.ni{padding:9px;justify-content:center}
+.main{padding:14px 10px}
 .g2,.g3,.g4{grid-template-columns:1fr}
 .cw{grid-template-columns:1fr}.cl{display:none}
 }
@@ -117,463 +123,528 @@ textarea.fi{resize:vertical;min-height:75px}
 </head>
 <body>
 
-<!-- AUTH -->
-
 <div id="auth">
   <div class="abox">
     <div class="alogo">Dog<span>Link</span></div>
     <div class="asub">Petsitting Belgique</div>
     <div class="atabs">
-      <button class="atab on" id="tl">Se connecter</button>
-      <button class="atab" id="tr">S'inscrire</button>
+      <button class="atab on" id="btnLogin" type="button">Se connecter</button>
+      <button class="atab" id="btnRegister" type="button">S'inscrire</button>
     </div>
-    <div id="rfields" style="display:none">
+    <div id="rfields">
       <div class="roles">
-        <button class="rbtn" id="ro">
+        <button class="rbtn" id="btnOwner" type="button">
           <span class="rico">🐕</span>
           <span class="rlbl">Propriétaire</span>
           <span class="rdsc">Je cherche un petsitter</span>
         </button>
-        <button class="rbtn" id="rs">
+        <button class="rbtn" id="btnSitter" type="button">
           <span class="rico">
-            <svg width="30" height="30" viewBox="0 0 60 60" fill="none">
+            <svg width="28" height="28" viewBox="0 0 60 60" fill="none">
               <circle cx="18" cy="9" r="5" fill="#EEE9FF"/>
-              <path d="M18 16 L15 30 L10 44 L15 44 L18 34 L21 44 L26 44 L23 30 L25 22" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-              <path d="M21 20 L27 26 Q33 30 36 34" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+              <path d="M18 16L15 30L10 44L15 44L18 34L21 44L26 44L23 30L25 22" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M21 20L27 26Q33 30 36 34" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
               <ellipse cx="42" cy="37" rx="8" ry="5" fill="#EEE9FF" transform="rotate(-8 42 37)"/>
               <circle cx="48" cy="32" r="4.5" fill="#EEE9FF"/>
-              <path d="M46 28 Q44 24 47 23" stroke="#EEE9FF" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M50 28 Q52 24 50 23" stroke="#EEE9FF" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M36 40 L34 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-              <path d="M41 42 L40 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-              <path d="M46 42 L46 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-              <path d="M51 41 L52 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
-              <path d="M35 36 Q30 30 33 26" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+              <path d="M35 36Q30 30 33 26" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+              <line x1="36" y1="40" x2="34" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
+              <line x1="41" y1="42" x2="40" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
+              <line x1="46" y1="42" x2="46" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
+              <line x1="51" y1="41" x2="52" y2="48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </span>
           <span class="rlbl">Petsitteur</span>
           <span class="rdsc">Je garde des chiens</span>
         </button>
       </div>
-      <input class="ainp" id="aname" placeholder="Votre prénom">
+      <input class="ainp" id="aname" placeholder="Votre prénom" type="text" autocomplete="given-name">
     </div>
     <input class="ainp" id="aemail" type="email" placeholder="Email" autocomplete="email">
     <input class="ainp" id="apass" type="password" placeholder="Mot de passe" autocomplete="current-password">
-    <button class="asbtn" id="asubmit">Se connecter →</button>
+    <button class="asbtn" id="btnSubmit" type="button">Se connecter →</button>
     <div class="aerr" id="aerr"></div>
   </div>
 </div>
 
-<!-- APP -->
-
 <div id="app">
-  <aside class="sb">
-    <div class="sblogo">Dog<span>Link</span></div>
-    <div class="sbrole" id="rlabel"></div>
-    <nav class="sbnav" id="snav"></nav>
-    <div class="sbu">
-      <div class="av" id="uav">?</div>
-      <div>
-        <div class="sbun" id="uname">Utilisateur</div>
-        <div class="sbur" id="urole"></div>
-        <button class="lbtn" id="lout">Déconnexion</button>
+  <div class="appwrap">
+    <aside class="sb">
+      <div class="sblogo">Dog<span>Link</span></div>
+      <div class="sbrole" id="rlabel"></div>
+      <nav class="sbnav" id="snav"></nav>
+      <div class="sbu">
+        <div class="av" id="uav">?</div>
+        <div>
+          <div class="sbun" id="uname"></div>
+          <div class="sbur" id="urole"></div>
+          <button class="lbtn" id="btnLogout" type="button">Déconnexion</button>
+        </div>
       </div>
-    </div>
-  </aside>
-  <main class="main" id="main"></main>
+    </aside>
+    <main class="main" id="main">
+      <div class="loading">Chargement...</div>
+    </main>
+  </div>
 </div>
 
+<!-- Load Supabase LAST so it's ready -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-var SB_URL='https://mxvzgngtgjovrzfktfhw.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU';
-var sb=supabase.createClient(SB_URL,SB_KEY);
-var CU=null,CP=null,ROLE='',MODE='login',TRIV=null,TRIDX=0;
-var TRPATH=[[310,210],[332,190],[362,180],[392,198],[412,218],[402,248],[372,258],[342,243],[310,228]];
-
-var SITTERS=[
-  {id:'d1',name:'Sophie M.',location:'Liège',price:25,rating:4.9,rc:87,bio:'Passionnée par les animaux, je prends soin de vos chiens comme des miens.',tags:['Petits chiens','Chats'],avail:true,prem:true},
-  {id:'d2',name:'Julien P.',location:'Namur',price:22,rating:4.8,rc:61,bio:'Grand jardin privé, vos chiens adorent venir chez moi.',tags:['Grands chiens','Jardins'],avail:true,prem:true},
-  {id:'d3',name:'Emma D.',location:'Charleroi',price:30,rating:5.0,rc:112,bio:'Vétérinaire de formation, votre chien est entre de bonnes mains.',tags:['Chiots','Vétérinaire'],avail:false,prem:true},
-  {id:'d4',name:'Lucas B.',location:'Mons',price:20,rating:4.7,rc:43,bio:'Éducateur canin certifié.',tags:['Éducation'],avail:true,prem:false},
-  {id:'d5',name:'Clara R.',location:'Verviers',price:18,rating:4.6,rc:29,bio:'Disponible toute la journée.',tags:['Petits chiens'],avail:true,prem:false},
-  {id:'d6',name:'Marc B.',location:'Arlon',price:28,rating:4.9,rc:74,bio:'Compte-rendu quotidien photos/vidéos.',tags:['Service VIP'],avail:false,prem:true},
-];
-
-// ── UTILS ──
-function st(n){return'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
-function al(name){return(name||'?')[0].toUpperCase();}
-function stbadge(s){var m={pending:['stp','En attente'],confirmed:['stc','Confirmée'],done:['std','Terminée'],cancelled:['std','Annulée']};var x=m[s]||['std','?'];return'<span class="st '+x[0]+'">'+x[1]+'</span>';}
-function el(id){return document.getElementById(id);}
-function html(id,h){var e=el(id);if(e)e.innerHTML=h;}
-
-// ── AUTH ──
-function setMode(m){
-  MODE=m;
-  el('tl').className='atab'+(m==='login'?' on':'');
-  el('tr').className='atab'+(m==='register'?' on':'');
-  el('rfields').style.display=m==='register'?'block':'none';
-  el('asubmit').textContent=m==='login'?'Se connecter →':'Créer mon compte →';
-  el('aerr').textContent='';
-}
-function selRole(r){
-  ROLE=r;
-  el('ro').className='rbtn'+(r==='owner'?' on':'');
-  el('rs').className='rbtn'+(r==='sitter'?' on':'');
-}
-async function doAuth(){
-  var email=el('aemail').value.trim();
-  var pass=el('apass').value;
-  var errEl=el('aerr');
-  var btn=el('asubmit');
-  errEl.textContent='';
-  btn.textContent='...';
-  btn.disabled=true;
-  try{
-    if(MODE==='login'){
-      var r=await sb.auth.signInWithPassword({email:email,password:pass});
-      if(r.error)throw r.error;
-      var p=await sb.from('profiles').select('*').eq('user_id',r.data.user.id).single();
-      startApp(r.data.user,p.data);
-    }else{
-      var name=el('aname').value.trim();
-      if(!ROLE){errEl.textContent='Choisissez votre rôle';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
-      if(!name){errEl.textContent='Entrez votre prénom';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
-      var r2=await sb.auth.signUp({email:email,password:pass});
-      if(r2.error)throw r2.error;
-      await sb.from('profiles').insert({user_id:r2.data.user.id,role:ROLE,name:name,location:'Belgique'});
-      await new Promise(function(res){setTimeout(res,600);});
-      var p2=await sb.from('profiles').select('*').eq('user_id',r2.data.user.id).single();
-      startApp(r2.data.user,p2.data);
-    }
-  }catch(e){
-    errEl.textContent=e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message;
-    btn.textContent=MODE==='login'?'Se connecter →':'Créer mon compte →';
-    btn.disabled=false;
-  }
-}
-
-// ── APP START ──
-function startApp(user,profile){
-  CU=user;CP=profile;
-  el('auth').style.display='none';
-  el('app').style.display='flex';
-  el('uav').textContent=al(profile&&profile.name?profile.name:user.email);
-  el('uname').textContent=(profile&&profile.name)||'Utilisateur';
-  var isSitter=profile&&profile.role==='sitter';
-  el('urole').textContent=isSitter?'Petsitteur':'Propriétaire';
-  el('rlabel').textContent=isSitter?'PETSITTEUR':'PROPRIÉTAIRE';
-  el('rlabel').style.color=isSitter?'#3DD68C':'#4D8EFF';
-  buildNav();
-  showPage(isSitter?'sdash':'odash');
-}
-async function doLogout(){
-  await sb.auth.signOut();
-  if(TRIV){clearInterval(TRIV);TRIV=null;}
-  CU=CP=null;
-  el('app').style.display='none';
-  el('auth').style.display='flex';
-}
-
-// ── NAV ──
-function buildNav(){
-  var isSitter=CP&&CP.role==='sitter';
-  var items=isSitter?[
-    {id:'sdash',ic:'◈',lb:'Tableau de bord'},
-    {id:'sbookings',ic:'📅',lb:'Réservations'},
-    {id:'msgs',ic:'💬',lb:'Messages',badge:2},
-    {id:'analytics',ic:'📊',lb:'Analytics'},
-    {id:'sprofile',ic:'👤',lb:'Mon profil'},
-    {id:'tracking',ic:'📡',lb:'Suivi Live'},
-  ]:[
-    {id:'odash',ic:'◈',lb:'Accueil'},
-    {id:'sitters',ic:'🐾',lb:'Petsitteurs'},
-    {id:'oresas',ic:'📅',lb:'Réservations'},
-    {id:'msgs',ic:'💬',lb:'Messages',badge:2},
-    {id:'tracking',ic:'📡',lb:'Suivi Live'},
-    {id:'reviews',ic:'⭐',lb:'Avis'},
+// Wait for everything to be ready
+window.addEventListener('load', function() {
+  var sb, CU=null, CP=null, ROLE='', MODE='login', TRIV=null, TRIDX=0;
+  var TRPATH=[[310,200],[332,180],[362,170],[392,188],[412,208],[402,238],[372,248],[342,232],[310,218]];
+  
+  var SITTERS=[
+    {id:'d1',name:'Sophie M.',loc:'Liège',price:25,rating:4.9,rc:87,bio:'Passionnée par les animaux, je prends soin de vos chiens comme des miens.',tags:['Petits chiens','Chats'],avail:true,prem:true},
+    {id:'d2',name:'Julien P.',loc:'Namur',price:22,rating:4.8,rc:61,bio:'Grand jardin privé.',tags:['Grands chiens'],avail:true,prem:true},
+    {id:'d3',name:'Emma D.',loc:'Charleroi',price:30,rating:5.0,rc:112,bio:'Vétérinaire de formation.',tags:['Chiots','Vétérinaire'],avail:false,prem:true},
+    {id:'d4',name:'Lucas B.',loc:'Mons',price:20,rating:4.7,rc:43,bio:'Éducateur canin certifié.',tags:['Éducation'],avail:true,prem:false},
+    {id:'d5',name:'Clara R.',loc:'Verviers',price:18,rating:4.6,rc:29,bio:'Disponible toute la journée.',tags:['Petits chiens'],avail:true,prem:false},
+    {id:'d6',name:'Marc B.',loc:'Arlon',price:28,rating:4.9,rc:74,bio:'Compte-rendu quotidien.',tags:['VIP'],avail:false,prem:true},
   ];
-  html('snav',items.map(function(n){
-    return'<div class="ni" data-page="'+n.id+'" onclick="showPage(\''+n.id+'\')"><span style="font-size:16px;width:18px;text-align:center">'+n.ic+'</span><span>'+n.lb+'</span>'+(n.badge?'<span class="nbadge">'+n.badge+'</span>':'')+'</div>';
-  }).join(''));
-}
-function showPage(id){
-  if(TRIV){clearInterval(TRIV);TRIV=null;}
-  document.querySelectorAll('.ni').forEach(function(n){n.classList.toggle('on',n.dataset.page===id);});
-  var m=el('main');
-  m.innerHTML='';
-  var pages={odash:odash,sitters:pgSitters,oresas:oresas,msgs:pgMsgs,tracking:pgTracking,reviews:pgReviews,sdash:sdash,sbookings:sbookings,analytics:pgAnalytics,sprofile:pgSprofile};
-  if(pages[id])pages[id](m);
-}
 
-// ── OWNER DASHBOARD ──
-async function odash(el){
-  var r=await sb.from('reservations').select('*').eq('owner_id',(CP&&CP.id)||'').order('created_at',{ascending:false});
-  var resa=r.data||[];
-  var active=resa.filter(function(x){return x.status!=='done'&&x.status!=='cancelled';});
-  el.innerHTML='<div class="ptitle">Bonjour, '+(CP&&CP.name||'là')+' 👋</div><div class="psub">Bienvenue sur DogLink Belgique</div>'
-  +'<div class="g4" style="margin-bottom:16px">'
-  +'<div class="card"><div style="font-size:22px">📅</div><div class="sv" style="color:#4D8EFF">'+active.length+'</div><div class="sl">Réservations actives</div></div>'
-  +'<div class="card"><div style="font-size:22px">🐾</div><div class="sv" style="color:#3DD68C">'+SITTERS.filter(function(s){return s.avail;}).length+'</div><div class="sl">Petsitteurs disponibles</div></div>'
-  +'<div class="card"><div style="font-size:22px">💬</div><div class="sv" style="color:#FF6B4A">2</div><div class="sl">Messages non lus</div></div>'
-  +'<div class="card"><div style="font-size:22px">⭐</div><div class="sv" style="color:#F0C060">4.9</div><div class="sl">Note moyenne</div></div>'
-  +'</div>'
-  +'<div class="g2">'
-  +'<div class="card"><div style="font-weight:700;margin-bottom:14px">Prochaines réservations</div>'
-  +(active.length===0?'<div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="showPage(\'sitters\')">Trouver un petsitteur</button></div>'
-  :active.slice(0,3).map(function(r){return'<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #2A2D40"><div class="av">'+al(r.sitter_name||'S')+'</div><div style="flex:1"><div style="font-weight:600;font-size:13px">'+(r.sitter_name||'Petsitteur')+'</div><div style="color:#7B7F9E;font-size:12px">'+r.type+' · '+r.start_date+'</div></div>'+stbadge(r.status)+'</div>';}).join(''))
-  +'</div>'
-  +'<div class="card" style="background:linear-gradient(135deg,#0D2A1A,#0A1A12);border:1px solid #1D4A30;cursor:pointer" onclick="showPage(\'tracking\')">'
-  +'<div style="color:#3DD68C;font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px"><span class="dot pulse"></span>SUIVI EN DIRECT</div>'
-  +'<div style="font-weight:800;font-size:18px;margin-bottom:6px">Rex est en promenade</div>'
-  +'<div style="color:#6BBF8A;font-size:13px;margin-bottom:16px">Dernière mise à jour il y a 2 min</div>'
-  +'<button class="btn bg bsm">Voir le suivi →</button>'
-  +'</div></div>';
-}
+  // Init Supabase safely
+  try {
+    sb = supabase.createClient(
+      'https://mxvzgngtgjovrzfktfhw.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU'
+    );
+  } catch(e) { console.error('Supabase error:', e); }
 
-// ── SITTERS LIST ──
-function pgSitters(el){
-  el.innerHTML='<div class="ptitle">Petsitteurs</div><div class="psub">'+SITTERS.length+' professionnels en Belgique</div>'
-  +'<div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">'
-  +'<input id="sq" class="fi" placeholder="Rechercher..." style="width:180px;margin:0" oninput="filterS()">'
-  +'<button class="btn bo bsm" id="fa" onclick="setF(\'all\')" style="border-color:#FF6B4A;color:#FF6B4A">Tous</button>'
-  +'<button class="btn bo bsm" id="fv" onclick="setF(\'avail\')">Disponibles</button>'
-  +'<button class="btn bo bsm" id="fp" onclick="setF(\'prem\')">✦ Premium</button>'
-  +'</div><div class="g3" id="sg"></div>';
-  renderS('all','');
-}
-var SF='all';
-function setF(f){
-  SF=f;
-  ['all','avail','prem'].forEach(function(x){var b=el('f'+x[0]);if(b){b.style.borderColor=(x.startsWith(f)||f===x)?'#FF6B4A':'#2A2D40';b.style.color=(x.startsWith(f)||f===x)?'#FF6B4A':'#EEE9FF';}});
-  filterS();
-}
-function filterS(){renderS(SF,(el('sq')||{}).value||'');}
-function renderS(f,q){
-  var g=el('sg');if(!g)return;
-  var list=SITTERS.filter(function(s){return(f==='all'||(f==='avail'&&s.avail)||(f==='prem'&&s.prem))&&(s.name.toLowerCase().includes(q.toLowerCase())||s.location.toLowerCase().includes(q.toLowerCase()));});
-  g.innerHTML=list.map(function(s){return'<div class="card" style="cursor:pointer;border:'+(s.prem?'1px solid rgba(240,192,96,.3)':'1px solid #2A2D40')+'" onclick="pgSitterDetail(\''+s.id+'\')">'+(s.prem?'<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><span class="pbadge">✦ PREMIUM</span></div>':'')+'<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><div class="av">'+al(s.name)+'</div><div><div style="font-weight:700;font-size:14px">'+s.name+'</div><div style="color:#7B7F9E;font-size:11px">📍 '+s.location+'</div></div></div><p style="color:#7B7F9E;font-size:12px;line-height:1.6;margin-bottom:10px">'+s.bio.slice(0,65)+'…</p><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+s.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('')+'</div><div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2A2D40;padding-top:10px"><div><span class="stars">'+st(s.rating)+'</span> <b style="font-size:12px">'+s.rating+'</b> <span style="color:#7B7F9E;font-size:11px">('+s.rc+')</span></div><div><b style="font-size:16px">'+s.price+'€</b><span style="color:#7B7F9E;font-size:11px">/j</span></div></div><div style="margin-top:8px;display:flex;align-items:center;gap:5px"><span class="dot" style="background:'+(s.avail?'#3DD68C':'#555')+'"></span><span style="font-size:11px;color:'+(s.avail?'#3DD68C':'#7B7F9E')+';font-weight:600">'+(s.avail?'Disponible':'Occupé')+'</span></div></div>';}).join('');
-}
-function pgSitterDetail(id){
-  var s=SITTERS.find(function(x){return x.id===id;});if(!s)return;
-  var m=el('main');
-  m.innerHTML='<button onclick="showPage(\'sitters\')" class="btn bo bsm" style="margin-bottom:18px">← Retour</button>'
-  +'<div class="g2" style="align-items:start">'
-  +'<div>'
-  +'<div class="card" style="margin-bottom:12px">'
-  +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"><div class="av avlg">'+al(s.name)+'</div><div>'+(s.prem?'<span class="pbadge">✦ PREMIUM</span><br>':'')+'<span style="font-family:Fraunces,serif;font-size:20px;font-weight:300">'+s.name+'</span><br><span style="color:#7B7F9E;font-size:12px">📍 '+s.location+'</span><br><span class="stars">'+st(s.rating)+'</span> <b>'+s.rating+'</b> <span style="color:#7B7F9E;font-size:12px">('+s.rc+' avis)</span></div></div>'
-  +'<p style="color:#AAA;line-height:1.8;margin-bottom:14px;font-size:13px">'+s.bio+'</p>'
-  +'<div style="display:flex;gap:6px;flex-wrap:wrap">'+s.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('')+'</div>'
-  +'</div>'
-  +'<div class="card">'
-  +'<div style="font-weight:700;margin-bottom:12px;font-size:14px">Services & tarifs</div>'
-  +[['🏠','Garde à domicile',s.price+'€/j'],['🦮','Promenade','15€/sortie'],['🌙','Hébergement nuit',(s.price+8)+'€/nuit'],['🎓','Éducation','30€/séance']].map(function(x,i){return'<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none');}).join('')
-  +'</div>'
-  +'</div>'
-  +'<div class="card" style="position:sticky;top:16px">'
-  +'<div style="font-weight:800;font-size:20px;margin-bottom:3px">'+s.price+'€<span style="font-weight:400;font-size:12px;color:#7B7F9E">/jour</span></div>'
-  +'<div style="color:'+(s.avail?'#3DD68C':'#888')+';font-size:12px;font-weight:700;margin-bottom:18px">'+(s.avail?'✓ Disponible':'✗ Non disponible')+'</div>'
-  +'<div id="bform">'
-  +'<label class="fl">Nom de votre chien</label><input class="fi" id="bdog" placeholder="Rex...">'
-  +'<label class="fl">Type de service</label><select class="fi" id="btype"><option>Garde à domicile</option><option>Promenade</option><option>Hébergement nuit</option><option>Éducation</option></select>'
-  +'<label class="fl">Date de début</label><input type="date" class="fi" id="bstart">'
-  +'<label class="fl">Date de fin</label><input type="date" class="fi" id="bend">'
-  +'<label class="fl">Notes (optionnel)</label><textarea class="fi" id="bnotes" placeholder="Infos sur votre chien..."></textarea>'
+  function $(id){return document.getElementById(id);}
+  function st(n){return'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
+  function al(s){return((s||'?')[0]||'?').toUpperCase();}
+  function stb(s){var m={pending:'<span class="st stp">En attente</span>',confirmed:'<span class="st stc">Confirmée</span>',done:'<span class="st std">Terminée</span>',cancelled:'<span class="st std">Annulée</span>'};return m[s]||m.done;}
 
-+’<button class="btn bp bfull" onclick="doBook(\''+s.id+'\',\''+s.name+'\','+s.price+')">Réserver maintenant</button>’
-+’<button class="btn bo bfull" onclick="showPage(\'msgs\')">Envoyer un message</button>’
-+’</div>’
-+’<div id="bsuc" style="display:none;text-align:center;padding:18px;color:#3DD68C;font-weight:700">🎉 Réservation envoyée !</div>’
-+’</div></div>’;
-// Fix services list
-var card=m.querySelectorAll(’.card’)[1];
-if(card){card.innerHTML=’<div style="font-weight:700;margin-bottom:12px;font-size:14px">Services & tarifs</div>’+[[‘🏠’,‘Garde à domicile’,s.price+‘€/j’],[‘🦮’,‘Promenade’,‘15€/sortie’],[‘🌙’,‘Hébergement nuit’,(s.price+8)+‘€/nuit’],[‘🎓’,‘Éducation’,‘30€/séance’]].map(function(x,i){return’<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+'"><span style="font-size:13px">’+x[0]+’ ‘+x[1]+’</span><span style="font-weight:700;color:#F0C060">’+x[2]+’</span></div>’;}).join(’’);}
-}
-async function doBook(sid,sname,price){
-var dog=el(‘bdog’).value.trim(),type=el(‘btype’).value,start=el(‘bstart’).value,end=el(‘bend’).value,notes=el(‘bnotes’).value;
+  // AUTH
+  $('btnLogin').onclick = function(){ setMode('login'); };
+  $('btnRegister').onclick = function(){ setMode('register'); };
+  $('btnOwner').onclick = function(){ setRole('owner'); };
+  $('btnSitter').onclick = function(){ setRole('sitter'); };
+  $('btnSubmit').onclick = function(){ doAuth(); };
+  $('apass').onkeydown = function(e){ if(e.key==='Enter') doAuth(); };
+
+  function setMode(m) {
+    MODE = m;
+    $('btnLogin').className = 'atab' + (m==='login'?' on':'');
+    $('btnRegister').className = 'atab' + (m==='register'?' on':'');
+    $('rfields').style.display = m==='register' ? 'block' : 'none';
+    $('btnSubmit').textContent = m==='login' ? 'Se connecter →' : 'Créer mon compte →';
+    $('aerr').textContent = '';
+  }
+
+  function setRole(r) {
+    ROLE = r;
+    $('btnOwner').className = 'rbtn' + (r==='owner'?' on':'');
+    $('btnSitter').className = 'rbtn' + (r==='sitter'?' on':'');
+  }
+
+  async function doAuth() {
+    if(!sb){$('aerr').textContent='Erreur de connexion. Rechargez la page.';return;}
+    var email=$('aemail').value.trim();
+    var pass=$('apass').value;
+    var btn=$('btnSubmit');
+    $('aerr').textContent='';
+    btn.textContent='...';
+    btn.disabled=true;
+    try {
+      if(MODE==='login'){
+        var r=await sb.auth.signInWithPassword({email:email,password:pass});
+        if(r.error)throw r.error;
+        var p=await sb.from('profiles').select('*').eq('user_id',r.data.user.id).single();
+        startApp(r.data.user, p.data);
+      } else {
+        var name=$('aname').value.trim();
+        if(!ROLE){$('aerr').textContent='Choisissez votre rôle';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
+        if(!name){$('aerr').textContent='Entrez votre prénom';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
+        var r2=await sb.auth.signUp({email:email,password:pass});
+        if(r2.error)throw r2.error;
+        await sb.from('profiles').insert({user_id:r2.data.user.id,role:ROLE,name:name,location:'Belgique'});
+        await new Promise(function(res){setTimeout(res,500);});
+        var p2=await sb.from('profiles').select('*').eq('user_id',r2.data.user.id).single();
+        startApp(r2.data.user, p2.data);
+      }
+    } catch(e) {
+      $('aerr').textContent = e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message;
+      btn.textContent = MODE==='login'?'Se connecter →':'Créer mon compte →';
+      btn.disabled = false;
+    }
+  }
+
+  function startApp(user, profile) {
+    CU=user; CP=profile;
+    $('auth').style.display='none';
+    $('app').style.display='block';
+    $('uav').textContent = al(profile&&profile.name?profile.name:user.email);
+    $('uname').textContent = (profile&&profile.name)||'Utilisateur';
+    $('urole').textContent = (profile&&profile.role==='sitter')?'Petsitteur':'Propriétaire';
+    $('rlabel').textContent = (profile&&profile.role==='sitter')?'PETSITTEUR':'PROPRIÉTAIRE';
+    $('rlabel').style.color = (profile&&profile.role==='sitter')?'#3DD68C':'#4D8EFF';
+    $('btnLogout').onclick = function(){ doLogout(); };
+    buildNav();
+    showPage((profile&&profile.role==='sitter')?'sdash':'odash');
+  }
+
+  async function doLogout(){
+    if(sb) await sb.auth.signOut();
+    if(TRIV){clearInterval(TRIV);TRIV=null;}
+    CU=CP=null;
+    $('app').style.display='none';
+    $('auth').style.display='flex';
+  }
+
+  function buildNav(){
+    var isSitter=CP&&CP.role==='sitter';
+    var items=isSitter?[
+      {id:'sdash',ic:'◈',lb:'Tableau de bord'},
+      {id:'sbookings',ic:'📅',lb:'Réservations'},
+      {id:'msgs',ic:'💬',lb:'Messages',b:2},
+      {id:'analytics',ic:'📊',lb:'Analytics'},
+      {id:'sprofile',ic:'👤',lb:'Mon profil'},
+      {id:'tracking',ic:'📡',lb:'Suivi Live'},
+    ]:[
+      {id:'odash',ic:'◈',lb:'Accueil'},
+      {id:'sitters',ic:'🐾',lb:'Petsitteurs'},
+      {id:'oresas',ic:'📅',lb:'Réservations'},
+      {id:'msgs',ic:'💬',lb:'Messages',b:2},
+      {id:'tracking',ic:'📡',lb:'Suivi Live'},
+      {id:'reviews',ic:'⭐',lb:'Avis'},
+    ];
+    $('snav').innerHTML=items.map(function(n){
+      return '<div class="ni" data-p="'+n.id+'" onclick="window._sp(\''+n.id+'\')">'
+        +'<span style="font-size:15px;width:17px;text-align:center">'+n.ic+'</span>'
+        +'<span>'+n.lb+'</span>'
+        +(n.b?'<span class="nbadge">'+n.b+'</span>':'')
+        +'</div>';
+    }).join('');
+  }
+
+  window._sp = function(id){ showPage(id); };
+
+  function showPage(id){
+    if(TRIV){clearInterval(TRIV);TRIV=null;}
+    document.querySelectorAll('.ni').forEach(function(n){n.classList.toggle('on',n.dataset.p===id);});
+    var m=$('main');
+    m.innerHTML='<div class="loading">Chargement...</div>';
+    var pages={odash:pgOdash,sitters:pgSitters,oresas:pgOresas,msgs:pgMsgs,tracking:pgTracking,reviews:pgReviews,sdash:pgSdash,sbookings:pgSbookings,analytics:pgAnalytics,sprofile:pgSprofile};
+    if(pages[id]) pages[id](m);
+  }
+
+  // ── OWNER DASHBOARD ──
+  async function pgOdash(m){
+    var r=await sb.from('reservations').select('*').eq('owner_id',(CP&&CP.id)||'').order('created_at',{ascending:false});
+    var resa=r.data||[];
+    var active=resa.filter(function(x){return x.status!=='done'&&x.status!=='cancelled';});
+    m.innerHTML='<div class="ptitle">Bonjour, '+(CP&&CP.name||'là')+' 👋</div><div class="psub">Bienvenue sur DogLink Belgique</div>'
+    +'<div class="g4">'
+    +'<div class="card"><div>📅</div><div class="sv" style="color:#4D8EFF">'+active.length+'</div><div class="sl">Réservations actives</div></div>'
+    +'<div class="card"><div>🐾</div><div class="sv" style="color:#3DD68C">'+SITTERS.filter(function(s){return s.avail;}).length+'</div><div class="sl">Petsitteurs dispos</div></div>'
+    +'<div class="card"><div>💬</div><div class="sv" style="color:#FF6B4A">2</div><div class="sl">Messages non lus</div></div>'
+    +'<div class="card"><div>⭐</div><div class="sv" style="color:#F0C060">4.9</div><div class="sl">Note moyenne</div></div>'
+    +'</div>'
+    +'<div class="g2">'
+    +'<div class="card"><div style="font-weight:700;margin-bottom:12px">Prochaines réservations</div>'
+    +(active.length===0
+      ?'<div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="window._sp(\'sitters\')">Trouver un petsitteur</button></div>'
+      :active.slice(0,3).map(function(r){return'<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #2A2D40"><div class="av">'+al(r.sitter_name)+'</div><div style="flex:1"><div style="font-weight:600;font-size:13px">'+(r.sitter_name||'Petsitteur')+'</div><div style="color:#7B7F9E;font-size:11px">'+r.type+' · '+r.start_date+'</div></div>'+stb(r.status)+'</div>';}).join('')
+    )+'</div>'
+    +'<div class="card" style="background:linear-gradient(135deg,#0D2A1A,#0A1A12);border:1px solid #1D4A30;cursor:pointer" onclick="window._sp(\'tracking\')">'
+    +'<div style="color:#3DD68C;font-size:11px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:5px"><span class="dot pulse"></span>SUIVI EN DIRECT</div>'
+    +'<div style="font-weight:800;font-size:17px;margin-bottom:5px">Rex est en promenade</div>'
+    +'<div style="color:#6BBF8A;font-size:12px;margin-bottom:14px">Mise à jour il y a 2 min</div>'
+    +'<button class="btn bg bsm">Voir le suivi →</button>'
+    +'</div></div>';
+  }
+
+  // ── SITTERS LIST ──
+  function pgSitters(m){
+    m.innerHTML='<div class="ptitle">Petsitteurs</div><div class="psub">'+SITTERS.length+' professionnels en Belgique</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'
+    +'<input id="sq" class="fi" placeholder="Rechercher..." style="width:160px;margin:0" oninput="window._fs()">'
+    +'<button class="btn bo bsm" id="fa" onclick="window._ff(\'all\')" style="border-color:#FF6B4A;color:#FF6B4A">Tous</button>'
+    +'<button class="btn bo bsm" id="fv" onclick="window._ff(\'avail\')">Disponibles</button>'
+    +'<button class="btn bo bsm" id="fp" onclick="window._ff(\'prem\')">✦ Premium</button>'
+    +'</div><div class="g3" id="sg"></div>';
+    window._SF='all';
+    renderSg('all','');
+  }
+  window._ff=function(f){window._SF=f;window._fs();};
+  window._fs=function(){renderSg(window._SF||'all',(document.getElementById('sq')||{}).value||'');};
+  function renderSg(f,q){
+    var g=document.getElementById('sg');if(!g)return;
+    var list=SITTERS.filter(function(s){return(f==='all'||(f==='avail'&&s.avail)||(f==='prem'&&s.prem))&&(s.name.toLowerCase().includes(q.toLowerCase())||s.loc.toLowerCase().includes(q.toLowerCase()));});
+    g.innerHTML=list.map(function(s){return'<div class="card" style="cursor:pointer;'+(s.prem?'border-color:rgba(240,192,96,.3)':'')+'" onclick="window._sd(\''+s.id+'\')">'
+    +(s.prem?'<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><span class="pbadge">✦ PREMIUM</span></div>':'')
+    +'<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><div class="av">'+al(s.name)+'</div><div><div style="font-weight:700;font-size:13px">'+s.name+'</div><div style="color:#7B7F9E;font-size:11px">📍 '+s.loc+'</div></div></div>'
+    +'<p style="color:#7B7F9E;font-size:12px;line-height:1.6;margin-bottom:10px">'+s.bio.slice(0,60)+'…</p>'
+    +'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+s.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('')+'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2A2D40;padding-top:9px"><div><span class="stars">'+st(s.rating)+'</span> <b style="font-size:12px">'+s.rating+'</b></div><div><b style="font-size:15px">'+s.price+'€</b><span style="color:#7B7F9E;font-size:11px">/j</span></div></div>'
+    +'<div style="margin-top:7px;display:flex;align-items:center;gap:5px"><span class="dot" style="background:'+(s.avail?'#3DD68C':'#555')+'"></span><span style="font-size:11px;color:'+(s.avail?'#3DD68C':'#7B7F9E')+';font-weight:600">'+(s.avail?'Disponible':'Occupé')+'</span></div>'
+    +'</div>';}).join('');
+  }
+  window._sd=function(id){
+    var s=SITTERS.find(function(x){return x.id===id;});if(!s)return;
+    var m=$('main');
+    m.innerHTML='<button class="btn bo bsm" onclick="window._sp(\'sitters\')" style="margin-bottom:16px">← Retour</button>'
+    +'<div class="g2" style="align-items:start">'
+    +'<div>'
+    +'<div class="card" style="margin-bottom:12px">'
+    +'<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">'
+    +'<div class="av avlg">'+al(s.name)+'</div>'
+    +'<div>'+(s.prem?'<span class="pbadge">✦ PREMIUM</span><br>':'')
+    +'<span style="font-family:Fraunces,serif;font-size:19px;font-weight:300">'+s.name+'</span><br>'
+    +'<span style="color:#7B7F9E;font-size:12px">📍 '+s.loc+'</span><br>'
+    +'<span class="stars">'+st(s.rating)+'</span> <b>'+s.rating+'</b> <span style="color:#7B7F9E;font-size:11px">('+s.rc+' avis)</span>'
+    +'</div></div>'
+    +'<p style="color:#AAA;line-height:1.8;font-size:13px">'+s.bio+'</p>'
+    +'</div>'
+    +'<div class="card">'
+    +'<div style="font-weight:700;margin-bottom:11px;font-size:13px">Services & tarifs</div>'
+    +[['🏠','Garde',s.price+'€/j'],['🦮','Promenade','15€'],['🌙','Hébergement',(s.price+8)+'€/nuit'],['🎓','Éducation','30€']].map(function(x,i){return'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+'"><span style="font-size:12px">'+x[0]+' '+x[1]+'</span><span style="font-weight:700;color:#F0C060;font-size:12px">'+x[2]+'</span></div>';}).join('')
+    +'</div></div>'
+    +'<div class="card" style="position:sticky;top:16px">'
+    +'<div style="font-weight:800;font-size:19px;margin-bottom:3px">'+s.price+'€<span style="font-weight:400;font-size:12px;color:#7B7F9E">/j</span></div>'
+    +'<div style="color:'+(s.avail?'#3DD68C':'#888')+';font-size:12px;font-weight:700;margin-bottom:16px">'+(s.avail?'✓ Disponible':'✗ Non disponible')+'</div>'
+    +'<div id="bform">'
+    +'<label class="fl">Nom du chien</label><input class="fi" id="bdog" placeholder="Rex...">'
+    +'<label class="fl">Service</label><select class="fi" id="btype"><option>Garde à domicile</option><option>Promenade</option><option>Hébergement</option><option>Éducation</option></select>'
+    +'<label class="fl">Date début</label><input type="date" class="fi" id="bstart">'
+    +'<label class="fl">Date fin</label><input type="date" class="fi" id="bend">'
+    +'<label class="fl">Notes</label><textarea class="fi" id="bnotes" placeholder="Infos sur votre chien..."></textarea>'
+
+```
++'<button class="btn bp bfull" onclick="window._bk(\''+s.id+'\',\''+s.name+'\','+s.price+')" type="button">Réserver maintenant</button>'
++'<button class="btn bo bfull" onclick="window._sp(\'msgs\')" type="button">Envoyer un message</button>'
++'</div>'
++'<div id="bsuc" style="display:none;text-align:center;padding:16px;color:#3DD68C;font-weight:700">🎉 Réservation envoyée !</div>'
++'</div></div>';
+```
+
+};
+window._bk=async function(sid,sname,price){
+var dog=document.getElementById(‘bdog’).value.trim();
+var type=document.getElementById(‘btype’).value;
+var start=document.getElementById(‘bstart’).value;
+var end=document.getElementById(‘bend’).value;
+var notes=document.getElementById(‘bnotes’).value;
 if(!dog||!start||!end){alert(‘Remplissez tous les champs.’);return;}
 var days=Math.max(1,Math.ceil((new Date(end)-new Date(start))/86400000));
 await sb.from(‘reservations’).insert({sitter_id:sid,owner_id:CP&&CP.id,sitter_name:sname,dog_name:dog,type:type,start_date:start,end_date:end,notes:notes,price:price*days,status:‘pending’});
-el(‘bform’).style.display=‘none’;el(‘bsuc’).style.display=‘block’;
-setTimeout(function(){showPage(‘oresas’);},2000);
-}
+document.getElementById(‘bform’).style.display=‘none’;
+document.getElementById(‘bsuc’).style.display=‘block’;
+setTimeout(function(){window._sp(‘oresas’);},2000);
+};
 
 // ── OWNER RESERVATIONS ──
-async function oresas(el){
+async function pgOresas(m){
 var r=await sb.from(‘reservations’).select(’*’).eq(‘owner_id’,(CP&&CP.id)||’’).order(‘created_at’,{ascending:false});
 var resa=r.data||[];
-el.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
-+(resa.length===0?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="showPage(\'sitters\')">Trouver un petsitteur</button></div></div>’
-:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:14px"><div class="av">’+al(r.sitter_name||‘S’)+’</div><div style="flex:1"><div style="font-weight:700;font-size:14px">’+(r.sitter_name||‘Petsitteur’)+’</div><div style="color:#7B7F9E;font-size:12px">’+r.type+’ · ‘+(r.dog_name||’’)+(r.start_date?’ · ‘+r.start_date:’’)+’</div></div><div style="text-align:right"><div style="font-weight:800;font-size:16px;margin-bottom:5px">’+(r.price||0)+‘€</div>’+stbadge(r.status)+’</div></div>’;}).join(’’))
-+’<div style="margin-top:14px;background:rgba(255,107,74,.06);border-radius:16px;padding:20px;border:1px solid rgba(255,107,74,.2)"><div style="font-weight:700;margin-bottom:5px">+ Nouvelle réservation</div><div style="color:#7B7F9E;font-size:12px;margin-bottom:12px">Planifiez une garde ou promenade.</div><button class="btn bp bsm" onclick="showPage(\'sitters\')">Trouver un petsitteur</button></div>’;
-}
-
-// ── SITTER DASHBOARD ──
-async function sdash(el){
-var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’);
-var resa=r.data||[];
-var pending=resa.filter(function(x){return x.status===‘pending’;});
-var confirmed=resa.filter(function(x){return x.status===‘confirmed’;});
-var revenue=resa.filter(function(x){return x.status===‘done’;}).reduce(function(s,x){return s+(x.price||0);},0);
-el.innerHTML=’<div class="ptitle">Bienvenue, ‘+(CP&&CP.name||‘Petsitteur’)+’ 🐾</div><div class="psub">Votre tableau de bord</div>’
-+’<div class="g4" style="margin-bottom:16px">’
-+’<div class="card"><div style="font-size:22px">📬</div><div class="sv" style="color:#F0C060">’+pending.length+’</div><div class="sl">Demandes en attente</div></div>’
-+’<div class="card"><div style="font-size:22px">📅</div><div class="sv" style="color:#4D8EFF">’+confirmed.length+’</div><div class="sl">Réservations actives</div></div>’
-+’<div class="card"><div style="font-size:22px">💰</div><div class="sv" style="color:#3DD68C">’+revenue+‘€</div><div class="sl">Revenus totaux</div></div>’
-+’<div class="card"><div style="font-size:22px">⭐</div><div class="sv" style="color:#FF6B4A">5.0</div><div class="sl">Note moyenne</div></div>’
-+’</div>’
-+(pending.length>0?’<div class="card" style="margin-bottom:14px;border-color:rgba(240,192,96,.3)"><div style="font-weight:700;margin-bottom:12px;color:#F0C060">📬 Nouvelles demandes (’+pending.length+’)</div>’+pending.map(function(r){return’<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #2A2D40"><div class="av">’+al(r.dog_name||‘C’)+’</div><div style="flex:1"><div style="font-weight:600;font-size:13px">’+(r.dog_name||‘Chien’)+’</div><div style="color:#7B7F9E;font-size:12px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+(r.price?’ · ‘+r.price+‘€’:’’)+’</div></div><button class="btn bg bsm" onclick="updR(\''+r.id+'\',\'confirmed\',\'sdash\')">✓ OK</button> <button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updR(\''+r.id+'\',\'cancelled\',\'sdash\')">✗</button></div>’;}).join(’’)+’</div>’:’’)
-+’<div class="g2">’
-+’<div class="card"><div style="font-weight:700;margin-bottom:12px">Mon profil public</div><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="av avlg">’+al(CP&&CP.name)+’</div><div><div style="font-weight:700;font-size:15px">’+(CP&&CP.name||‘Votre nom’)+’</div><div style="color:#7B7F9E;font-size:12px">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div><span class="stars">★★★★★</span></div></div><p style="color:#7B7F9E;font-size:12px;line-height:1.7;margin-bottom:12px">’+(CP&&CP.bio||‘Ajoutez une bio dans votre profil.’)+’</p><button class="btn bo bsm" onclick="showPage(\'sprofile\')">Modifier →</button></div>’
-+’<div class="card"><div style="font-weight:700;margin-bottom:12px">Conseils</div>’+[‘Complétez votre profil à 100%’,‘Répondez aux demandes rapidement’,‘Envoyez des photos à chaque promenade’,‘Demandez des avis après chaque garde’].map(function(t,i){return’<div style="display:flex;gap:8px;padding:8px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+';font-size:12px"><span style="color:#3DD68C;font-weight:700">’+(i+1)+’.</span><span style="color:#AAA">’+t+’</span></div>’;}).join(’’)+’</div>’
+m.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
++(resa.length===0
+?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="window._sp(\'sitters\')" type="button">Trouver un petsitteur</button></div></div>’
+:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:12px">’
++’<div class="av">’+al(r.sitter_name)+’</div>’
++’<div style="flex:1"><div style="font-weight:700;font-size:13px">’+(r.sitter_name||‘Petsitteur’)+’</div>’
++’<div style="color:#7B7F9E;font-size:11px">’+r.type+’ · ‘+(r.dog_name||’’)+’ · ‘+(r.start_date||’’)+’</div></div>’
++’<div style="text-align:right"><div style="font-weight:800;font-size:15px;margin-bottom:4px">’+(r.price||0)+‘€</div>’+stb(r.status)+’</div>’
++’</div>’;}).join(’’))
++’<div style="margin-top:12px;background:rgba(255,107,74,.06);border-radius:14px;padding:18px;border:1px solid rgba(255,107,74,.2)">’
++’<div style="font-weight:700;margin-bottom:5px;font-size:14px">+ Nouvelle réservation</div>’
++’<div style="color:#7B7F9E;font-size:12px;margin-bottom:11px">Planifiez une garde ou promenade.</div>’
++’<button class="btn bp bsm" onclick="window._sp(\'sitters\')" type="button">Trouver un petsitteur</button>’
 +’</div>’;
 }
 
-// ── SITTER BOOKINGS ──
-async function sbookings(el){
-var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’).order(‘created_at’,{ascending:false});
+// ── SITTER DASHBOARD ──
+async function pgSdash(m){
+var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’);
 var resa=r.data||[];
-el.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
-+(resa.length===0?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation pour l'instant.</div></div>’
-:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="av">’+al(r.dog_name||‘C’)+’</div><div style="flex:1"><div style="font-weight:700;font-size:14px">’+(r.dog_name||‘Chien’)+’</div><div style="color:#7B7F9E;font-size:12px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+(r.notes?’<br>Note: ‘+r.notes:’’)+’</div></div><div style="text-align:right;margin-right:8px"><div style="font-weight:800;font-size:16px;margin-bottom:4px">’+(r.price||0)+‘€</div>’+stbadge(r.status)+’</div>’+(r.status===‘pending’?’<button class="btn bg bsm" onclick="updR(\''+r.id+'\',\'confirmed\',\'sbookings\')">✓ Accepter</button> <button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updR(\''+r.id+'\',\'cancelled\',\'sbookings\')">✗ Refuser</button>’:’’)+(r.status===‘confirmed’?’<button class="btn bsm" style="background:rgba(61,214,140,.12);color:#3DD68C;border:1px solid rgba(61,214,140,.3)" onclick="updR(\''+r.id+'\',\'done\',\'sbookings\')">✓ Terminé</button>’:’’)+’</div>’;}).join(’’));
-}
-async function updR(id,status,page){
-await sb.from(‘reservations’).update({status:status}).eq(‘id’,id);
-showPage(page);
+var pending=resa.filter(function(x){return x.status===‘pending’;});
+var conf=resa.filter(function(x){return x.status===‘confirmed’;});
+var rev=resa.filter(function(x){return x.status===‘done’;}).reduce(function(s,x){return s+(x.price||0);},0);
+m.innerHTML=’<div class="ptitle">Bienvenue, ‘+(CP&&CP.name||‘Petsitteur’)+’ 🐾</div><div class="psub">Votre tableau de bord</div>’
++’<div class="g4">’
++’<div class="card"><div>📬</div><div class="sv" style="color:#F0C060">’+pending.length+’</div><div class="sl">Demandes</div></div>’
++’<div class="card"><div>📅</div><div class="sv" style="color:#4D8EFF">’+conf.length+’</div><div class="sl">Actives</div></div>’
++’<div class="card"><div>💰</div><div class="sv" style="color:#3DD68C">’+rev+‘€</div><div class="sl">Revenus</div></div>’
++’<div class="card"><div>⭐</div><div class="sv" style="color:#FF6B4A">5.0</div><div class="sl">Note</div></div>’
++’</div>’
++(pending.length>0?’<div class="card" style="margin-bottom:12px;border-color:rgba(240,192,96,.3)">’
++’<div style="font-weight:700;margin-bottom:11px;color:#F0C060">📬 Nouvelles demandes (’+pending.length+’)</div>’
++pending.map(function(r){return’<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #2A2D40;flex-wrap:wrap">’
++’<div class="av">’+al(r.dog_name)+’</div>’
++’<div style="flex:1"><div style="font-weight:600;font-size:13px">’+(r.dog_name||‘Chien’)+’</div>’
++’<div style="color:#7B7F9E;font-size:11px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+(r.price?’ · ‘+r.price+‘€’:’’)+’</div></div>’
++’<button class="btn bg bsm" onclick="window._ur(\''+r.id+'\',\'confirmed\',\'sdash\')" type="button">✓ OK</button> ’
++’<button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="window._ur(\''+r.id+'\',\'cancelled\',\'sdash\')" type="button">✗</button>’
++’</div>’;}).join(’’)+’</div>’:’’)
++’<div class="g2">’
++’<div class="card"><div style="font-weight:700;margin-bottom:11px">Mon profil public</div>’
++’<div style="display:flex;gap:11px;align-items:center;margin-bottom:11px"><div class="av avlg">’+al(CP&&CP.name)+’</div>’
++’<div><div style="font-weight:700;font-size:14px">’+(CP&&CP.name||‘Votre nom’)+’</div>’
++’<div style="color:#7B7F9E;font-size:11px">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div>’
++’<span class="stars">★★★★★</span></div></div>’
++’<p style="color:#7B7F9E;font-size:12px;line-height:1.6;margin-bottom:11px">’+(CP&&CP.bio||‘Ajoutez une bio dans votre profil.’)+’</p>’
++’<button class="btn bo bsm" onclick="window._sp(\'sprofile\')" type="button">Modifier →</button></div>’
++’<div class="card"><div style="font-weight:700;margin-bottom:11px">Conseils</div>’
++[‘Complétez votre profil à 100%’,‘Répondez aux demandes rapidement’,‘Envoyez des photos à chaque promenade’,‘Demandez des avis après chaque garde’].map(function(t,i){return’<div style="display:flex;gap:8px;padding:7px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+';font-size:11px"><span style="color:#3DD68C;font-weight:700">’+(i+1)+’.</span><span style="color:#AAA">’+t+’</span></div>’;}).join(’’)
++’</div></div>’;
 }
 
+// ── SITTER BOOKINGS ──
+async function pgSbookings(m){
+var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’).order(‘created_at’,{ascending:false});
+var resa=r.data||[];
+m.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
++(resa.length===0?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation pour l'instant.</div></div>’
+:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:11px;flex-wrap:wrap">’
++’<div class="av">’+al(r.dog_name)+’</div>’
++’<div style="flex:1"><div style="font-weight:700;font-size:13px">’+(r.dog_name||‘Chien’)+’</div>’
++’<div style="color:#7B7F9E;font-size:11px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+’</div></div>’
++’<div style="text-align:right;margin-right:8px"><div style="font-weight:800;font-size:15px;margin-bottom:4px">’+(r.price||0)+‘€</div>’+stb(r.status)+’</div>’
++(r.status===‘pending’?’<button class="btn bg bsm" onclick="window._ur(\''+r.id+'\',\'confirmed\',\'sbookings\')" type="button">✓ Accepter</button> <button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="window._ur(\''+r.id+'\',\'cancelled\',\'sbookings\')" type="button">✗ Refuser</button>’:’’)
++(r.status===‘confirmed’?’<button class="btn bsm" style="background:rgba(61,214,140,.12);color:#3DD68C;border:1px solid rgba(61,214,140,.3)" onclick="window._ur(\''+r.id+'\',\'done\',\'sbookings\')" type="button">✓ Terminé</button>’:’’)
++’</div>’;}).join(’’));
+}
+window._ur=async function(id,status,page){
+await sb.from(‘reservations’).update({status:status}).eq(‘id’,id);
+window._sp(page);
+};
+
 // ── ANALYTICS ──
-async function pgAnalytics(el){
+async function pgAnalytics(m){
 var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’);
 var done=(r.data||[]).filter(function(x){return x.status===‘done’;});
 var rev=done.reduce(function(s,x){return s+(x.price||0);},0);
 var months=[{m:‘Jan’,v:480},{m:‘Fév’,v:620},{m:‘Mar’,v:590},{m:‘Avr’,v:780},{m:‘Mai’,v:Math.max(rev,860)}];
 var maxV=Math.max.apply(null,months.map(function(d){return d.v;}));
-el.innerHTML=’<div class="ptitle">Analytics</div><div class="psub">Vos performances</div>’
-+’<div class="g4" style="margin-bottom:16px">’
+m.innerHTML=’<div class="ptitle">Analytics</div><div class="psub">Vos performances</div>’
++’<div class="g4" style="margin-bottom:14px">’
 +’<div class="card"><div class="sv" style="color:#F0C060">’+rev+‘€</div><div class="sl">Revenus totaux</div></div>’
 +’<div class="card"><div class="sv" style="color:#3DD68C">’+done.length+’</div><div class="sl">Gardes terminées</div></div>’
-+’<div class="card"><div class="sv" style="color:#4D8EFF">5.0 ★</div><div class="sl">Note moyenne</div></div>’
-+’<div class="card"><div class="sv" style="color:#FF6B4A">100%</div><div class="sl">Taux d'acceptation</div></div>’
++’<div class="card"><div class="sv" style="color:#4D8EFF">5.0★</div><div class="sl">Note</div></div>’
++’<div class="card"><div class="sv" style="color:#FF6B4A">100%</div><div class="sl">Acceptation</div></div>’
 +’</div>’
-+’<div class="card"><div style="font-weight:700;margin-bottom:20px">Revenus mensuels</div><div style="display:flex;align-items:flex-end;gap:12px;height:150px">’
-+months.map(function(d){return’<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end"><div style="font-size:11px;color:#7B7F9E;font-weight:700">’+d.v+‘€</div><div style="width:100%;background:linear-gradient(to top,#FF6B4A,#F0C060);border-radius:5px 5px 0 0;height:'+Math.round((d.v/maxV)*120)+'px"></div><div style="font-size:11px;color:#7B7F9E">’+d.m+’</div></div>’;}).join(’’)
++’<div class="card"><div style="font-weight:700;margin-bottom:18px">Revenus mensuels</div>’
++’<div style="display:flex;align-items:flex-end;gap:10px;height:140px">’
++months.map(function(d){return’<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">’
++’<div style="font-size:10px;color:#7B7F9E;font-weight:700">’+d.v+‘€</div>’
++’<div style="width:100%;background:linear-gradient(to top,#FF6B4A,#F0C060);border-radius:4px 4px 0 0;height:'+Math.round((d.v/maxV)*110)+'px"></div>’
++’<div style="font-size:10px;color:#7B7F9E">’+d.m+’</div>’
++’</div>’;}).join(’’)
 +’</div></div>’;
 }
 
 // ── SITTER PROFILE ──
-function pgSprofile(el){
-el.innerHTML=’<div class="ptitle">Mon profil</div><div class="psub">Visible par tous les propriétaires</div>’
+function pgSprofile(m){
+var pav=CP&&CP.available!==false;
+m.innerHTML=’<div class="ptitle">Mon profil</div><div class="psub">Visible par tous les propriétaires</div>’
 +’<div class="g2" style="align-items:start">’
 +’<div class="card">’
-+’<label class="fl">Prénom</label><input class="fi" id="pn" value="'+(CP&&CP.name||'')+'" placeholder="Votre prénom">’
-+’<label class="fl">Localisation</label><input class="fi" id="pl" value="'+(CP&&CP.location||'')+'" placeholder="Ex: Liège...">’
++’<label class="fl">Prénom</label><input class="fi" id="pn" value="'+(CP&&CP.name||'')+'" placeholder="Votre prénom" type="text">’
++’<label class="fl">Localisation</label><input class="fi" id="pl" value="'+(CP&&CP.location||'')+'" placeholder="Ex: Liège..." type="text">’
 +’<label class="fl">Tarif journalier (€)</label><input type="number" class="fi" id="pp" value="'+(CP&&CP.price||25)+'">’
 +’<label class="fl">Bio</label><textarea class="fi" id="pb">’+(CP&&CP.bio||’’)+’</textarea>’
 +’<label class="fl">Disponibilité</label>’
-+’<div style="display:flex;gap:8px;margin-bottom:16px">’
-+’<button id="pav1" class="btn bsm '+(CP&&CP.available!==false?'bg':'bo')+'" onclick="setAv(true)">● Disponible</button>’
-+’<button id="pav0" class="btn bsm '+(CP&&CP.available===false?'bp':'bo')+'" onclick="setAv(false)">Occupé</button>’
++’<div style="display:flex;gap:8px;margin-bottom:14px">’
++’<button id="pav1" class="btn bsm '+(pav?'bg':'bo')+'" onclick="window._pav(true)" type="button">● Disponible</button>’
++’<button id="pav0" class="btn bsm '+(pav?'bo':'bp')+'" onclick="window._pav(false)" type="button">Occupé</button>’
 +’</div>’
-+’<button class="btn bp bfull" id="psave" onclick="saveP()">Sauvegarder</button>’
++’<button class="btn bp bfull" id="psave" onclick="window._saveP()" type="button">Sauvegarder</button>’
 +’</div>’
 +’<div class="card">’
-+’<div style="font-weight:700;margin-bottom:12px">Aperçu</div>’
-+’<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><div class="av avlg" id="pavav">’+al(CP&&CP.name)+’</div><div><div style="font-weight:700;font-size:15px" id="pavname">’+(CP&&CP.name||‘Votre nom’)+’</div><div style="color:#7B7F9E;font-size:12px" id="pavloc">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div><span class="stars">★★★★★</span></div></div>’
++’<div style="font-weight:700;margin-bottom:11px">Aperçu</div>’
++’<div style="display:flex;gap:11px;align-items:center;margin-bottom:11px"><div class="av avlg" id="pavav">’+al(CP&&CP.name)+’</div><div><div style="font-weight:700;font-size:14px" id="pavname">’+(CP&&CP.name||‘Votre nom’)+’</div><div style="color:#7B7F9E;font-size:11px" id="pavloc">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div><span class="stars">★★★★★</span></div></div>’
 +’<p style="color:#7B7F9E;font-size:12px;line-height:1.7" id="pavbio">’+(CP&&CP.bio||‘Votre bio…’)+’</p>’
-+’<div style="display:flex;justify-content:space-between;border-top:1px solid #2A2D40;padding-top:12px;margin-top:12px"><span style="color:#7B7F9E;font-size:12px">Tarif</span><span style="font-weight:800;font-size:16px" id="pavprice">’+(CP&&CP.price||25)+‘€</span></div>’
++’<div style="display:flex;justify-content:space-between;border-top:1px solid #2A2D40;padding-top:11px;margin-top:11px"><span style="color:#7B7F9E;font-size:12px">Tarif</span><span style="font-weight:800;font-size:15px" id="pavp">’+(CP&&CP.price||25)+‘€</span></div>’
 +’</div></div>’;
-el.querySelector(’#pn’).oninput=function(){var v=this.value;el.querySelector(’#pavname’).textContent=v||‘Votre nom’;el.querySelector(’#pavav’).textContent=al(v);};
-el.querySelector(’#pl’).oninput=function(){el.querySelector(’#pavloc’).textContent=‘📍 ‘+(this.value||‘Belgique’);};
-el.querySelector(’#pb’).oninput=function(){el.querySelector(’#pavbio’).textContent=this.value||‘Votre bio…’;};
-el.querySelector(’#pp’).oninput=function(){el.querySelector(’#pavprice’).textContent=(this.value||25)+‘€’;};
+document.getElementById(‘pn’).oninput=function(){document.getElementById(‘pavname’).textContent=this.value||‘Votre nom’;document.getElementById(‘pavav’).textContent=al(this.value);};
+document.getElementById(‘pl’).oninput=function(){document.getElementById(‘pavloc’).textContent=‘📍 ‘+(this.value||‘Belgique’);};
+document.getElementById(‘pb’).oninput=function(){document.getElementById(‘pavbio’).textContent=this.value||‘Votre bio…’;};
+document.getElementById(‘pp’).oninput=function(){document.getElementById(‘pavp’).textContent=(this.value||25)+‘€’;};
+window._PAV=pav;
 }
-var pAv=true;
-function setAv(v){pAv=v;el(‘pav1’).className=‘btn bsm ‘+(v?‘bg’:‘bo’);el(‘pav0’).className=‘btn bsm ‘+(v?‘bo’:‘bp’);}
-async function saveP(){
-var btn=el(‘psave’);btn.textContent=’…’;btn.disabled=true;
-await sb.from(‘profiles’).update({name:el(‘pn’).value,bio:el(‘pb’).value,location:el(‘pl’).value,price:el(‘pp’).value,available:pAv}).eq(‘user_id’,CU.id);
+window._pav=function(v){window._PAV=v;document.getElementById(‘pav1’).className=‘btn bsm ‘+(v?‘bg’:‘bo’);document.getElementById(‘pav0’).className=‘btn bsm ‘+(v?‘bo’:‘bp’);};
+window._saveP=async function(){
+var btn=document.getElementById(‘psave’);btn.textContent=’…’;btn.disabled=true;
+await sb.from(‘profiles’).update({name:document.getElementById(‘pn’).value,bio:document.getElementById(‘pb’).value,location:document.getElementById(‘pl’).value,price:document.getElementById(‘pp’).value,available:window._PAV}).eq(‘user_id’,CU.id);
 var p=await sb.from(‘profiles’).select(’*’).eq(‘user_id’,CU.id).single();
 CP=p.data;btn.textContent=‘✓ Sauvegardé!’;btn.style.background=’#3DD68C’;
 setTimeout(function(){btn.textContent=‘Sauvegarder’;btn.style.background=’’;btn.disabled=false;},2000);
-}
+};
 
 // ── MESSAGES ──
-var CHATMSGS=[{text:‘Bonjour ! Je suis disponible.’,mine:false,time:‘10:15’},{text:‘Super ! Mon chien s'appelle Rex. 🐕’,mine:true,time:‘10:17’},{text:‘Combien de sorties par jour ?’,mine:false,time:‘10:19’},{text:‘2-3 promenades idéalement.’,mine:true,time:‘10:20’},{text:‘Votre réservation est confirmée ✅’,mine:false,time:‘10:23’}];
-function pgMsgs(el){
-var contacts=[{name:‘Sophie M.’,time:‘10:23’,preview:‘Réservation confirmée ✅’,u:2},{name:‘Julien P.’,time:‘Hier’,preview:‘Rex à partir de 9h’,u:0},{name:‘Emma D.’,time:‘Lun’,preview:‘Rex sage aujourd'hui 🐶’,u:0}];
-el.innerHTML=’<div class="ptitle">Messages</div><div class="psub" style="margin-bottom:12px">Vos conversations</div>’
+var CHATD=[{t:‘Bonjour ! Je suis disponible.’,me:false,h:‘10:15’},{t:‘Super ! Mon chien s'appelle Rex 🐕’,me:true,h:‘10:17’},{t:‘Combien de sorties par jour ?’,me:false,h:‘10:19’},{t:‘2-3 promenades.’,me:true,h:‘10:20’},{t:‘Réservation confirmée ✅’,me:false,h:‘10:23’}];
+function pgMsgs(m){
+var contacts=[{n:‘Sophie M.’,h:‘10:23’,p:‘Réservation confirmée ✅’,u:2},{n:‘Julien P.’,h:‘Hier’,p:‘Rex à partir de 9h’,u:0},{n:‘Emma D.’,h:‘Lun’,p:‘Rex sage 🐶’,u:0}];
+m.innerHTML=’<div class="ptitle">Messages</div><div class="psub" style="margin-bottom:11px">Vos conversations</div>’
 +’<div class="cw">’
-+’<div class="cl"><div style="padding:12px 14px;font-weight:700;border-bottom:1px solid #2A2D40;font-size:14px">Conversations</div>’
-+contacts.map(function(c,i){return’<div class="ci'+(i===0?' on':'')+'" onclick="selChat(\''+c.name+'\')"><div style="position:relative"><div class="av" style="width:34px;height:34px;font-size:12px">’+al(c.name)+’</div>’+(c.u?’<span style="position:absolute;top:-2px;right:-2px;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 4px">’+c.u+’</span>’:’’)+’</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><b style="font-size:12px">’+c.name+’</b><span style="color:#7B7F9E;font-size:10px">’+c.time+’</span></div><div style="color:#7B7F9E;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+c.preview+’</div></div></div>’;}).join(’’)
++’<div class="cl"><div style="padding:11px 13px;font-weight:700;border-bottom:1px solid #2A2D40;font-size:13px">Conversations</div>’
++contacts.map(function(c,i){return’<div class="ci'+(i===0?' on':'')+'">’
++’<div style="position:relative"><div class="av" style="width:32px;height:32px;font-size:11px">’+al(c.n)+’</div>’
++(c.u?’<span style="position:absolute;top:-2px;right:-2px;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 4px">’+c.u+’</span>’:’’)
++’</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><b style="font-size:12px">’+c.n+’</b><span style="color:#7B7F9E;font-size:10px">’+c.h+’</span></div>’
++’<div style="color:#7B7F9E;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+c.p+’</div></div></div>’;}).join(’’)
 +’</div>’
 +’<div class="cb">’
-+’<div class="ch"><div class="av" style="width:34px;height:34px;font-size:12px">S</div><div><div style="font-weight:700;font-size:14px">Sophie M.</div><div style="color:#3DD68C;font-size:11px;font-weight:600">● En ligne</div></div></div>’
-+’<div class="ms" id="msgsarea">’+CHATMSGS.map(function(m){return’<div class="mg'+(m.mine?' me':'')+'">’+(!m.mine?’<div class="av" style="width:28px;height:28px;font-size:11px">S</div>’:’’)+’<div><div class="mb '+(m.mine?'me':'th')+'">’+m.text+’</div><div class="mt" style="text-align:'+(m.mine?'right':'left')+'">’+m.time+’</div></div></div>’;}).join(’’)+’</div>’
-+’<div class="cf"><input class="ci2" id="minp" placeholder="Écrire un message…" onkeydown="if(event.key===\'Enter\')sendM()"><button class="btn bp" onclick="sendM()">Envoyer →</button></div>’
++’<div class="ch"><div class="av" style="width:32px;height:32px;font-size:11px">S</div><div><div style="font-weight:700;font-size:13px">Sophie M.</div><div style="color:#3DD68C;font-size:11px">● En ligne</div></div></div>’
++’<div class="ms" id="msga">’+CHATD.map(function(d){return’<div class="mg'+(d.me?' me':'')+'">’+(!d.me?’<div class="av" style="width:26px;height:26px;font-size:10px">S</div>’:’’)+’<div><div class="mb '+(d.me?'me':'th')+'">’+d.t+’</div><div class="mt" style="text-align:'+(d.me?'right':'left')+'">’+d.h+’</div></div></div>’;}).join(’’)+’</div>’
++’<div class="cf"><input class="cinp" id="minp" placeholder="Écrire un message…" onkeydown="if(event.key===\'Enter\')window._sm()"><button class="btn bp" onclick="window._sm()" type="button">Envoyer →</button></div>’
 +’</div></div>’;
 }
-function selChat(name){}
-function sendM(){
-var inp=el(‘minp’),txt=inp.value.trim();if(!txt)return;
-var area=el(‘msgsarea’);
-area.innerHTML+=’<div class="mg me"><div><div class="mb me">’+txt+’</div><div class="mt" style="text-align:right">Maintenant</div></div></div>’;
-inp.value=’’;area.scrollTop=area.scrollHeight;
-}
+window._sm=function(){var i=document.getElementById(‘minp’),t=i.value.trim();if(!t)return;var a=document.getElementById(‘msga’);a.innerHTML+=’<div class="mg me"><div><div class="mb me">’+t+’</div><div class="mt" style="text-align:right">Maintenant</div></div></div>’;i.value=’’;a.scrollTop=a.scrollHeight;};
 
 // ── TRACKING ──
-function pgTracking(el){
-el.innerHTML=’<div class="ptitle">Suivi en temps réel</div><div class="psub">Rex · En promenade · Belgique</div>’
+function pgTracking(m){
+m.innerHTML=’<div class="ptitle">Suivi en temps réel</div><div class="psub">Rex · En promenade · Belgique</div>’
 +’<div class="g2" style="align-items:start">’
 +’<div class="tm" id="tmap">’
-+’<svg width="100%" height="100%" viewBox="0 0 700 380" style="position:absolute">’
-+’<rect width="700" height="380" fill="#080E08"/>’
-+Array.from({length:9},function(*,i){return’<line x1="0" y1="'+(i*44)+'" x2="700" y2="'+(i*44)+'" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
-+Array.from({length:13},function(*,i){return’<line x1="'+(i*58)+'" y1="0" x2="'+(i*58)+'" y2="380" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
-+’<path d="M0 200 Q175 175 350 190 Q525 208 700 180" stroke="#0A2840" stroke-width="18" fill="none" opacity=".8"/>’
-+[[80,55,110,45],[200,100,90,45],[380,70,100,48],[500,120,80,40],[120,155,95,45],[320,155,85,44],[450,190,110,48],[80,270,90,45],[240,288,105,46],[400,255,90,42]].map(function(x){return’<rect x="'+x[0]+'" y="'+x[1]+'" width="'+x[2]+'" height="'+x[3]+'" rx="7" fill="#0C1A0C"/>’;}).join(’’)
-+’<polyline points="310,200 332,180 362,170" stroke="#3DD68C" stroke-width="2.5" fill="none" opacity=".4" stroke-dasharray="5,4"/>’
++’<svg width="100%" height="100%" viewBox="0 0 700 360" style="position:absolute">’
++’<rect width="700" height="360" fill="#080E08"/>’
++Array.from({length:8},function(*,i){return’<line x1="0" y1="'+(i*48)+'" x2="700" y2="'+(i*48)+'" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
++Array.from({length:13},function(*,i){return’<line x1="'+(i*58)+'" y1="0" x2="'+(i*58)+'" y2="360" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
++’<path d="M0 190 Q175 165 350 180 Q525 198 700 170" stroke="#0A2840" stroke-width="18" fill="none" opacity=".8"/>’
++[[80,50,110,42],[200,95,90,42],[380,65,100,44],[500,115,80,38],[120,145,95,42],[320,145,85,40],[450,180,110,44],[80,255,90,42],[240,272,105,42],[400,240,90,40]].map(function(x){return’<rect x="'+x[0]+'" y="'+x[1]+'" width="'+x[2]+'" height="'+x[3]+'" rx="7" fill="#0C1A0C"/>’;}).join(’’)
 +’</svg>’
-+’<div id="tdot" style="position:absolute;left:310px;top:200px;transform:translate(-50%,-50%);z-index:10;transition:left .85s ease,top .85s ease"><div style="position:relative"><div class="ping" style="position:absolute;inset:-5px;border-radius:50%;background:#3DD68C;opacity:.3"></div><div style="width:26px;height:26px;border-radius:50%;background:#3DD68C;border:3px solid #070E08;display:flex;align-items:center;justify-content:center;font-size:13px;position:relative">🐕</div></div></div>’
-+’<div style="position:absolute;bottom:12px;left:12px;background:rgba(7,14,8,.92);border-radius:11px;padding:7px 13px;border:1px solid #1D4A30;display:flex;align-items:center;gap:7px"><span class="dot pulse"></span><span style="font-size:12px;font-weight:700;color:#3DD68C">Rex · En direct</span></div>’
++’<div id="tdot" style="position:absolute;left:310px;top:190px;transform:translate(-50%,-50%);z-index:10;transition:left .85s ease,top .85s ease">’
++’<div style="position:relative"><div class="ping" style="position:absolute;inset:-5px;border-radius:50%;background:#3DD68C;opacity:.3"></div>’
++’<div style="width:25px;height:25px;border-radius:50%;background:#3DD68C;border:3px solid #070E08;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative">🐕</div>’
++’</div></div>’
++’<div style="position:absolute;bottom:11px;left:11px;background:rgba(7,14,8,.92);border-radius:10px;padding:6px 12px;border:1px solid #1D4A30;display:flex;align-items:center;gap:6px"><span class="dot pulse"></span><span style="font-size:11px;font-weight:700;color:#3DD68C">Rex · En direct</span></div>’
 +’</div>’
 +’<div class="sc">’
-+[[‘🕐’,‘Dernière promenade’,‘Il y a 12 min’],[‘📍’,‘Position’,‘Rue centrale, Belgique’],[‘🌡️’,‘Météo’,‘18°C · Nuageux’],[‘💤’,‘État’,‘Actif · En promenade’],[‘🦴’,‘Repas’,‘Donné à 12h00’],[‘❤️’,‘Fréquence cardiaque’,‘72 bpm · Normal’]].map(function(x){return’<div class="ic"><span style="font-size:18px">’+x[0]+’</span><div><div style="color:#7B7F9E;font-size:10px;font-weight:600;letter-spacing:.5px">’+x[1].toUpperCase()+’</div><div style="font-weight:700;font-size:13px;margin-top:1px">’+x[2]+’</div></div></div>’;}).join(’’)
++[[‘🕐’,‘Dernière promenade’,‘Il y a 12 min’],[‘📍’,‘Position’,‘Rue centrale’],[‘🌡️’,‘Météo’,‘18°C · Nuageux’],[‘💤’,‘État’,‘Actif’],[‘🦴’,‘Repas’,‘12h00’],[‘❤️’,‘Rythme cardiaque’,‘72 bpm · Normal’]].map(function(x){return’<div class="ic"><span style="font-size:17px">’+x[0]+’</span><div><div style="color:#7B7F9E;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase">’+x[1]+’</div><div style="font-weight:700;font-size:12px;margin-top:1px">’+x[2]+’</div></div></div>’;}).join(’’)
 +’</div></div>’;
 TRIDX=0;
-TRIV=setInterval(function(){TRIDX=(TRIDX+1)%TRPATH.length;var d=el.querySelector(’#tdot’);if(d){d.style.left=TRPATH[TRIDX][0]+‘px’;d.style.top=TRPATH[TRIDX][1]+‘px’;}},900);
+TRIV=setInterval(function(){TRIDX=(TRIDX+1)%TRPATH.length;var d=document.getElementById(‘tdot’);if(d){d.style.left=TRPATH[TRIDX][0]+‘px’;d.style.top=TRPATH[TRIDX][1]+‘px’;}},900);
 }
 
 // ── REVIEWS ──
-function pgReviews(el){
-var revs=[{s:‘Sophie M.’,r:5,by:‘Marie L.’,d:‘3 Avr’,t:‘Sophie est exceptionnelle ! Photos quotidiennes, rapport détaillé. Je recommande !’},
-{s:‘Emma D.’,r:5,by:‘Pierre D.’,d:‘10 Avr’,t:‘Vétérinaire de formation, aucune inquiétude. Rex était en parfaite santé.’},
-{s:‘Julien P.’,r:4,by:‘Camille R.’,d:‘25 Avr’,t:‘Beau jardin, chien bien traité. Je recommande !’},
-{s:‘Marc B.’,r:5,by:‘Thomas B.’,d:‘28 Avr’,t:‘Service VIP au vrai sens du terme. Parfait.’}];
-el.innerHTML=’<div class="ptitle">Avis & Notations</div><div class="psub">Avis vérifiés de la communauté</div>’
-+’<div class="g2">’+revs.map(function(r){return’<div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><div class="av">’+al(r.s)+’</div><div><div style="font-weight:700;font-size:13px">Avis sur ‘+r.s+’</div><div style="color:#7B7F9E;font-size:11px">Par ‘+r.by+’ · ‘+r.d+’</div></div><div style="margin-left:auto"><span class="stars">’+st(r.r)+’</span></div></div><p style="color:#999;font-size:12px;line-height:1.75;font-style:italic">”’+r.t+’”</p></div>’;}).join(’’)+’</div>’;
+function pgReviews(m){
+var rv=[{s:‘Sophie M.’,r:5,by:‘Marie L.’,d:‘3 Avr’,t:‘Sophie est exceptionnelle ! Photos quotidiennes. Je recommande !’},
+{s:‘Emma D.’,r:5,by:‘Pierre D.’,d:‘10 Avr’,t:‘Vétérinaire de formation, Rex était en parfaite santé.’},
+{s:‘Julien P.’,r:4,by:‘Camille R.’,d:‘25 Avr’,t:‘Beau jardin, chien bien traité. Recommandé !’},
+{s:‘Marc B.’,r:5,by:‘Thomas B.’,d:‘28 Avr’,t:‘Service VIP parfait.’}];
+m.innerHTML=’<div class="ptitle">Avis & Notations</div><div class="psub">Avis vérifiés de la communauté</div>’
++’<div class="g2">’+rv.map(function(r){return’<div class="card"><div style="display:flex;gap:11px;align-items:center;margin-bottom:11px"><div class="av">’+al(r.s)+’</div><div><div style="font-weight:700;font-size:12px">Avis sur ‘+r.s+’</div><div style="color:#7B7F9E;font-size:10px">Par ‘+r.by+’ · ‘+r.d+’</div></div><div style="margin-left:auto"><span class="stars">’+st(r.r)+’</span></div></div><p style="color:#999;font-size:12px;line-height:1.7;font-style:italic">”’+r.t+’”</p></div>’;}).join(’’)+’</div>’;
 }
 
-// ── INIT ──
-window.addEventListener(‘DOMContentLoaded’, function(){
-// Auth buttons
-el(‘tl’).addEventListener(‘click’,function(){setMode(‘login’);});
-el(‘tr’).addEventListener(‘click’,function(){setMode(‘register’);});
-el(‘ro’).addEventListener(‘click’,function(){selRole(‘owner’);});
-el(‘rs’).addEventListener(‘click’,function(){selRole(‘sitter’);});
-el(‘asubmit’).addEventListener(‘click’,function(){doAuth();});
-el(‘apass’).addEventListener(‘keydown’,function(e){if(e.key===‘Enter’)doAuth();});
-el(‘lout’).addEventListener(‘click’,function(){doLogout();});
-
-// Check session
+// ── SESSION CHECK ──
+if(sb){
 sb.auth.getSession().then(function(r){
-var session=r.data.session;
-if(session&&session.user){
-sb.from(‘profiles’).select(’*’).eq(‘user_id’,session.user.id).single().then(function(p){
-if(p.data)startApp(session.user,p.data);
+var s=r.data&&r.data.session;
+if(s&&s.user){
+sb.from(‘profiles’).select(’*’).eq(‘user_id’,s.user.id).single().then(function(p){
+if(p.data) startApp(s.user,p.data);
 });
 }
 });
-});
+}
+
+}); // end window.load
 </script>
 
 </body>
