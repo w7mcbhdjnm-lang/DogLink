@@ -13,8 +13,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2A2D40;border-radius:4px}
 .hidden{display:none!important}
 /* AUTH */
-#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-box{background:#13151F;border:1px solid #2A2D40;border-radius:28px;padding:40px;width:100%;max-width:420px}
+#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:99}
+.auth-box{background:#13151F;border:1px solid #2A2D40;border-radius:28px;padding:40px;width:100%;max-width:420px;position:relative;z-index:100}
 .auth-logo{font-family:'Fraunces',serif;font-size:30px;text-align:center;margin-bottom:6px;font-weight:600}
 .auth-logo span{color:#FF6B4A}
 .auth-sub{text-align:center;color:#7B7F9E;font-size:14px;margin-bottom:28px}
@@ -675,11 +675,17 @@ el.innerHTML=` <div class="page-title">Avis & Notations</div> <div class="page-s
 
 // ── INIT ──────────────────────────────────────
 // iOS Safari fix - use addEventListener instead of onclick
-document.getElementById(‘tab-login’).addEventListener(‘click’, function(){ setMode(‘login’); });
-document.getElementById(‘tab-register’).addEventListener(‘click’, function(){ setMode(‘register’); });
-document.getElementById(‘role-owner’).addEventListener(‘click’, function(){ selectRole(‘owner’); });
-document.getElementById(‘role-sitter’).addEventListener(‘click’, function(){ selectRole(‘sitter’); });
-document.getElementById(‘auth-submit-btn’).addEventListener(‘click’, function(){ doAuth(); });
+function addTap(id, fn) {
+var el = document.getElementById(id);
+if (!el) return;
+el.addEventListener(‘click’, fn);
+el.addEventListener(‘touchend’, function(e){ e.preventDefault(); fn(); });
+}
+addTap(‘tab-login’, function(){ setMode(‘login’); });
+addTap(‘tab-register’, function(){ setMode(‘register’); });
+addTap(‘role-owner’, function(){ selectRole(‘owner’); });
+addTap(‘role-sitter’, function(){ selectRole(‘sitter’); });
+addTap(‘auth-submit-btn’, function(){ doAuth(); });
 
 sb.auth.getSession().then(({data:{session}})=>{
 if(session?.user){
