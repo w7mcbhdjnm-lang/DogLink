@@ -6,1077 +6,660 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DogLink</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body,#root{height:100%}
-body{font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF;overflow-x:hidden}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2A2D40;border-radius:4px}
-
+.hidden{display:none!important}
 /* AUTH */
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0D0F18 0%,#13151F 100%);padding:20px}
-.auth-box{background:#13151F;border:1px solid #2A2D40;border-radius:28px;padding:40px;width:100%;max-width:440px;box-shadow:0 40px 100px rgba(0,0,0,.5)}
-.auth-logo{font-family:‘Fraunces’,serif;font-size:30px;font-weight:600;text-align:center;margin-bottom:8px}
+#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-box{background:#13151F;border:1px solid #2A2D40;border-radius:28px;padding:40px;width:100%;max-width:420px}
+.auth-logo{font-family:'Fraunces',serif;font-size:30px;text-align:center;margin-bottom:6px;font-weight:600}
 .auth-logo span{color:#FF6B4A}
-.auth-sub{text-align:center;color:#7B7F9E;font-size:14px;margin-bottom:32px}
-.auth-tabs{display:flex;gap:0;margin-bottom:28px;background:#1C1F2E;border-radius:14px;padding:4px}
-.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:#7B7F9E;font-weight:600;font-size:14px;cursor:pointer;border-radius:10px;transition:all .2s;font-family:inherit}
+.auth-sub{text-align:center;color:#7B7F9E;font-size:14px;margin-bottom:28px}
+.auth-tabs{display:flex;background:#1C1F2E;border-radius:14px;padding:4px;margin-bottom:24px}
+.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:#7B7F9E;font-weight:600;font-size:14px;cursor:pointer;border-radius:10px;font-family:inherit;transition:all .2s}
 .auth-tab.active{background:#252838;color:#EEE9FF}
-.role-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
-.role-btn{padding:18px 14px;border:1.5px solid #2A2D40;border-radius:16px;background:transparent;color:#EEE9FF;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit}
-.role-btn:hover{border-color:#FF6B4A}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.role-btn{padding:18px 14px;border:1.5px solid #2A2D40;border-radius:16px;background:transparent;color:#EEE9FF;cursor:pointer;text-align:center;font-family:inherit;transition:all .2s}
 .role-btn.sel{border-color:#FF6B4A;background:rgba(255,107,74,.08)}
 .role-icon{font-size:28px;display:block;margin-bottom:6px}
-.role-label{font-weight:700;font-size:14px;display:block}
-.role-desc{font-size:11px;color:#7B7F9E;margin-top:2px;display:block}
-.inp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:12px 16px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none;transition:border .2s;margin-bottom:14px}
+.role-label{font-weight:700;font-size:14px}
+.role-desc{font-size:11px;color:#7B7F9E;margin-top:2px}
+.inp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:12px 16px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px}
 .inp:focus{border-color:#FF6B4A}
-.inp::placeholder{color:#4A4D60}
-.auth-btn{width:100%;background:linear-gradient(135deg,#FF6B4A,#E05535);color:white;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;margin-top:6px;transition:opacity .2s}
-.auth-btn:hover{opacity:.88}
-.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-btn{width:100%;background:linear-gradient(135deg,#FF6B4A,#E05535);color:white;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;margin-top:6px}
 .auth-err{color:#FF6B4A;font-size:13px;text-align:center;margin-top:10px}
-
-/* APP LAYOUT */
-.app{display:flex;height:100vh}
-.sidebar{width:240px;background:#13151F;border-right:1px solid #2A2D40;display:flex;flex-direction:column;padding:22px 12px;flex-shrink:0;overflow-y:auto}
-.s-logo{font-family:‘Fraunces’,serif;font-size:24px;font-weight:600;padding-left:10px;margin-bottom:8px}
+/* APP */
+#app-screen{display:flex;height:100vh}
+.sidebar{width:240px;background:#13151F;border-right:1px solid #2A2D40;display:flex;flex-direction:column;padding:22px 12px;flex-shrink:0}
+.s-logo{font-family:'Fraunces',serif;font-size:24px;font-weight:600;padding-left:10px;margin-bottom:4px}
 .s-logo span{color:#FF6B4A}
-.s-role-badge{font-size:10px;font-weight:700;letter-spacing:1px;padding-left:10px;margin-bottom:20px}
-.s-nav{flex:1;display:flex;flex-direction:column;gap:2px}
-.s-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;color:#7B7F9E;transition:all .2s;border-left:3px solid transparent}
-.s-item:hover{background:#1C1F2E}
-.s-item.act{background:#1C1F2E;color:#EEE9FF;border-left-color:#F0C060}
-.s-badge{margin-left:auto;background:#FF6B4A;color:white;border-radius:20px;font-size:10px;font-weight:800;padding:1px 7px}
-.s-user{border-top:1px solid #2A2D40;padding-top:14px;display:flex;align-items:center;gap:10px;padding-left:6px}
-.s-avatar{width:36px;height:36px;border-radius:50%;background:#252838;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#F0C060;flex-shrink:0}
+.s-role{font-size:10px;font-weight:700;letter-spacing:1px;padding-left:10px;margin-bottom:20px}
+.s-nav{flex:1;display:flex;flex-direction:column;gap:3px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;color:#7B7F9E;border-left:3px solid transparent;transition:all .2s}
+.nav-item:hover{background:#1C1F2E}
+.nav-item.active{background:#1C1F2E;color:#EEE9FF;border-left-color:#F0C060}
+.nav-badge{margin-left:auto;background:#FF6B4A;color:white;border-radius:20px;font-size:10px;font-weight:800;padding:1px 7px}
+.s-user{border-top:1px solid #2A2D40;padding-top:14px;display:flex;align-items:center;gap:10px;padding-left:6px;margin-top:auto}
+.avatar{width:38px;height:38px;border-radius:50%;background:#252838;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#F0C060;flex-shrink:0}
+.avatar-lg{width:64px;height:64px;font-size:26px}
 .s-uname{font-size:13px;font-weight:700}
 .s-urole{font-size:11px;color:#7B7F9E}
-.s-logout{background:none;border:none;color:#7B7F9E;cursor:pointer;font-size:11px;padding:2px 0;font-family:inherit}
-.s-logout:hover{color:#FF6B4A}
-
-.main{flex:1;overflow-y:auto;padding:32px 36px}
-.page-title{font-family:‘Fraunces’,serif;font-size:28px;font-weight:300;letter-spacing:-1px;margin-bottom:6px}
-.page-sub{color:#7B7F9E;font-size:13px;margin-bottom:28px}
-
+.logout-btn{background:none;border:none;color:#7B7F9E;cursor:pointer;font-size:11px;font-family:inherit}
+.logout-btn:hover{color:#FF6B4A}
+.main-area{flex:1;overflow-y:auto;padding:30px 34px}
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+.page-title{font-family:'Fraunces',serif;font-size:26px;font-weight:300;letter-spacing:-1px;margin-bottom:4px}
+.page-sub{color:#7B7F9E;font-size:13px;margin-bottom:24px}
 /* CARDS */
-.card{background:#13151F;border:1px solid #2A2D40;border-radius:20px;padding:24px}
-.card-sm{background:#13151F;border:1px solid #2A2D40;border-radius:16px;padding:18px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-
-/* STAT CARDS */
-.stat-val{font-family:‘Fraunces’,serif;font-size:28px;font-weight:700;margin-top:10px}
-.stat-lbl{font-size:12px;color:#7B7F9E;margin-top:4px}
-
+.card{background:#13151F;border:1px solid #2A2D40;border-radius:20px;padding:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat-val{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-top:10px}
+.stat-lbl{font-size:12px;color:#7B7F9E;margin-top:3px}
 /* BUTTONS */
-.btn{padding:10px 20px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.btn{padding:9px 18px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.btn:hover{opacity:.85;transform:translateY(-1px)}
 .btn-primary{background:#FF6B4A;color:white}
-.btn-primary:hover{opacity:.85;transform:translateY(-1px)}
-.btn-gold{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000}
 .btn-outline{background:transparent;color:#EEE9FF;border:1.5px solid #2A2D40}
-.btn-outline:hover{border-color:#7B7F9E}
 .btn-green{background:rgba(61,214,140,.15);color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
+.btn-gold{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000}
 .btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
-.btn-full{width:100%;padding:13px;border-radius:14px;font-size:14px}
-
+.btn-full{width:100%;padding:13px;font-size:14px;border-radius:14px}
 /* STATUS */
 .status{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
-.status-pending{background:#2A1F08;color:#F0C060;border:1px solid rgba(240,192,96,.3)}
-.status-confirmed{background:#0D2A1A;color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
-.status-done{background:#1A1A1A;color:#555;border:1px solid #333}
-.status-cancelled{background:#2A0D0D;color:#FF6B4A;border:1px solid rgba(255,107,74,.3)}
-
-/* SITTER CARDS */
-.sitter-card{background:#13151F;border:1px solid #2A2D40;border-radius:20px;padding:22px;cursor:pointer;transition:all .2s}
-.sitter-card:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.4);border-color:#3A3D50}
-.sitter-card.premium{border-color:rgba(240,192,96,.3);box-shadow:0 0 0 1px rgba(240,192,96,.2)}
-.avatar{width:52px;height:52px;border-radius:50%;background:#1C1F2E;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#F0C060;flex-shrink:0}
-.avatar-lg{width:72px;height:72px;font-size:30px}
+.s-pending{background:#2A1F08;color:#F0C060;border:1px solid rgba(240,192,96,.3)}
+.s-confirmed{background:#0D2A1A;color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
+.s-done{background:#1A1A1A;color:#555;border:1px solid #333}
+.s-cancelled{background:#2A0D0D;color:#FF6B4A;border:1px solid rgba(255,107,74,.3)}
+/* FORM */
+.form-label{font-size:11px;font-weight:700;color:#7B7F9E;letter-spacing:.8px;display:block;margin-bottom:6px;text-transform:uppercase}
+.form-inp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:11px 15px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px}
+.form-inp:focus{border-color:#FF6B4A}
+textarea.form-inp{resize:vertical;min-height:80px}
+/* TAG */
 .tag{background:rgba(255,255,255,.06);color:#7B7F9E;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
-.tag-gold{background:rgba(240,192,96,.12);color:#F0C060;border:1px solid rgba(240,192,96,.25)}
-.stars{color:#F0C060;font-size:13px;letter-spacing:1px}
-
+.premium-badge{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px}
+.stars{color:#F0C060;font-size:13px}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#3DD68C;display:inline-block}
 /* CHAT */
-.chat-wrap{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 120px);background:#13151F;border-radius:22px;border:1px solid #2A2D40;overflow:hidden}
+.chat-wrap{display:grid;grid-template-columns:270px 1fr;height:calc(100vh - 130px);background:#13151F;border-radius:20px;border:1px solid #2A2D40;overflow:hidden}
 .chat-list{border-right:1px solid #2A2D40;overflow-y:auto}
-.chat-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .15s}
+.chat-item{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;transition:background .15s}
 .chat-item:hover{background:#1C1F2E}
 .chat-item.sel{background:#252838}
-.chat-msgs{flex:1;display:flex;flex-direction:column}
-.chat-header{padding:16px 22px;border-bottom:1px solid #2A2D40;display:flex;align-items:center;gap:12px}
-.msgs-area{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.chat-body{display:flex;flex-direction:column;height:100%}
+.chat-hdr{padding:15px 20px;border-bottom:1px solid #2A2D40;display:flex;align-items:center;gap:12px}
+.msgs{flex:1;padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
 .msg{display:flex;justify-content:flex-start;gap:10px;align-items:flex-end}
 .msg.mine{justify-content:flex-end}
-.msg-bubble{max-width:60%;padding:11px 15px;border-radius:18px;font-size:14px;line-height:1.6}
-.msg-bubble.them{background:#1C1F2E;border-radius:18px 18px 18px 4px}
-.msg-bubble.mine{background:linear-gradient(135deg,#FF6B4A,#E05535);border-radius:18px 18px 4px 18px}
+.bubble{max-width:60%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.6}
+.bubble.them{background:#1C1F2E;border-radius:18px 18px 18px 4px}
+.bubble.mine{background:linear-gradient(135deg,#FF6B4A,#E05535);border-radius:18px 18px 4px 18px}
 .msg-time{font-size:10px;color:#4A4D60;margin-top:3px}
-.chat-input{padding:14px 20px;border-top:1px solid #2A2D40;display:flex;gap:10px}
-.chat-inp{flex:1;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:14px;padding:11px 16px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none}
+.chat-foot{padding:13px 18px;border-top:1px solid #2A2D40;display:flex;gap:10px}
+.chat-inp{flex:1;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:14px;padding:10px 15px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none}
 .chat-inp:focus{border-color:#FF6B4A}
-
-/* FORM */
-.form-group{margin-bottom:18px}
-.form-label{font-size:11px;font-weight:700;color:#7B7F9E;letter-spacing:.8px;display:block;margin-bottom:7px;text-transform:uppercase}
-.form-inp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:12px 16px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none;transition:border .2s}
-.form-inp:focus{border-color:#FF6B4A}
-.form-inp::placeholder{color:#4A4D60}
-textarea.form-inp{resize:vertical;min-height:90px}
-select.form-inp option{background:#1C1F2E}
-
 /* TRACKING */
-.track-map{background:#070E08;border-radius:22px;border:1px solid #1D4A30;overflow:hidden;position:relative;height:420px}
-.track-info{display:flex;flex-direction:column;gap:12px}
-.tinfo-card{background:#13151F;border-radius:14px;padding:14px 16px;border:1px solid #2A2D40;display:flex;align-items:center;gap:12px}
-
+.track-map{background:#070E08;border-radius:20px;border:1px solid #1D4A30;position:relative;height:400px;overflow:hidden}
+/* SITTER CARDS */
+.sitter-card{background:#13151F;border:1px solid #2A2D40;border-radius:20px;padding:20px;cursor:pointer;transition:all .2s}
+.sitter-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.4)}
+.sitter-card.premium{border-color:rgba(240,192,96,.3)}
 /* MISC */
-.divider{height:1px;background:#2A2D40;margin:20px 0}
-.empty{text-align:center;padding:48px 20px;color:#7B7F9E;font-size:14px}
-.empty-icon{font-size:40px;display:block;margin-bottom:12px}
-.premium-badge{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
-.online-dot{width:8px;height:8px;border-radius:50%;background:#3DD68C;display:inline-block}
-.pulse{animation:pulse 2s infinite}
+.divider{height:1px;background:#2A2D40;margin:18px 0}
+.empty{text-align:center;padding:40px;color:#7B7F9E;font-size:14px}
+.empty-ico{font-size:38px;display:block;margin-bottom:10px}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 @keyframes ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.8);opacity:0}}
+.pulse{animation:pulse 2s infinite}
 .ping{animation:ping 1.3s cubic-bezier(0,0,.2,1) infinite}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.fade{animation:fadeIn .3s ease forwards}
-.loading{text-align:center;padding:40px;color:#7B7F9E}
-
-@media(max-width:768px){
-.sidebar{width:60px;padding:16px 8px}
-.s-logo,.s-role-badge,.s-item span,.s-uname,.s-urole,.s-logout{display:none}
-.s-item{padding:12px;justify-content:center}
-.main{padding:20px 16px}
-.grid2,.grid3,.grid4{grid-template-columns:1fr}
-.chat-wrap{grid-template-columns:1fr}
-.chat-list{display:none}
-.hero-cards{display:none}
+@media(max-width:700px){
+  .sidebar{width:56px;padding:14px 8px}
+  .s-logo,.s-role,.nav-item span:last-child,.s-uname,.s-urole,.logout-btn{display:none}
+  .nav-item{padding:12px;justify-content:center}
+  .main-area{padding:18px 14px}
+  .grid2,.grid3,.grid4{grid-template-columns:1fr}
+  .chat-wrap{grid-template-columns:1fr}
+  .chat-list{display:none}
 }
 </style>
-
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useEffect, useRef } = React;
 
-const SUPABASE_URL = ‘https://mxvzgngtgjovrzfktfhw.supabase.co’;
-const SUPABASE_KEY = ‘eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU’;
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<!-- AUTH -->
 
-// ── DEMO SITTERS ───────────────────────────────────────────
-const DEMO_SITTERS = [
-{id:‘d1’,name:‘Sophie M.’,location:‘Liège’,price:25,rating:4.9,reviews_count:87,bio:‘Passionnée par les animaux, je prends soin de vos chiens comme des miens.’,tags:[‘Petits chiens’,‘Chats’],available:true,premium:true},
-{id:‘d2’,name:‘Julien P.’,location:‘Namur’,price:22,rating:4.8,reviews_count:61,bio:‘Grand jardin privé, vos chiens adorent venir chez moi.’,tags:[‘Grands chiens’,‘Jardins’],available:true,premium:true},
-{id:‘d3’,name:‘Emma D.’,location:‘Charleroi’,price:30,rating:5.0,reviews_count:112,bio:‘Vétérinaire de formation, votre chien est entre de bonnes mains.’,tags:[‘Chiots’,‘Vétérinaire’],available:false,premium:true},
-{id:‘d4’,name:‘Lucas B.’,location:‘Mons’,price:20,rating:4.7,reviews_count:43,bio:‘Éducateur canin certifié, promenades et séjours adaptés.’,tags:[‘Éducation’,‘Grandes races’],available:true,premium:false},
-{id:‘d5’,name:‘Clara R.’,location:‘Verviers’,price:18,rating:4.6,reviews_count:29,bio:‘Disponible toute la journée grâce au télétravail.’,tags:[‘Petits chiens’,‘Chats’],available:true,premium:false},
-{id:‘d6’,name:‘Marc B.’,location:‘Arlon’,price:28,rating:4.9,reviews_count:74,bio:‘Compte-rendu quotidien photos/vidéos. Service premium.’,tags:[‘Service VIP’,‘Prestige’],available:false,premium:true},
-];
-
-const DEMO_MSGS = [
-{id:‘m1’,from:‘Sophie M.’,time:‘10:23’,preview:‘Votre réservation est confirmée ✅’,unread:2},
-{id:‘m2’,from:‘Julien P.’,time:‘Hier’,preview:‘Je peux accueillir Rex à partir de 9h’,unread:0},
-{id:‘m3’,from:‘Emma D.’,time:‘Lun’,preview:‘Rex a été super sage aujourd'hui 🐶’,unread:0},
-];
-const DEMO_CHAT = [
-{id:1,text:‘Bonjour ! Je suis disponible pour votre chien.’,mine:false,time:‘10:15’},
-{id:2,text:‘Super ! Il s'appelle Rex, 3 ans, très joueur. 🐕’,mine:true,time:‘10:17’},
-{id:3,text:‘Parfait ! Combien de sorties par jour ?’,mine:false,time:‘10:19’},
-{id:4,text:‘2-3 promenades idéalement.’,mine:true,time:‘10:20’},
-{id:5,text:‘Votre réservation est confirmée ✅’,mine:false,time:‘10:23’},
-];
-
-// ── HELPERS ────────────────────────────────────────────────
-const Stars = ({n=5,sz=13}) => (
-<span>{[1,2,3,4,5].map(i=><span key={i} style={{color:i<=Math.round(n)?’#F0C060’:’#333’,fontSize:sz}}>★</span>)}</span>
-);
-const Avatar = ({name=’?’,size=‘md’}) => {
-const sz = size===‘lg’?72:size===‘sm’?32:44;
-const fs = size===‘lg’?28:size===‘sm’?14:18;
-return <div className="avatar" style={{width:sz,height:sz,fontSize:fs}}>{(name||’?’)[0].toUpperCase()}</div>;
-};
-const Spinner = () => <div className="loading">⟳ Chargement…</div>;
-
-// ══════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════
-function AuthScreen({onAuth}) {
-const [mode, setMode] = useState(‘login’);
-const [role, setRole] = useState(’’);
-const [email, setEmail] = useState(’’);
-const [password, setPassword] = useState(’’);
-const [name, setName] = useState(’’);
-const [loading, setLoading] = useState(false);
-const [err, setErr] = useState(’’);
-
-async function handleSubmit() {
-setErr(’’); setLoading(true);
-try {
-if (mode === ‘login’) {
-const {data,error} = await sb.auth.signInWithPassword({email,password});
-if (error) throw error;
-const {data:profile} = await sb.from(‘profiles’).select(’*’).eq(‘user_id’,data.user.id).single();
-onAuth(data.user, profile);
-} else {
-if (!role) { setErr(‘Choisissez votre rôle’); setLoading(false); return; }
-if (!name) { setErr(‘Entrez votre prénom’); setLoading(false); return; }
-const {data,error} = await sb.auth.signUp({email,password});
-if (error) throw error;
-await sb.from(‘profiles’).insert({user_id:data.user.id,role,name,location:‘Belgique’});
-const {data:profile} = await sb.from(‘profiles’).select(’*’).eq(‘user_id’,data.user.id).single();
-onAuth(data.user, profile);
-}
-} catch(e) {
-setErr(e.message === ‘Invalid login credentials’ ? ‘Email ou mot de passe incorrect’ : e.message);
-}
-setLoading(false);
-}
-
-return (
-<div className="auth-wrap">
-<div className="auth-box fade">
-<div className="auth-logo">Dog<span>Link</span> 🐾</div>
-<div className="auth-sub">La plateforme de petsitting en Belgique</div>
-<div className="auth-tabs">
-<button className={`auth-tab${mode==='login'?' active':''}`} onClick={()=>setMode(‘login’)}>Se connecter</button>
-<button className={`auth-tab${mode==='register'?' active':''}`} onClick={()=>setMode(‘register’)}>S’inscrire</button>
-</div>
-
-```
-    {mode==='register' && <>
-      <div className="role-pick">
-        <button className={`role-btn${role==='owner'?' sel':''}`} onClick={()=>setRole('owner')}>
-          <span className="role-icon">🐕</span>
-          <span className="role-label">Propriétaire</span>
-          <span className="role-desc">Je cherche un petsitter</span>
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">Dog<span>Link</span> 🐾</div>
+    <div class="auth-sub">Petsitting Belgique</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="setMode('login')">Se connecter</button>
+      <button class="auth-tab" onclick="setMode('register')">S'inscrire</button>
+    </div>
+    <div id="register-fields" class="hidden">
+      <div class="role-grid">
+        <button class="role-btn" id="role-owner" onclick="selectRole('owner')">
+          <span class="role-icon">🐕</span>
+          <span class="role-label">Propriétaire</span>
+          <span class="role-desc">Je cherche un petsitter</span>
         </button>
-        <button className={`role-btn${role==='sitter'?' sel':''}`} onClick={()=>setRole('sitter')}>
-          <span className="role-icon">🐾</span>
-          <span className="role-label">Petsitteur</span>
-          <span className="role-desc">Je garde des chiens</span>
+        <button class="role-btn" id="role-sitter" onclick="selectRole('sitter')">
+          <span class="role-icon">🐾</span>
+          <span class="role-label">Petsitteur</span>
+          <span class="role-desc">Je garde des chiens</span>
         </button>
       </div>
-      <input className="inp" placeholder="Votre prénom" value={name} onChange={e=>setName(e.target.value)}/>
-    </>}
-
-    <input className="inp" type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}/>
-    <input className="inp" type="password" placeholder="Mot de passe" value={password} onChange={e=>setPassword(e.target.value)}
-      onKeyDown={e=>e.key==='Enter'&&handleSubmit()}/>
-    <button className="auth-btn" onClick={handleSubmit} disabled={loading}>
-      {loading ? '...' : mode==='login' ? 'Se connecter →' : 'Créer mon compte →'}
-    </button>
-    {err && <div className="auth-err">{err}</div>}
+      <input class="inp" id="auth-name" placeholder="Votre prénom">
+    </div>
+    <input class="inp" id="auth-email" type="email" placeholder="Email">
+    <input class="inp" id="auth-password" type="password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doAuth()">
+    <button class="auth-btn" id="auth-submit-btn" onclick="doAuth()">Se connecter →</button>
+    <div class="auth-err hidden" id="auth-err"></div>
   </div>
 </div>
+
+<!-- APP -->
+
+<div id="app-screen" class="hidden">
+  <aside class="sidebar">
+    <div class="s-logo">Dog<span>Link</span></div>
+    <div class="s-role" id="role-label"></div>
+    <nav class="s-nav" id="sidebar-nav"></nav>
+    <div class="s-user">
+      <div class="avatar" id="user-avatar">?</div>
+      <div>
+        <div class="s-uname" id="user-name">Utilisateur</div>
+        <div class="s-urole" id="user-role-display"></div>
+        <button class="logout-btn" onclick="doLogout()">Déconnexion</button>
+      </div>
+    </div>
+  </aside>
+  <main class="main-area" id="main-area"></main>
+</div>
+
+<script>
+const SUPA_URL = 'https://mxvzgngtgjovrzfktfhw.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null, currentProfile = null, currentRole = '', authMode = 'login';
+let trackInterval = null, trackIdx = 0;
+const trackPath = [[310,250],[332,228],[362,218],[392,238],[412,260],[402,292],[372,302],[342,286],[310,268]];
+
+const DEMO_SITTERS = [
+  {id:'d1',name:'Sophie M.',location:'Liège',price:25,rating:4.9,reviews_count:87,bio:'Passionnée par les animaux, je prends soin de vos chiens comme des miens.',tags:['Petits chiens','Chats'],available:true,premium:true},
+  {id:'d2',name:'Julien P.',location:'Namur',price:22,rating:4.8,reviews_count:61,bio:'Grand jardin privé, vos chiens adorent venir chez moi.',tags:['Grands chiens','Jardins'],available:true,premium:true},
+  {id:'d3',name:'Emma D.',location:'Charleroi',price:30,rating:5.0,reviews_count:112,bio:'Vétérinaire de formation, votre chien est entre de bonnes mains.',tags:['Chiots','Vétérinaire'],available:false,premium:true},
+  {id:'d4',name:'Lucas B.',location:'Mons',price:20,rating:4.7,reviews_count:43,bio:'Éducateur canin certifié.',tags:['Éducation','Grandes races'],available:true,premium:false},
+  {id:'d5',name:'Clara R.',location:'Verviers',price:18,rating:4.6,reviews_count:29,bio:'Disponible toute la journée grâce au télétravail.',tags:['Petits chiens','Chats'],available:true,premium:false},
+  {id:'d6',name:'Marc B.',location:'Arlon',price:28,rating:4.9,reviews_count:74,bio:'Compte-rendu quotidien photos/vidéos.',tags:['Service VIP'],available:false,premium:true},
+];
+
+// ── UTILS ──────────────────────────────────────
+function stars(n){return '★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
+function avatarLetter(name){return (name||'?')[0].toUpperCase();}
+function statusBadge(s){
+  const m={pending:['s-pending','En attente'],confirmed:['s-confirmed','Confirmée'],done:['s-done','Terminée'],cancelled:['s-cancelled','Annulée']};
+  return `<span class="status ${(m[s]||['s-done','?'])[0]}">${(m[s]||['','?'])[1]}</span>`;
+}
+
+// ── AUTH ──────────────────────────────────────
+function setMode(m){
+  authMode = m;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(m==='login'?i===0:i===1)));
+  document.getElementById('register-fields').classList.toggle('hidden', m==='login');
+  document.getElementById('auth-submit-btn').textContent = m==='login'?'Se connecter →':'Créer mon compte →';
+}
+function selectRole(r){
+  currentRole = r;
+  document.getElementById('role-owner').classList.toggle('sel', r==='owner');
+  document.getElementById('role-sitter').classList.toggle('sel', r==='sitter');
+}
+async function doAuth(){
+  const email = document.getElementById('auth-email').value.trim();
+  const pass = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-err');
+  const btn = document.getElementById('auth-submit-btn');
+  errEl.classList.add('hidden'); btn.textContent='...'; btn.disabled=true;
+  try {
+    if(authMode==='login'){
+      const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
+      if(error) throw error;
+      const {data:profile} = await sb.from('profiles').select('*').eq('user_id',data.user.id).single();
+      startApp(data.user, profile);
+    } else {
+      const name = document.getElementById('auth-name').value.trim();
+      if(!currentRole){throw{message:'Choisissez votre rôle'};}
+      if(!name){throw{message:'Entrez votre prénom'};}
+      const {data,error} = await sb.auth.signUp({email,password:pass});
+      if(error) throw error;
+      await sb.from('profiles').insert({user_id:data.user.id,role:currentRole,name,location:'Belgique'});
+      await new Promise(r=>setTimeout(r,800));
+      const {data:profile} = await sb.from('profiles').select('*').eq('user_id',data.user.id).single();
+      startApp(data.user, profile);
+    }
+  } catch(e){
+    errEl.textContent = e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message;
+    errEl.classList.remove('hidden');
+    btn.textContent = authMode==='login'?'Se connecter →':'Créer mon compte →';
+    btn.disabled=false;
+  }
+}
+function startApp(user, profile){
+  currentUser=user; currentProfile=profile;
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.remove('hidden');
+  document.getElementById('user-avatar').textContent = avatarLetter(profile?.name||user.email);
+  document.getElementById('user-name').textContent = profile?.name||'Utilisateur';
+  document.getElementById('user-role-display').textContent = profile?.role==='sitter'?'Petsitteur ✦':'Propriétaire 🐕';
+  document.getElementById('role-label').textContent = profile?.role==='sitter'?'PETSITTEUR':'PROPRIÉTAIRE';
+  document.getElementById('role-label').style.color = profile?.role==='sitter'?'#3DD68C':'#4D8EFF';
+  buildNav();
+  showPage(profile?.role==='sitter'?'sitter-dashboard':'owner-dashboard');
+}
+async function doLogout(){
+  await sb.auth.signOut();
+  if(trackInterval) clearInterval(trackInterval);
+  currentUser=currentProfile=null;
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('auth-screen').classList.remove('hidden');
+}
+
+// ── NAV ──────────────────────────────────────
+function buildNav(){
+  const role = currentProfile?.role;
+  const navItems = role==='sitter' ? [
+    {id:'sitter-dashboard',icon:'◈',label:'Tableau de bord'},
+    {id:'sitter-bookings',icon:'📅',label:'Réservations'},
+    {id:'messages',icon:'💬',label:'Messages',badge:2},
+    {id:'analytics',icon:'📊',label:'Analytics'},
+    {id:'sitter-profile',icon:'👤',label:'Mon profil'},
+    {id:'tracking',icon:'📡',label:'Suivi Live'},
+  ] : [
+    {id:'owner-dashboard',icon:'◈',label:'Accueil'},
+    {id:'sitters-list',icon:'🐾',label:'Petsitteurs'},
+    {id:'owner-reservations',icon:'📅',label:'Réservations'},
+    {id:'messages',icon:'💬',label:'Messages',badge:2},
+    {id:'tracking',icon:'📡',label:'Suivi Live'},
+    {id:'reviews',icon:'⭐',label:'Avis'},
+  ];
+  const nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = navItems.map(n=>`
+    <div class="nav-item" id="nav-${n.id}" onclick="showPage('${n.id}')">
+      <span style="font-size:17px;width:20px;text-align:center">${n.icon}</span>
+      <span>${n.label}</span>
+      ${n.badge?`<span class="nav-badge">${n.badge}</span>`:''}
+    </div>`).join('');
+}
+function showPage(id){
+  if(trackInterval){clearInterval(trackInterval);trackInterval=null;}
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const ni = document.getElementById('nav-'+id);
+  if(ni) ni.classList.add('active');
+  const main = document.getElementById('main-area');
+  main.innerHTML = '';
+  const pages = {
+    'owner-dashboard': renderOwnerDashboard,
+    'sitters-list': renderSittersList,
+    'owner-reservations': renderOwnerReservations,
+    'messages': renderMessages,
+    'tracking': renderTracking,
+    'reviews': renderReviews,
+    'sitter-dashboard': renderSitterDashboard,
+    'sitter-bookings': renderSitterBookings,
+    'analytics': renderAnalytics,
+    'sitter-profile': renderSitterProfile,
+  };
+  if(pages[id]) pages[id](main);
+}
+
+// ── OWNER DASHBOARD ──────────────────────────
+async function renderOwnerDashboard(el){
+  const {data:resa} = await sb.from('reservations').select('*').eq('owner_id',currentProfile?.id||'').order('created_at',{ascending:false});
+  const active = (resa||[]).filter(r=>r.status!=='done'&&r.status!=='cancelled');
+  el.innerHTML = `
+    <div class="page-title">Bonjour, ${currentProfile?.name||'là'} 👋</div>
+    <div class="page-sub">Bienvenue sur DogLink Belgique</div>
+    <div class="grid4" style="margin-bottom:20px">
+      <div class="card"><div style="font-size:24px">📅</div><div class="stat-val" style="color:#4D8EFF">${active.length}</div><div class="stat-lbl">Réservations actives</div></div>
+      <div class="card"><div style="font-size:24px">🐾</div><div class="stat-val" style="color:#3DD68C">${DEMO_SITTERS.filter(s=>s.available).length}</div><div class="stat-lbl">Petsitteurs disponibles</div></div>
+      <div class="card"><div style="font-size:24px">💬</div><div class="stat-val" style="color:#FF6B4A">2</div><div class="stat-lbl">Messages non lus</div></div>
+      <div class="card"><div style="font-size:24px">⭐</div><div class="stat-val" style="color:#F0C060">4.9</div><div class="stat-lbl">Note moyenne</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:16px">Prochaines réservations</div>
+        ${active.length===0?`<div class="empty"><span class="empty-ico">📅</span>Aucune réservation<br><br><button class="btn btn-primary btn-sm" onclick="showPage('sitters-list')">Trouver un petsitteur</button></div>`
+        :active.slice(0,3).map(r=>`
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #2A2D40">
+            <div class="avatar">${avatarLetter(r.sitter_name||'S')}</div>
+            <div style="flex:1"><div style="font-weight:600;font-size:14px">${r.sitter_name||'Petsitteur'}</div><div style="color:#7B7F9E;font-size:12px">${r.type} · ${r.start_date}</div></div>
+            ${statusBadge(r.status)}
+          </div>`).join('')}
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,#0D2A1A,#0A1A12);border:1px solid #1D4A30;cursor:pointer" onclick="showPage('tracking')">
+        <div style="color:#3DD68C;font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+          <span class="online-dot pulse"></span>SUIVI EN DIRECT
+        </div>
+        <div style="font-weight:800;font-size:20px;margin-bottom:6px">Rex est en promenade</div>
+        <div style="color:#6BBF8A;font-size:13px;margin-bottom:20px">Dernière mise à jour il y a 2 min</div>
+        <button class="btn btn-green btn-sm">Voir le suivi →</button>
+      </div>
+    </div>`;
+}
+
+// ── SITTERS LIST ──────────────────────────────
+function renderSittersList(el){
+  el.innerHTML = `
+    <div class="page-title">Petsitteurs</div>
+    <div class="page-sub">${DEMO_SITTERS.length} professionnels en Belgique</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+      <input id="search-inp" class="form-inp" placeholder="Rechercher..." style="width:200px;margin:0" oninput="filterSitters()">
+      <button class="btn btn-outline btn-sm" id="flt-all" onclick="setSitterFilter('all')" style="border-color:#FF6B4A;color:#FF6B4A">Tous</button>
+      <button class="btn btn-outline btn-sm" id="flt-avail" onclick="setSitterFilter('available')">● Disponibles</button>
+      <button class="btn btn-outline btn-sm" id="flt-prem" onclick="setSitterFilter('premium')">✦ Premium</button>
+    </div>
+    <div class="grid3" id="sitters-grid"></div>`;
+  renderSittersGrid('all','');
+}
+let sitFilter='all';
+function setSitterFilter(f){
+  sitFilter=f;
+  ['all','avail','prem'].forEach(x=>{
+    const b=document.getElementById('flt-'+x);
+    if(b){b.style.borderColor=(x===f||('all'===f&&x==='all')||('available'===f&&x==='avail')||('premium'===f&&x==='prem'))?'#FF6B4A':'#2A2D40';b.style.color=(x===f||('all'===f&&x==='all')||('available'===f&&x==='avail')||('premium'===f&&x==='prem'))?'#FF6B4A':'#EEE9FF';}
+  });
+  filterSitters();
+}
+function filterSitters(){
+  const q=(document.getElementById('search-inp')?.value||'').toLowerCase();
+  renderSittersGrid(sitFilter,q);
+}
+function renderSittersGrid(filter,q){
+  const grid=document.getElementById('sitters-grid');
+  if(!grid)return;
+  const filtered=DEMO_SITTERS.filter(s=>(filter==='all'||(filter==='available'&&s.available)||(filter==='premium'&&s.premium))&&(s.name.toLowerCase().includes(q)||s.location.toLowerCase().includes(q)));
+  grid.innerHTML=filtered.map(s=>`
+    <div class="sitter-card${s.premium?' premium':''}" onclick="showSitterDetail('${s.id}')">
+      ${s.premium?'<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><span class="premium-badge">✦ PREMIUM</span></div>':''}
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div class="avatar" style="width:50px;height:50px;font-size:20px">${avatarLetter(s.name)}</div>
+        <div><div style="font-weight:700;font-size:15px">${s.name}</div><div style="color:#7B7F9E;font-size:12px">📍 ${s.location}</div></div>
+      </div>
+      <p style="color:#7B7F9E;font-size:13px;line-height:1.6;margin-bottom:12px">${s.bio.slice(0,70)}…</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2A2D40;padding-top:12px">
+        <div><span class="stars">${stars(s.rating)}</span> <b style="font-size:13px">${s.rating}</b> <span style="color:#7B7F9E;font-size:12px">(${s.reviews_count})</span></div>
+        <div><span style="font-weight:800;font-size:18px">${s.price}€</span><span style="color:#7B7F9E;font-size:12px">/j</span></div>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:6px">
+        <span class="online-dot" style="background:${s.available?'#3DD68C':'#555'}"></span>
+        <span style="font-size:12px;color:${s.available?'#3DD68C':'#7B7F9E'};font-weight:600">${s.available?'Disponible':'Occupé'}</span>
+      </div>
+    </div>`).join('');
+}
+function showSitterDetail(id){
+  const s=DEMO_SITTERS.find(x=>x.id===id);
+  if(!s)return;
+  const main=document.getElementById('main-area');
+  main.innerHTML=`
+    <button onclick="showPage('sitters-list')" style="background:none;border:none;cursor:pointer;color:#7B7F9E;font-size:14px;margin-bottom:20px;display:flex;align-items:center;gap:6px;font-family:inherit">← Retour</button>
+    <div class="grid2" style="align-items:start">
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px">
+            <div class="avatar avatar-lg">${avatarLetter(s.name)}</div>
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+                <span style="font-family:Fraunces,serif;font-size:22px;font-weight:300">${s.name}</span>
+                ${s.premium?'<span class="premium-badge">✦ PREMIUM</span>':''}
+              </div>
+              <div style="color:#7B7F9E;font-size:13px;margin-bottom:6px">📍 ${s.location}</div>
+              <div><span class="stars">${stars(s.rating)}</span> <b>${s.rating}</b> <span style="color:#7B7F9E;font-size:13px">· ${s.reviews_count} avis</span></div>
+            </div>
+          </div>
+          <p style="color:#AAA;line-height:1.8;margin-bottom:16px">${s.bio}</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="card">
+          <div style="font-weight:700;margin-bottom:14px">Services & tarifs</div>
+          ${[['🏠','Garde à domicile',s.price+'€/j'],['🦮','Promenade','15€/sortie'],['🌙','Hébergement nuit',(s.price+8)+'€/nuit'],['🎓','Éducation','30€/séance']].map(([ic,lbl,p],i)=>`
+            <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:${i<3?'1px solid #2A2D40':'none'}">
+              <span style="font-size:14px">${ic} ${lbl}</span>
+              <span style="font-weight:700;color:#F0C060">${p}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="card" style="position:sticky;top:20px">
+        <div style="font-weight:800;font-size:22px;margin-bottom:4px">${s.price}€<span style="font-weight:400;font-size:13px;color:#7B7F9E">/jour</span></div>
+        <div style="color:${s.available?'#3DD68C':'#888'};font-size:13px;font-weight:700;margin-bottom:20px">${s.available?'✓ Disponible':'✗ Non disponible'}</div>
+        <div id="book-form">
+          <label class="form-label">Nom de votre chien</label>
+          <input class="form-inp" id="book-dog" placeholder="Rex...">
+          <label class="form-label">Type de service</label>
+          <select class="form-inp" id="book-type">
+            <option>Garde à domicile</option><option>Promenade</option><option>Hébergement nuit</option><option>Éducation</option>
+          </select>
+          <label class="form-label">Date de début</label>
+          <input type="date" class="form-inp" id="book-start">
+          <label class="form-label">Date de fin</label>
+          <input type="date" class="form-inp" id="book-end">
+          <label class="form-label">Notes (optionnel)</label>
+          <textarea class="form-inp" id="book-notes" placeholder="Infos sur votre chien..."></textarea>
+
+```
+      <button class="btn btn-primary btn-full" onclick="doBook('${s.id}','${s.name}',${s.price})" style="margin-bottom:10px">Réserver maintenant</button>
+      <button class="btn btn-outline btn-full" onclick="showPage('messages')">Envoyer un message</button>
+    </div>
+    <div id="book-success" class="hidden" style="text-align:center;padding:20px;color:#3DD68C;font-weight:700">🎉 Réservation envoyée !</div>
+  </div>
+</div>`;
 ```
 
-);
+}
+async function doBook(sitterId,sitterName,price){
+const dog=document.getElementById(‘book-dog’).value.trim();
+const type=document.getElementById(‘book-type’).value;
+const start=document.getElementById(‘book-start’).value;
+const end=document.getElementById(‘book-end’).value;
+const notes=document.getElementById(‘book-notes’).value;
+if(!dog||!start||!end){alert(‘Remplissez tous les champs.’);return;}
+const days=Math.max(1,Math.ceil((new Date(end)-new Date(start))/(86400000)));
+await sb.from(‘reservations’).insert({sitter_id:sitterId,owner_id:currentProfile?.id,sitter_name:sitterName,dog_name:dog,type,start_date:start,end_date:end,notes,price:price*days,status:‘pending’});
+document.getElementById(‘book-form’).classList.add(‘hidden’);
+document.getElementById(‘book-success’).classList.remove(‘hidden’);
+setTimeout(()=>showPage(‘owner-reservations’),2000);
 }
 
-// ══════════════════════════════════════════════
-// OWNER APP
-// ══════════════════════════════════════════════
-function OwnerApp({user, profile, onLogout}) {
-const [tab, setTab] = useState(‘dashboard’);
-const [selSitter, setSelSitter] = useState(null);
-const [reservations, setReservations] = useState([]);
-const [unread, setUnread] = useState(2);
-
-useEffect(()=>{loadReservations();},[]);
-
-async function loadReservations() {
-const {data} = await sb.from(‘reservations’).select(’*’).eq(‘owner_id’, profile?.id).order(‘created_at’,{ascending:false});
-setReservations(data || []);
+// ── OWNER RESERVATIONS ────────────────────────
+async function renderOwnerReservations(el){
+const {data} = await sb.from(‘reservations’).select(’*’).eq(‘owner_id’,currentProfile?.id||’’).order(‘created_at’,{ascending:false});
+const resa = data||[];
+el.innerHTML=` <div class="page-title">Mes réservations</div> <div class="page-sub">${resa.length} réservation(s)</div> ${resa.length===0?`<div class="card"><div class="empty"><span class="empty-ico">📅</span>Aucune réservation<br><br><button class="btn btn-primary btn-sm" onclick="showPage('sitters-list')">Trouver un petsitteur</button></div></div>`: resa.map(r=>`
+<div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+<div class="avatar">${avatarLetter(r.sitter_name||‘S’)}</div>
+<div style="flex:1">
+<div style="font-weight:700;font-size:15px;margin-bottom:3px">${r.sitter_name||‘Petsitteur’}</div>
+<div style="color:#7B7F9E;font-size:13px">${r.type} · ${r.dog_name} · ${r.start_date}${r.end_date&&r.end_date!==r.start_date?’ → ‘+r.end_date:’’}</div>
+</div>
+<div style="text-align:right"><div style="font-weight:800;font-size:18px;margin-bottom:6px">${r.price}€</div>${statusBadge(r.status)}</div>
+</div>`).join('')} <div style="margin-top:18px;background:rgba(255,107,74,.06);border-radius:20px;padding:22px;border:1px solid rgba(255,107,74,.2)"> <div style="font-weight:700;margin-bottom:6px">+ Nouvelle réservation</div> <div style="color:#7B7F9E;font-size:13px;margin-bottom:14px">Planifiez une garde, promenade ou hébergement.</div> <button class="btn btn-primary btn-sm" onclick="showPage('sitters-list')">Trouver un petsitteur</button> </div>`;
 }
 
-const nav = [
-{id:‘dashboard’,icon:‘◈’,label:‘Accueil’},
-{id:‘sitters’,icon:‘🐾’,label:‘Petsitteurs’},
-{id:‘reservations’,icon:‘📅’,label:‘Réservations’},
-{id:‘messages’,icon:‘💬’,label:‘Messages’,badge:unread},
-{id:‘tracking’,icon:‘📡’,label:‘Suivi Live’},
-{id:‘reviews’,icon:‘⭐’,label:‘Avis’},
-];
-
-return (
-<div className="app">
-<aside className="sidebar">
-<div className="s-logo">Dog<span>Link</span></div>
-<div className=“s-role-badge” style={{color:’#4D8EFF’}}>PROPRIÉTAIRE</div>
-<nav className="s-nav">
-{nav.map(n=>(
-<div key={n.id} className={`s-item${tab===n.id?' act':''}`} onClick={()=>{setTab(n.id);setSelSitter(null)}}>
-<span style={{fontSize:17,width:20,textAlign:‘center’}}>{n.icon}</span>
-<span>{n.label}</span>
-{n.badge?<span className="s-badge">{n.badge}</span>:null}
-</div>
-))}
-</nav>
-<div className="s-user">
-<div className="s-avatar">{(profile?.name||user.email)[0].toUpperCase()}</div>
-<div>
-<div className="s-uname">{profile?.name||‘Utilisateur’}</div>
-<div className="s-urole">Propriétaire</div>
-<button className="s-logout" onClick={onLogout}>Déconnexion</button>
-</div>
-</div>
-</aside>
-<main className="main fade">
-{tab===‘dashboard’ && <OwnerDashboard profile={profile} reservations={reservations} setTab={setTab}/>}
-{tab===‘sitters’ && !selSitter && <SittersList onSelect={setSelSitter}/>}
-{tab===‘sitters’ && selSitter && <SitterDetail sitter={selSitter} back={()=>setSelSitter(null)} profile={profile} onBooked={loadReservations} setTab={setTab}/>}
-{tab===‘reservations’ && <OwnerReservations reservations={reservations} setTab={setTab}/>}
-{tab===‘messages’ && <Messages profile={profile} onRead={()=>setUnread(0)}/>}
-{tab===‘tracking’ && <Tracking/>}
-{tab===‘reviews’ && <ReviewsList/>}
-</main>
-</div>
-);
+// ── SITTER DASHBOARD ──────────────────────────
+async function renderSitterDashboard(el){
+const {data} = await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,currentProfile?.id||’’).order(‘created_at’,{ascending:false});
+const resa=data||[];
+const pending=resa.filter(r=>r.status===‘pending’);
+const confirmed=resa.filter(r=>r.status===‘confirmed’);
+const revenue=resa.filter(r=>r.status===‘done’).reduce((s,r)=>s+(r.price||0),0);
+el.innerHTML=` <div class="page-title">Bienvenue, ${currentProfile?.name||'Petsitteur'} 🐾</div> <div class="page-sub">Votre tableau de bord</div> <div class="grid4" style="margin-bottom:20px"> <div class="card"><div style="font-size:24px">📬</div><div class="stat-val" style="color:#F0C060">${pending.length}</div><div class="stat-lbl">Demandes en attente</div></div> <div class="card"><div style="font-size:24px">📅</div><div class="stat-val" style="color:#4D8EFF">${confirmed.length}</div><div class="stat-lbl">Réservations actives</div></div> <div class="card"><div style="font-size:24px">💰</div><div class="stat-val" style="color:#3DD68C">${revenue}€</div><div class="stat-lbl">Revenus totaux</div></div> <div class="card"><div style="font-size:24px">⭐</div><div class="stat-val" style="color:#FF6B4A">5.0</div><div class="stat-lbl">Note moyenne</div></div> </div> ${pending.length>0?`
+<div class="card" style="margin-bottom:16px;border-color:rgba(240,192,96,.3)">
+<div style="font-weight:700;margin-bottom:14px;color:#F0C060">📬 Nouvelles demandes (${pending.length})</div>
+${pending.map(r=>` <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #2A2D40"> <div class="avatar">${avatarLetter(r.dog_name||'C')}</div> <div style="flex:1"> <div style="font-weight:600;font-size:14px">${r.dog_name||'Chien'}</div> <div style="color:#7B7F9E;font-size:12px">${r.type} · ${r.start_date}${r.end_date?' → '+r.end_date:''} · ${r.price}€</div> ${r.notes?`<div style="color:#7B7F9E;font-size:12px">${r.notes}</div>`:''} </div> <button class="btn btn-green btn-sm" onclick="updateResa('${r.id}','confirmed')">✓ Accepter</button> <button class="btn btn-sm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updateResa('${r.id}','cancelled')">✗ Refuser</button> </div>`).join(’’)}
+</div>`:''} <div class="grid2"> <div class="card"> <div style="font-weight:700;margin-bottom:14px">Mon profil public</div> <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"> <div class="avatar avatar-lg">${avatarLetter(currentProfile?.name)}</div> <div> <div style="font-weight:700;font-size:16px">${currentProfile?.name||'Votre nom'}</div> <div style="color:#7B7F9E;font-size:13px">📍 ${currentProfile?.location||'Belgique'}</div> <span class="stars">★★★★★</span> </div> </div> <p style="color:#7B7F9E;font-size:13px;line-height:1.7;margin-bottom:14px">${currentProfile?.bio||'Ajoutez une bio dans votre profil.'}</p> <button class="btn btn-outline btn-sm" onclick="showPage('sitter-profile')">Modifier le profil →</button> </div> <div class="card"> <div style="font-weight:700;margin-bottom:14px">Conseils pour réussir</div> ${['Complétez votre profil à 100%','Répondez aux demandes rapidement','Envoyez des photos à chaque promenade','Demandez des avis après chaque garde'].map((t,i)=>`
+<div style="display:flex;gap:10px;padding:10px 0;border-bottom:${i<3?'1px solid #2A2D40':'none'};font-size:13px">
+<span style="color:#3DD68C;font-weight:700">${i+1}.</span>
+<span style="color:#AAA">${t}</span>
+</div>`).join('')} </div> </div>`;
 }
 
-function OwnerDashboard({profile, reservations, setTab}) {
-const active = reservations.filter(r=>r.status!==‘done’&&r.status!==‘cancelled’);
-return (
-<div>
-<div className="page-title">Bonjour, {profile?.name||‘là’} 👋</div>
-<div className="page-sub">Bienvenue sur DogLink Belgique</div>
-<div className="grid4" style={{marginBottom:24}}>
-{[
-{label:‘Réservations actives’,val:active.length,icon:‘📅’,col:’#4D8EFF’},
-{label:‘Petsitteurs disponibles’,val:DEMO_SITTERS.filter(s=>s.available).length,icon:‘🐾’,col:’#3DD68C’},
-{label:‘Messages non lus’,val:2,icon:‘💬’,col:’#FF6B4A’},
-{label:‘Avis laissés’,val:reservations.filter(r=>r.status===‘done’).length,icon:‘⭐’,col:’#F0C060’},
-].map((s,i)=>(
-<div key={i} className="card">
-<div style={{fontSize:26}}>{s.icon}</div>
-<div className="stat-val" style={{color:s.col}}>{s.val}</div>
-<div className="stat-lbl">{s.label}</div>
+// ── SITTER BOOKINGS ───────────────────────────
+async function renderSitterBookings(el){
+const {data} = await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,currentProfile?.id||’’).order(‘created_at’,{ascending:false});
+const resa=data||[];
+el.innerHTML=` <div class="page-title">Mes réservations</div> <div class="page-sub">${resa.length} réservation(s)</div> ${resa.length===0?`<div class="card"><div class="empty"><span class="empty-ico">📅</span>Aucune réservation pour l’instant.<br>Partagez votre profil pour attirer des clients !</div></div>`: resa.map(r=>`
+<div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+<div class="avatar">${avatarLetter(r.dog_name||‘C’)}</div>
+<div style="flex:1">
+<div style="font-weight:700;font-size:15px;margin-bottom:3px">${r.dog_name||‘Chien’}</div>
+<div style="color:#7B7F9E;font-size:13px">${r.type} · ${r.start_date}${r.end_date&&r.end_date!==r.start_date?’ → ‘+r.end_date:’’}</div>
+${r.notes?`<div style="color:#7B7F9E;font-size:12px;margin-top:2px">Note : ${r.notes}</div>`:’’}
 </div>
-))}
+<div style="text-align:right;margin-right:10px">
+<div style="font-weight:800;font-size:18px;margin-bottom:6px">${r.price}€</div>
+${statusBadge(r.status)}
 </div>
-<div className="grid2">
-<div className="card">
-<div style={{fontWeight:700,marginBottom:18}}>Prochaines réservations</div>
-{active.length===0 ? (
-<div className="empty">
-<span className="empty-icon">📅</span>
-Aucune réservation active
-<br/><br/>
-<button className=“btn btn-primary btn-sm” onClick={()=>setTab(‘sitters’)}>Trouver un petsitteur</button>
-</div>
-) : active.slice(0,3).map(r=>(
-<div key={r.id} style={{display:‘flex’,alignItems:‘center’,gap:14,padding:‘12px 0’,borderBottom:‘1px solid #2A2D40’}}>
-<Avatar name={r.sitter_name||‘S’}/>
-<div style={{flex:1}}>
-<div style={{fontWeight:600,fontSize:14}}>{r.sitter_name||‘Petsitteur’}</div>
-<div style={{color:’#7B7F9E’,fontSize:12}}>{r.type} · {r.start_date}</div>
-</div>
-<span className={`status status-${r.status}`}>{r.status===‘pending’?‘En attente’:r.status===‘confirmed’?‘Confirmée’:‘Terminée’}</span>
-</div>
-))}
-</div>
-<div onClick={()=>setTab(‘tracking’)} style={{background:‘linear-gradient(135deg,#0D2A1A,#0A1A12)’,borderRadius:20,padding:28,border:‘1px solid #1D4A30’,cursor:‘pointer’,position:‘relative’,overflow:‘hidden’}}>
-<div style={{position:‘absolute’,top:-30,right:-30,fontSize:100,opacity:.05}}>🐕</div>
-<div style={{color:’#3DD68C’,fontSize:12,fontWeight:700,marginBottom:8,display:‘flex’,alignItems:‘center’,gap:6}}>
-<span className="online-dot pulse"/>SUIVI EN DIRECT
-</div>
-<div style={{fontWeight:800,fontSize:20,marginBottom:6}}>Rex est en bonne santé</div>
-<div style={{color:’#6BBF8A’,fontSize:13,marginBottom:20}}>Dernière promenade il y a 12 min</div>
-<button className="btn btn-green btn-sm">Voir le suivi →</button>
-</div>
-</div>
-</div>
-);
+${r.status===‘pending’?` <div style="display:flex;flex-direction:column;gap:8px"> <button class="btn btn-green btn-sm" onclick="updateResa('${r.id}','confirmed')">✓ Accepter</button> <button class="btn btn-sm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updateResa('${r.id}','cancelled')">✗ Refuser</button> </div>`:’’}
+${r.status===‘confirmed’?`<button class="btn btn-sm" style="background:rgba(61,214,140,.12);color:#3DD68C;border:1px solid rgba(61,214,140,.3)" onclick="updateResa('${r.id}','done')">✓ Terminé</button>`:’’}
+</div>`).join('')}`;
 }
-
-function SittersList({onSelect}) {
-const [filter, setFilter] = useState(‘all’);
-const [search, setSearch] = useState(’’);
-const filtered = DEMO_SITTERS.filter(s=>
-(filter===‘all’||(filter===‘available’&&s.available)||(filter===‘premium’&&s.premium))&&
-(s.name.toLowerCase().includes(search.toLowerCase())||s.location.toLowerCase().includes(search.toLowerCase()))
-);
-return (
-<div>
-<div className="page-title">Petsitteurs</div>
-<div className="page-sub">{filtered.length} professionnels en Belgique</div>
-<div style={{display:‘flex’,gap:10,marginBottom:24,flexWrap:‘wrap’}}>
-<input className=“form-inp” placeholder=“Rechercher…” value={search} onChange={e=>setSearch(e.target.value)} style={{width:220}}/>
-{[‘all’,‘available’,‘premium’].map(f=>(
-<button key={f} onClick={()=>setFilter(f)} className=“btn btn-outline btn-sm”
-style={filter===f?{borderColor:’#FF6B4A’,color:’#FF6B4A’}:{}}>
-{f===‘all’?‘Tous’:f===‘available’?‘● Disponibles’:‘✦ Premium’}
-</button>
-))}
-</div>
-<div className="grid3">
-{filtered.map(s=>(
-<div key={s.id} className={`sitter-card${s.premium?' premium':''}`} onClick={()=>onSelect(s)}>
-{s.premium&&<div style={{display:‘flex’,justifyContent:‘flex-end’,marginBottom:10}}><span className="premium-badge">✦ PREMIUM</span></div>}
-<div style={{display:‘flex’,gap:14,alignItems:‘center’,marginBottom:14}}>
-<Avatar name={s.name}/>
-<div>
-<div style={{fontWeight:700,fontSize:15}}>{s.name}</div>
-<div style={{color:’#7B7F9E’,fontSize:12}}>📍 {s.location}</div>
-</div>
-</div>
-<p style={{color:’#7B7F9E’,fontSize:13,lineHeight:1.6,marginBottom:14,minHeight:40}}>{s.bio.slice(0,70)}…</p>
-<div style={{display:‘flex’,gap:6,flexWrap:‘wrap’,marginBottom:14}}>
-{s.tags.map(t=><span key={t} className="tag">{t}</span>)}
-</div>
-<div style={{display:‘flex’,justifyContent:‘space-between’,alignItems:‘center’,borderTop:‘1px solid #2A2D40’,paddingTop:12}}>
-<div style={{display:‘flex’,alignItems:‘center’,gap:7}}>
-<Stars n={s.rating}/><b style={{fontSize:14}}>{s.rating}</b>
-<span style={{color:’#7B7F9E’,fontSize:12}}>({s.reviews_count})</span>
-</div>
-<div><span style={{fontWeight:800,fontSize:18}}>{s.price}€</span><span style={{color:’#7B7F9E’,fontSize:12}}>/j</span></div>
-</div>
-<div style={{marginTop:10,display:‘flex’,alignItems:‘center’,gap:6}}>
-<span className=“online-dot” style={{background:s.available?’#3DD68C’:’#555’}}/>
-<span style={{fontSize:12,color:s.available?’#3DD68C’:’#7B7F9E’,fontWeight:600}}>{s.available?‘Disponible’:‘Occupé’}</span>
-</div>
-</div>
-))}
-</div>
-</div>
-);
-}
-
-function SitterDetail({sitter, back, profile, onBooked, setTab}) {
-const [start, setStart] = useState(’’);
-const [end, setEnd] = useState(’’);
-const [type, setType] = useState(‘Garde à domicile’);
-const [dog, setDog] = useState(’’);
-const [notes, setNotes] = useState(’’);
-const [loading, setLoading] = useState(false);
-const [success, setSuccess] = useState(false);
-
-async function book() {
-if (!start||!end||!dog) return;
-setLoading(true);
-const days = Math.max(1, Math.ceil((new Date(end)-new Date(start))/(1000*60*60*24)));
-const price = sitter.price * days;
-await sb.from(‘reservations’).insert({
-sitter_id: sitter.id,
-owner_id: profile?.id,
-sitter_name: sitter.name,
-dog_name: dog,
-start_date: start,
-end_date: end,
-type,
-notes,
-price,
-status: ‘pending’
-});
-setSuccess(true);
-setLoading(false);
-onBooked();
-setTimeout(()=>{setSuccess(false);setTab(‘reservations’);},2000);
-}
-
-return (
-<div>
-<button onClick={back} style={{background:‘none’,border:‘none’,cursor:‘pointer’,color:’#7B7F9E’,fontSize:14,marginBottom:22,display:‘flex’,alignItems:‘center’,gap:6}}>← Retour</button>
-<div className=“grid2” style={{alignItems:‘start’}}>
-<div>
-<div className="card" style={{marginBottom:18}}>
-<div style={{display:‘flex’,alignItems:‘center’,gap:20,marginBottom:20}}>
-<Avatar name={sitter.name} size="lg"/>
-<div>
-<div style={{display:‘flex’,alignItems:‘center’,gap:10,marginBottom:4}}>
-<span style={{fontFamily:‘Fraunces,serif’,fontSize:24,fontWeight:300}}>{sitter.name}</span>
-{sitter.premium&&<span className="premium-badge">✦ PREMIUM</span>}
-</div>
-<div style={{color:’#7B7F9E’,fontSize:13,marginBottom:8}}>📍 {sitter.location}</div>
-<div style={{display:‘flex’,alignItems:‘center’,gap:8}}>
-<Stars n={sitter.rating} sz={15}/><b>{sitter.rating}</b>
-<span style={{color:’#7B7F9E’,fontSize:13}}>· {sitter.reviews_count} avis</span>
-</div>
-</div>
-</div>
-<p style={{color:’#AAA’,lineHeight:1.8,marginBottom:18}}>{sitter.bio}</p>
-<div style={{display:‘flex’,gap:8,flexWrap:‘wrap’}}>
-{sitter.tags.map(t=><span key={t} className="tag">{t}</span>)}
-</div>
-</div>
-<div className="card">
-<div style={{fontWeight:700,marginBottom:16}}>Services & tarifs</div>
-{[[‘🏠’,‘Garde à domicile’,`${sitter.price}€/j`],[‘🦮’,‘Promenade’,‘15€/sortie’],[‘🌙’,‘Hébergement nuit’,`${sitter.price+8}€/nuit`],[‘🎓’,‘Éducation’,‘30€/séance’]].map(([ic,lbl,p],i)=>(
-<div key={i} style={{display:‘flex’,justifyContent:‘space-between’,padding:‘11px 0’,borderBottom:i<3?‘1px solid #2A2D40’:‘none’}}>
-<span style={{fontSize:14}}>{ic} {lbl}</span>
-<span style={{fontWeight:700,color:’#F0C060’}}>{p}</span>
-</div>
-))}
-</div>
-</div>
-<div className=“card” style={{position:‘sticky’,top:20}}>
-<div style={{fontWeight:800,fontSize:24,marginBottom:4}}>{sitter.price}€<span style={{fontWeight:400,fontSize:14,color:’#7B7F9E’}}>/jour</span></div>
-<div style={{color:sitter.available?’#3DD68C’:’#888’,fontSize:13,fontWeight:700,marginBottom:22}}>{sitter.available?‘✓ Disponible’:‘✗ Non disponible’}</div>
-{success ? (
-<div style={{textAlign:‘center’,padding:20,color:’#3DD68C’,fontWeight:700}}>🎉 Réservation envoyée !</div>
-) : <>
-<div className="form-group">
-<label className="form-label">Nom de votre chien</label>
-<input className=“form-inp” placeholder=“Rex…” value={dog} onChange={e=>setDog(e.target.value)}/>
-</div>
-<div className="form-group">
-<label className="form-label">Type de service</label>
-<select className=“form-inp” value={type} onChange={e=>setType(e.target.value)}>
-<option>Garde à domicile</option>
-<option>Promenade</option>
-<option>Hébergement nuit</option>
-<option>Éducation</option>
-</select>
-</div>
-<div className="form-group">
-<label className="form-label">Date de début</label>
-<input type=“date” className=“form-inp” value={start} onChange={e=>setStart(e.target.value)}/>
-</div>
-<div className="form-group">
-<label className="form-label">Date de fin</label>
-<input type=“date” className=“form-inp” value={end} onChange={e=>setEnd(e.target.value)}/>
-</div>
-<div className="form-group">
-<label className="form-label">Notes (optionnel)</label>
-<textarea className=“form-inp” placeholder=“Informations sur votre chien…” value={notes} onChange={e=>setNotes(e.target.value)}/>
-</div>
-<button className="btn btn-primary btn-full" onClick={book} disabled={loading||!start||!end||!dog} style={{marginBottom:10}}>
-{loading?‘Envoi…’:‘Réserver maintenant’}
-</button>
-<button className="btn btn-outline btn-full">Envoyer un message</button>
-</>}
-</div>
-</div>
-</div>
-);
-}
-
-function OwnerReservations({reservations, setTab}) {
-const statusLabel = {pending:‘En attente’,confirmed:‘Confirmée’,done:‘Terminée’,cancelled:‘Annulée’};
-return (
-<div>
-<div className="page-title">Mes réservations</div>
-<div className="page-sub">{reservations.length} réservation(s)</div>
-{reservations.length===0 ? (
-<div className="card"><div className="empty"><span className="empty-icon">📅</span>Aucune réservation pour l’instant.<br/><br/>
-<button className=“btn btn-primary btn-sm” onClick={()=>setTab(‘sitters’)}>Trouver un petsitteur</button>
-</div></div>
-) : (
-<div style={{display:‘flex’,flexDirection:‘column’,gap:14}}>
-{reservations.map(r=>(
-<div key={r.id} className=“card” style={{display:‘flex’,alignItems:‘center’,gap:18}}>
-<Avatar name={r.sitter_name||‘S’}/>
-<div style={{flex:1}}>
-<div style={{fontWeight:700,fontSize:15,marginBottom:3}}>{r.sitter_name||‘Petsitteur’}</div>
-<div style={{color:’#7B7F9E’,fontSize:13}}>{r.type} · {r.dog_name} · {r.start_date}{r.end_date&&r.end_date!==r.start_date?` → ${r.end_date}`:’’}</div>
-</div>
-<div style={{textAlign:‘right’}}>
-<div style={{fontWeight:800,fontSize:18,marginBottom:6}}>{r.price}€</div>
-<span className={`status status-${r.status}`}>{statusLabel[r.status]||r.status}</span>
-</div>
-</div>
-))}
-</div>
-)}
-<div style={{marginTop:22,background:‘rgba(255,107,74,.06)’,borderRadius:20,padding:24,border:‘1px solid rgba(255,107,74,.2)’}}>
-<div style={{fontWeight:700,marginBottom:6}}>+ Nouvelle réservation</div>
-<div style={{color:’#7B7F9E’,fontSize:13,marginBottom:14}}>Planifiez une garde, une promenade ou un hébergement.</div>
-<button className=“btn btn-primary btn-sm” onClick={()=>setTab(‘sitters’)}>Trouver un petsitteur</button>
-</div>
-</div>
-);
-}
-
-function ReviewsList() {
-const reviews = [
-{sitter:‘Sophie M.’,rating:5,by:‘Marie L.’,date:‘3 Avr’,text:‘Sophie est exceptionnelle ! Mon chien n'a jamais été aussi heureux. Photos quotidiennes, rapport détaillé.’},
-{sitter:‘Emma D.’,rating:5,by:‘Pierre D.’,date:‘10 Avr’,text:‘Vétérinaire de formation, aucune inquiétude. Rex était en parfaite santé à mon retour.’},
-{sitter:‘Julien P.’,rating:4,by:‘Camille R.’,date:‘25 Avr’,text:‘Beau jardin, chien bien traité. Communication claire. Je recommande !’},
-{sitter:‘Marc B.’,rating:5,by:‘Thomas B.’,date:‘28 Avr’,text:‘Service VIP au vrai sens du terme. Vidéos, rapports, suivi. Parfait.’},
-];
-return (
-<div>
-<div className="page-title">Avis & Notations</div>
-<div className="page-sub">Avis vérifiés de la communauté DogLink</div>
-<div className="grid2">
-{reviews.map((r,i)=>(
-<div key={i} className="card">
-<div style={{display:‘flex’,gap:14,alignItems:‘center’,marginBottom:14}}>
-<Avatar name={r.sitter}/>
-<div>
-<div style={{fontWeight:700,fontSize:14}}>Avis sur {r.sitter}</div>
-<div style={{color:’#7B7F9E’,fontSize:12}}>Par {r.by} · {r.date}</div>
-</div>
-<div style={{marginLeft:‘auto’}}><Stars n={r.rating} sz={15}/></div>
-</div>
-<p style={{color:’#999’,fontSize:13,lineHeight:1.75,fontStyle:‘italic’}}>”{r.text}”</p>
-</div>
-))}
-</div>
-</div>
-);
-}
-
-// ══════════════════════════════════════════════
-// SITTER APP
-// ══════════════════════════════════════════════
-function SitterApp({user, profile, onLogout}) {
-const [tab, setTab] = useState(‘dashboard’);
-const [reservations, setReservations] = useState([]);
-const [unread, setUnread] = useState(2);
-
-useEffect(()=>{loadReservations();},[]);
-
-async function loadReservations() {
-const {data} = await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’, profile?.id).order(‘created_at’,{ascending:false});
-setReservations(data || []);
-}
-
-async function updateStatus(id, status) {
+async function updateResa(id,status){
 await sb.from(‘reservations’).update({status}).eq(‘id’,id);
-loadReservations();
+showPage(currentProfile?.role===‘sitter’?‘sitter-bookings’:‘owner-reservations’);
 }
 
-const nav = [
-{id:‘dashboard’,icon:‘◈’,label:‘Tableau de bord’},
-{id:‘bookings’,icon:‘📅’,label:‘Réservations’},
-{id:‘messages’,icon:‘💬’,label:‘Messages’,badge:unread},
-{id:‘analytics’,icon:‘📊’,label:‘Analytics’},
-{id:‘profile’,icon:‘👤’,label:‘Mon profil’},
-{id:‘tracking’,icon:‘📡’,label:‘Suivi Live’},
-];
-
-return (
-<div className="app">
-<aside className="sidebar">
-<div className="s-logo">Dog<span>Link</span></div>
-<div className=“s-role-badge” style={{color:’#3DD68C’}}>PETSITTEUR</div>
-<nav className="s-nav">
-{nav.map(n=>(
-<div key={n.id} className={`s-item${tab===n.id?' act':''}`} onClick={()=>setTab(n.id)}>
-<span style={{fontSize:17,width:20,textAlign:‘center’}}>{n.icon}</span>
-<span>{n.label}</span>
-{n.badge?<span className="s-badge">{n.badge}</span>:null}
-</div>
-))}
-</nav>
-<div className="s-user">
-<div className="s-avatar">{(profile?.name||user.email)[0].toUpperCase()}</div>
-<div>
-<div className="s-uname">{profile?.name||‘Petsitteur’}</div>
-<div className="s-urole">Petsitteur ✦</div>
-<button className="s-logout" onClick={onLogout}>Déconnexion</button>
-</div>
-</div>
-</aside>
-<main className="main fade">
-{tab===‘dashboard’ && <SitterDashboard profile={profile} reservations={reservations} setTab={setTab}/>}
-{tab===‘bookings’ && <SitterBookings reservations={reservations} onUpdateStatus={updateStatus}/>}
-{tab===‘messages’ && <Messages profile={profile} onRead={()=>setUnread(0)}/>}
-{tab===‘analytics’ && <Analytics reservations={reservations}/>}
-{tab===‘profile’ && <SitterProfile user={user} profile={profile}/>}
-{tab===‘tracking’ && <Tracking/>}
-</main>
-</div>
-);
+// ── ANALYTICS ─────────────────────────────────
+async function renderAnalytics(el){
+const {data} = await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,currentProfile?.id||’’);
+const done=(data||[]).filter(r=>r.status===‘done’);
+const revenue=done.reduce((s,r)=>s+(r.price||0),0);
+const months=[{m:‘Jan’,v:480},{m:‘Fév’,v:620},{m:‘Mar’,v:590},{m:‘Avr’,v:780},{m:‘Mai’,v:Math.max(revenue,860)}];
+const maxV=Math.max(…months.map(d=>d.v));
+el.innerHTML=` <div class="page-title">Analytics</div> <div class="page-sub">Vos performances</div> <div class="grid4" style="margin-bottom:20px"> <div class="card"><div class="stat-val" style="color:#F0C060">${revenue}€</div><div class="stat-lbl">Revenus totaux</div></div> <div class="card"><div class="stat-val" style="color:#3DD68C">${done.length}</div><div class="stat-lbl">Gardes terminées</div></div> <div class="card"><div class="stat-val" style="color:#4D8EFF">5.0 ★</div><div class="stat-lbl">Note moyenne</div></div> <div class="card"><div class="stat-val" style="color:#FF6B4A">100%</div><div class="stat-lbl">Taux d'acceptation</div></div> </div> <div class="card" style="margin-bottom:16px"> <div style="font-weight:700;margin-bottom:22px">Revenus mensuels (€)</div> <div style="display:flex;align-items:flex-end;gap:14px;height:160px"> ${months.map(d=>`
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
+<div style="font-size:11px;color:#7B7F9E;font-weight:700">${d.v}€</div>
+<div style="width:100%;background:linear-gradient(to top,#FF6B4A,#F0C060);border-radius:6px 6px 0 0;height:${Math.round((d.v/maxV)*130)}px"></div>
+<div style="font-size:12px;color:#7B7F9E">${d.m}</div>
+</div>`).join('')} </div> </div> <div class="card"> <div style="font-weight:700;margin-bottom:16px">Gardes récentes</div> ${done.length===0?`<div class="empty">Pas encore de gardes terminées.</div>`:done.map((r,i)=>`
+<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:${i<done.length-1?'1px solid #2A2D40':'none'};font-size:13px">
+<span>${r.dog_name||‘Chien’} · ${r.type}</span>
+<span style="color:#3DD68C;font-weight:700">${r.price}€</span>
+</div>`).join('')} </div>`;
 }
 
-function SitterDashboard({profile, reservations, setTab}) {
-const pending = reservations.filter(r=>r.status===‘pending’);
-const confirmed = reservations.filter(r=>r.status===‘confirmed’);
-const revenue = reservations.filter(r=>r.status===‘done’).reduce((s,r)=>s+(r.price||0),0);
-return (
-<div>
-<div className="page-title">Bienvenue, {profile?.name||‘Petsitteur’} 🐾</div>
-<div className="page-sub">Votre tableau de bord petsitteur</div>
-<div className="grid4" style={{marginBottom:24}}>
-{[
-{label:‘Demandes en attente’,val:pending.length,icon:‘📬’,col:’#F0C060’},
-{label:‘Réservations actives’,val:confirmed.length,icon:‘📅’,col:’#4D8EFF’},
-{label:‘Revenus totaux’,val:`${revenue}€`,icon:‘💰’,col:’#3DD68C’},
-{label:‘Note moyenne’,val:‘5.0 ★’,icon:‘⭐’,col:’#FF6B4A’},
-].map((s,i)=>(
-<div key={i} className="card">
-<div style={{fontSize:26}}>{s.icon}</div>
-<div className="stat-val" style={{color:s.col}}>{s.val}</div>
-<div className="stat-lbl">{s.label}</div>
-</div>
-))}
-</div>
-{pending.length>0 && (
-<div className=“card” style={{marginBottom:18,border:‘1px solid rgba(240,192,96,.3)’}}>
-<div style={{fontWeight:700,marginBottom:16,display:‘flex’,alignItems:‘center’,gap:8}}>
-<span style={{color:’#F0C060’}}>📬</span> Nouvelles demandes ({pending.length})
-</div>
-{pending.map(r=>(
-<div key={r.id} style={{display:‘flex’,alignItems:‘center’,gap:14,padding:‘12px 0’,borderBottom:‘1px solid #2A2D40’}}>
-<Avatar name={r.dog_name||‘C’}/>
-<div style={{flex:1}}>
-<div style={{fontWeight:600,fontSize:14}}>{r.dog_name||‘Chien’}</div>
-<div style={{color:’#7B7F9E’,fontSize:12}}>{r.type} · {r.start_date}{r.end_date?` → ${r.end_date}`:’’} · {r.price}€</div>
-{r.notes&&<div style={{color:’#7B7F9E’,fontSize:12,marginTop:2}}>{r.notes}</div>}
-</div>
-<div style={{display:‘flex’,gap:8}}>
-<button className=“btn btn-green btn-sm” onClick={()=>{}}>✓ Accepter</button>
-<button className=“btn btn-sm” style={{background:‘rgba(255,107,74,.12)’,color:’#FF6B4A’,border:‘1px solid rgba(255,107,74,.3)’}} onClick={()=>{}}>✗ Refuser</button>
-</div>
-</div>
-))}
-</div>
-)}
-<div className="grid2">
-<div className="card">
-<div style={{fontWeight:700,marginBottom:16}}>Profil public</div>
-<div style={{display:‘flex’,alignItems:‘center’,gap:14,marginBottom:16}}>
-<Avatar name={profile?.name} size="lg"/>
-<div>
-<div style={{fontWeight:700,fontSize:16}}>{profile?.name||‘Votre nom’}</div>
-<div style={{color:’#7B7F9E’,fontSize:13}}>📍 {profile?.location||‘Belgique’}</div>
-<div style={{marginTop:6}}><Stars n={5}/></div>
-</div>
-</div>
-<p style={{color:’#7B7F9E’,fontSize:13,lineHeight:1.7,marginBottom:14}}>{profile?.bio||‘Ajoutez une bio dans votre profil pour attirer plus de clients.’}</p>
-<button className=“btn btn-outline btn-sm” onClick={()=>setTab(‘profile’)}>Modifier le profil →</button>
-</div>
-<div className="card">
-<div style={{fontWeight:700,marginBottom:16}}>Conseils pour réussir</div>
-{[‘Complétez votre profil à 100%’,‘Répondez aux demandes en moins d'1h’,‘Envoyez des photos à chaque promenade’,‘Demandez des avis après chaque garde’].map((tip,i)=>(
-<div key={i} style={{display:‘flex’,gap:10,padding:‘10px 0’,borderBottom:i<3?‘1px solid #2A2D40’:‘none’,fontSize:13}}>
-<span style={{color:’#3DD68C’,fontWeight:700}}>{i+1}.</span>
-<span style={{color:’#AAA’}}>{tip}</span>
-</div>
-))}
-</div>
-</div>
-</div>
-);
+// ── SITTER PROFILE ────────────────────────────
+function renderSitterProfile(el){
+el.innerHTML=` <div class="page-title">Mon profil</div> <div class="page-sub">Visible par tous les propriétaires</div> <div class="grid2" style="align-items:start"> <div class="card"> <div style="font-weight:700;margin-bottom:20px">Informations</div> <label class="form-label">Prénom</label> <input class="form-inp" id="p-name" placeholder="Votre prénom" value="${currentProfile?.name||''}"> <label class="form-label">Localisation</label> <input class="form-inp" id="p-location" placeholder="Ex: Liège, Namur..." value="${currentProfile?.location||''}"> <label class="form-label">Tarif journalier (€)</label> <input type="number" class="form-inp" id="p-price" value="${currentProfile?.price||25}"> <label class="form-label">Bio</label> <textarea class="form-inp" id="p-bio" placeholder="Décrivez votre expérience...">${currentProfile?.bio||''}</textarea> <label class="form-label">Disponibilité</label> <div style="display:flex;gap:10px;margin-bottom:18px"> <button id="p-avail-yes" class="btn btn-green btn-sm${currentProfile?.available!==false?' ':' btn-outline'}" onclick="setAvail(true)">● Disponible</button> <button id="p-avail-no" class="btn btn-sm${currentProfile?.available===false?' btn-primary':' btn-outline'}" onclick="setAvail(false)">Occupé</button> </div> <button class="btn btn-primary btn-full" id="save-profile-btn" onclick="saveProfile()">Sauvegarder</button> </div> <div class="card" id="profile-preview"> <div style="font-weight:700;margin-bottom:16px">Aperçu</div> <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"> <div class="avatar avatar-lg">${avatarLetter(currentProfile?.name)}</div> <div> <div style="font-weight:700;font-size:16px" id="prev-name">${currentProfile?.name||'Votre nom'}</div> <div style="color:#7B7F9E;font-size:13px" id="prev-loc">📍 ${currentProfile?.location||'Belgique'}</div> <span class="stars">★★★★★</span> </div> </div> <p style="color:#7B7F9E;font-size:13px;line-height:1.7" id="prev-bio">${currentProfile?.bio||'Votre bio apparaîtra ici...'}</p> <div style="display:flex;justify-content:space-between;border-top:1px solid #2A2D40;padding-top:14px;margin-top:14px"> <span style="color:#7B7F9E;font-size:13px">Tarif journalier</span> <span style="font-weight:800;font-size:18px" id="prev-price">${currentProfile?.price||25}€</span> </div> </div> </div>`;
+document.getElementById(‘p-name’).oninput=()=>{document.getElementById(‘prev-name’).textContent=document.getElementById(‘p-name’).value||‘Votre nom’;};
+document.getElementById(‘p-location’).oninput=()=>{document.getElementById(‘prev-loc’).textContent=‘📍 ‘+(document.getElementById(‘p-location’).value||‘Belgique’);};
+document.getElementById(‘p-bio’).oninput=()=>{document.getElementById(‘prev-bio’).textContent=document.getElementById(‘p-bio’).value||‘Votre bio…’;};
+document.getElementById(‘p-price’).oninput=()=>{document.getElementById(‘prev-price’).textContent=(document.getElementById(‘p-price’).value||25)+‘€’;};
 }
-
-function SitterBookings({reservations, onUpdateStatus}) {
-const statusLabel = {pending:‘En attente’,confirmed:‘Confirmée’,done:‘Terminée’,cancelled:‘Annulée’};
-return (
-<div>
-<div className="page-title">Mes réservations</div>
-<div className="page-sub">{reservations.length} réservation(s)</div>
-{reservations.length===0 ? (
-<div className="card"><div className="empty"><span className="empty-icon">📅</span>Aucune réservation pour l’instant.<br/>Partagez votre profil pour attirer des clients !</div></div>
-) : (
-<div style={{display:‘flex’,flexDirection:‘column’,gap:14}}>
-{reservations.map(r=>(
-<div key={r.id} className=“card” style={{display:‘flex’,alignItems:‘center’,gap:18}}>
-<Avatar name={r.dog_name||‘C’}/>
-<div style={{flex:1}}>
-<div style={{fontWeight:700,fontSize:15,marginBottom:3}}>{r.dog_name||‘Chien’}</div>
-<div style={{color:’#7B7F9E’,fontSize:13}}>{r.type} · {r.start_date}{r.end_date&&r.end_date!==r.start_date?` → ${r.end_date}`:’’}</div>
-{r.notes&&<div style={{color:’#7B7F9E’,fontSize:12,marginTop:2}}>Note : {r.notes}</div>}
-</div>
-<div style={{textAlign:‘right’,marginRight:14}}>
-<div style={{fontWeight:800,fontSize:18,marginBottom:6}}>{r.price}€</div>
-<span className={`status status-${r.status}`}>{statusLabel[r.status]||r.status}</span>
-</div>
-{r.status===‘pending’ && (
-<div style={{display:‘flex’,gap:8,flexDirection:‘column’}}>
-<button className=“btn btn-green btn-sm” onClick={()=>onUpdateStatus(r.id,‘confirmed’)}>✓ Accepter</button>
-<button className=“btn btn-sm” style={{background:‘rgba(255,107,74,.12)’,color:’#FF6B4A’,border:‘1px solid rgba(255,107,74,.3)’}} onClick={()=>onUpdateStatus(r.id,‘cancelled’)}>✗ Refuser</button>
-</div>
-)}
-{r.status===‘confirmed’ && (
-<button className=“btn btn-sm” style={{background:‘rgba(61,214,140,.12)’,color:’#3DD68C’,border:‘1px solid rgba(61,214,140,.3)’}} onClick={()=>onUpdateStatus(r.id,‘done’)}>
-✓ Terminé
-</button>
-)}
-</div>
-))}
-</div>
-)}
-</div>
-);
+let profileAvail = true;
+function setAvail(v){
+profileAvail=v;
+document.getElementById(‘p-avail-yes’).className=‘btn btn-green btn-sm’+(v?’’:’ btn-outline’);
+document.getElementById(‘p-avail-no’).className=‘btn btn-sm’+(v?’’:’ btn-primary’)+(v?’ btn-outline’:’’);
 }
-
-function Analytics({reservations}) {
-const done = reservations.filter(r=>r.status===‘done’);
-const revenue = done.reduce((s,r)=>s+(r.price||0),0);
-const monthlyData = [
-{m:‘Jan’,rev:480},{m:‘Fév’,rev:620},{m:‘Mar’,rev:590},{m:‘Avr’,rev:780},{m:‘Mai’,rev:Math.max(revenue,860)},
-];
-const maxRev = Math.max(…monthlyData.map(d=>d.rev));
-return (
-<div>
-<div className="page-title">Analytics</div>
-<div className="page-sub">Vos performances petsitteur</div>
-<div className="grid4" style={{marginBottom:24}}>
-{[
-{label:‘Revenus totaux’,val:`${revenue}€`,col:’#F0C060’},
-{label:‘Gardes terminées’,val:done.length,col:’#3DD68C’},
-{label:‘Note moyenne’,val:‘5.0 ★’,col:’#4D8EFF’},
-{label:‘Taux d'acceptation’,val:‘100%’,col:’#FF6B4A’},
-].map((s,i)=>(
-<div key={i} className="card">
-<div className="stat-val" style={{color:s.col}}>{s.val}</div>
-<div className="stat-lbl">{s.label}</div>
-</div>
-))}
-</div>
-<div className="card" style={{marginBottom:18}}>
-<div style={{fontWeight:700,marginBottom:24}}>Revenus mensuels (€)</div>
-<div style={{display:‘flex’,alignItems:‘flex-end’,gap:16,height:180}}>
-{monthlyData.map((d,i)=>(
-<div key={i} style={{flex:1,display:‘flex’,flexDirection:‘column’,alignItems:‘center’,gap:6}}>
-<div style={{fontSize:12,color:’#7B7F9E’,fontWeight:700}}>{d.rev}€</div>
-<div style={{width:‘100%’,background:`linear-gradient(to top, #FF6B4A, #F0C060)`,borderRadius:‘6px 6px 0 0’,height:`${(d.rev/maxRev)*140}px`,transition:‘height .3s’}}/>
-<div style={{fontSize:12,color:’#7B7F9E’}}>{d.m}</div>
-</div>
-))}
-</div>
-</div>
-<div className="card">
-<div style={{fontWeight:700,marginBottom:18}}>Réservations récentes</div>
-{done.length===0 ? <div className="empty">Pas encore de gardes terminées.</div> : done.map((r,i)=>(
-<div key={i} style={{display:‘flex’,justifyContent:‘space-between’,padding:‘10px 0’,borderBottom:i<done.length-1?‘1px solid #2A2D40’:‘none’,fontSize:13}}>
-<span>{r.dog_name||‘Chien’} · {r.type}</span>
-<span style={{color:’#3DD68C’,fontWeight:700}}>{r.price}€</span>
-</div>
-))}
-</div>
-</div>
-);
-}
-
-function SitterProfile({user, profile: initProfile}) {
-const [profile, setProfile] = useState(initProfile||{});
-const [saving, setSaving] = useState(false);
-const [saved, setSaved] = useState(false);
-
-async function save() {
-setSaving(true);
+async function saveProfile(){
+const btn=document.getElementById(‘save-profile-btn’);
+btn.textContent=‘Sauvegarde…’; btn.disabled=true;
 await sb.from(‘profiles’).update({
-name: profile.name,
-bio: profile.bio,
-location: profile.location,
-price: profile.price,
-available: profile.available,
-}).eq(‘user_id’, user.id);
-setSaving(false); setSaved(true);
-setTimeout(()=>setSaved(false),2000);
+name:document.getElementById(‘p-name’).value,
+bio:document.getElementById(‘p-bio’).value,
+location:document.getElementById(‘p-location’).value,
+price:document.getElementById(‘p-price’).value,
+available:profileAvail
+}).eq(‘user_id’,currentUser.id);
+const {data} = await sb.from(‘profiles’).select(’*’).eq(‘user_id’,currentUser.id).single();
+currentProfile=data;
+btn.textContent=‘✓ Sauvegardé !’; btn.style.background=’#3DD68C’;
+setTimeout(()=>{btn.textContent=‘Sauvegarder’;btn.style.background=’’;btn.disabled=false;},2000);
 }
 
-return (
+// ── MESSAGES ──────────────────────────────────
+function renderMessages(el){
+const contacts=[{id:‘m1’,name:‘Sophie M.’,time:‘10:23’,preview:‘Votre réservation est confirmée ✅’,unread:2},{id:‘m2’,name:‘Julien P.’,time:‘Hier’,preview:‘Je peux accueillir Rex à partir de 9h’,unread:0},{id:‘m3’,name:‘Emma D.’,time:‘Lun’,preview:‘Rex a été super sage aujourd'hui 🐶’,unread:0}];
+const chatMsgs=[{text:‘Bonjour ! Je suis disponible pour votre chien.’,mine:false,time:‘10:15’},{text:‘Super ! Il s'appelle Rex, 3 ans. 🐕’,mine:true,time:‘10:17’},{text:‘Parfait ! Combien de sorties par jour ?’,mine:false,time:‘10:19’},{text:‘2-3 promenades idéalement.’,mine:true,time:‘10:20’},{text:‘Votre réservation est confirmée ✅’,mine:false,time:‘10:23’}];
+el.innerHTML=` <div class="page-title">Messages</div> <div class="page-sub" style="margin-bottom:12px">Vos conversations</div> <div class="chat-wrap"> <div class="chat-list"> <div style="padding:14px 16px;font-weight:700;border-bottom:1px solid #2A2D40">Conversations</div> ${contacts.map(c=>`
+<div class="chat-item${c.id==='m1'?' sel':''}" onclick="selectChat('${c.id}')">
+<div style="position:relative">
+<div class="avatar" style="width:36px;height:36px;font-size:14px">${avatarLetter(c.name)}</div>
+${c.unread?`<span style="position:absolute;top:-2px;right:-2px;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 4px">${c.unread}</span>`:’’}
+</div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;justify-content:space-between"><b style="font-size:13px">${c.name}</b><span style="color:#7B7F9E;font-size:11px">${c.time}</span></div>
+<div style="color:#7B7F9E;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px">${c.preview}</div>
+</div>
+</div>`).join('')} </div> <div class="chat-body"> <div class="chat-hdr"> <div class="avatar" style="width:36px;height:36px;font-size:14px">S</div> <div><div style="font-weight:700;font-size:15px">Sophie M.</div><div style="color:#3DD68C;font-size:12px;font-weight:600">● En ligne</div></div> </div> <div class="msgs" id="msgs-area"> ${chatMsgs.map(m=>`
+<div class="msg${m.mine?' mine':''}">
+${!m.mine?`<div class="avatar" style="width:30px;height:30px;font-size:12px">S</div>`:’’}
 <div>
-<div className="page-title">Mon profil</div>
-<div className="page-sub">Ces informations sont visibles par les propriétaires</div>
-<div className=“grid2” style={{alignItems:‘start’}}>
-<div className="card">
-<div style={{fontWeight:700,marginBottom:22}}>Informations</div>
-{[
-{label:‘Prénom’,key:‘name’,placeholder:‘Votre prénom’},
-{label:‘Localisation’,key:‘location’,placeholder:‘Ex: Liège, Namur…’},
-].map(f=>(
-<div key={f.key} className="form-group">
-<label className="form-label">{f.label}</label>
-<input className=“form-inp” placeholder={f.placeholder} value={profile[f.key]||’’} onChange={e=>setProfile({…profile,[f.key]:e.target.value})}/>
+<div class="bubble${m.mine?' mine':' them'}">${m.text}</div>
+<div class="msg-time" style="text-align:${m.mine?'right':'left'}">${m.time}</div>
 </div>
-))}
-<div className="form-group">
-<label className="form-label">Tarif journalier (€)</label>
-<input type=“number” className=“form-inp” value={profile.price||25} onChange={e=>setProfile({…profile,price:e.target.value})}/>
-</div>
-<div className="form-group">
-<label className="form-label">Bio</label>
-<textarea className=“form-inp” placeholder=“Décrivez-vous, votre expérience avec les animaux…” value={profile.bio||’’} onChange={e=>setProfile({…profile,bio:e.target.value})}/>
-</div>
-<div className="form-group">
-<label className="form-label">Disponibilité</label>
-<div style={{display:‘flex’,gap:12}}>
-<button className={`btn btn-sm${profile.available?' btn-green':' btn-outline'}`} onClick={()=>setProfile({…profile,available:true})}>● Disponible</button>
-<button className={`btn btn-sm${!profile.available?' btn-primary':' btn-outline'}`} onClick={()=>setProfile({…profile,available:false})}>Occupé</button>
-</div>
-</div>
-<button className="btn btn-primary btn-full" onClick={save} disabled={saving}>
-{saving?‘Sauvegarde…’:saved?‘✓ Sauvegardé !’:‘Sauvegarder’}
-</button>
-</div>
-<div className="card">
-<div style={{fontWeight:700,marginBottom:18}}>Aperçu de votre profil</div>
-<div style={{display:‘flex’,gap:14,alignItems:‘center’,marginBottom:14}}>
-<Avatar name={profile.name} size="lg"/>
+</div>`).join('')} </div> <div class="chat-foot"> <input class="chat-inp" id="msg-inp" placeholder="Écrire un message…" onkeydown="if(event.key==='Enter')sendMsg()"> <button class="btn btn-primary" onclick="sendMsg()">Envoyer →</button> </div> </div> </div>`;
+}
+function sendMsg(){
+const inp=document.getElementById(‘msg-inp’);
+const txt=inp.value.trim();
+if(!txt)return;
+const area=document.getElementById(‘msgs-area’);
+area.innerHTML+=`<div class="msg mine"><div><div class="bubble mine">${txt}</div><div class="msg-time" style="text-align:right">Maintenant</div></div></div>`;
+inp.value=’’;
+area.scrollTop=area.scrollHeight;
+}
+function selectChat(id){}
+
+// ── TRACKING ──────────────────────────────────
+function renderTracking(el){
+el.innerHTML=` <div class="page-title">Suivi en temps réel</div> <div class="page-sub">Rex · En promenade · Belgique</div> <div class="grid2" style="align-items:start"> <div class="track-map" id="track-map"> <svg width="100%" height="100%" viewBox="0 0 700 400" style="position:absolute"> <rect width="700" height="400" fill="#080E08"/> ${Array.from({length:9},(_,i)=>`<line x1="0" y1="${i*48}" x2="700" y2="${i*48}" stroke="#0D1A0D" stroke-width="1"/>`).join('')} ${Array.from({length:13},(_,i)=>`<line x1="${i*58}" y1="0" x2="${i*58}" y2="400" stroke="#0D1A0D" stroke-width="1"/>`).join('')} <path d="M0 210 Q175 185 350 200 Q525 218 700 190" stroke="#0A2840" stroke-width="18" fill="none" opacity=".8"/> ${[[80,60,110,50],[200,110,90,48],[380,75,100,52],[500,130,80,45],[120,165,95,50],[320,165,85,48],[450,200,110,52],[80,290,90,48],[240,308,105,50],[400,275,90,45]].map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="#0C1A0C"/>`).join('')} <polyline points="310,210 332,190 362,180" stroke="#3DD68C" stroke-width="2.5" fill="none" opacity=".4" stroke-dasharray="5,4"/> </svg> <div id="track-dot" style="position:absolute;left:310px;top:210px;transform:translate(-50%,-50%);z-index:10;transition:left .85s ease,top .85s ease"> <div style="position:relative"> <div class="ping" style="position:absolute;inset:-6px;border-radius:50%;background:#3DD68C;opacity:.3"></div> <div style="width:28px;height:28px;border-radius:50%;background:#3DD68C;border:3px solid #070E08;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative">🐕</div> </div> </div> <div style="position:absolute;bottom:12px;left:12px;background:rgba(7,14,8,.92);border-radius:12px;padding:7px 14px;border:1px solid #1D4A30;display:flex;align-items:center;gap:8px"> <span class="online-dot pulse"></span> <span style="font-size:12px;font-weight:700;color:#3DD68C">Rex · En direct</span> </div> </div> <div style="display:flex;flex-direction:column;gap:12px"> ${[['🕐','Dernière promenade','Il y a 12 min'],['📍','Position','Rue centrale, Belgique'],['🌡️','Météo','18°C · Nuageux'],['💤','État','Actif · En promenade'],['🦴','Repas','Donné à 12h00'],['❤️','Fréquence cardiaque','72 bpm · Normal']].map(([ic,lbl,val])=>`
+<div class="card" style="display:flex;align-items:center;gap:12px;padding:14px 16px">
+<span style="font-size:20px">${ic}</span>
 <div>
-<div style={{fontWeight:700,fontSize:16}}>{profile.name||‘Votre nom’}</div>
-<div style={{color:’#7B7F9E’,fontSize:13}}>📍 {profile.location||‘Belgique’}</div>
-<Stars n={5}/>
+<div style="color:#7B7F9E;font-size:11px;font-weight:600;letter-spacing:.5px">${lbl.toUpperCase()}</div>
+<div style="font-weight:700;font-size:14px;margin-top:2px">${val}</div>
 </div>
-</div>
-<p style={{color:’#7B7F9E’,fontSize:13,lineHeight:1.7,marginBottom:14}}>{profile.bio||‘Votre bio apparaîtra ici…’}</p>
-<div style={{display:‘flex’,justifyContent:‘space-between’,borderTop:‘1px solid #2A2D40’,paddingTop:14}}>
-<span style={{color:’#7B7F9E’,fontSize:13}}>Tarif journalier</span>
-<span style={{fontWeight:800,fontSize:18}}>{profile.price||25}€</span>
-</div>
-</div>
-</div>
-</div>
-);
+</div>`).join('')} </div> </div>`;
+trackIdx=0;
+trackInterval=setInterval(()=>{
+trackIdx=(trackIdx+1)%trackPath.length;
+const dot=document.getElementById(‘track-dot’);
+if(dot){dot.style.left=trackPath[trackIdx][0]+‘px’;dot.style.top=trackPath[trackIdx][1]+‘px’;}
+},900);
 }
 
-// ══════════════════════════════════════════════
-// SHARED COMPONENTS
-// ══════════════════════════════════════════════
-function Messages({profile, onRead}) {
-const [sel, setSel] = useState(DEMO_MSGS[0]);
-const [input, setInput] = useState(’’);
-const [msgs, setMsgs] = useState(DEMO_CHAT);
-useEffect(()=>{onRead&&onRead();},[]);
-
-function send() {
-if (!input.trim()) return;
-setMsgs([…msgs,{id:msgs.length+1,text:input,mine:true,time:‘Maintenant’}]);
-setInput(’’);
+// ── REVIEWS ────────────────────────────────────
+function renderReviews(el){
+const reviews=[{s:‘Sophie M.’,r:5,by:‘Marie L.’,d:‘3 Avr’,t:‘Sophie est exceptionnelle ! Mon chien n'a jamais été aussi heureux. Photos quotidiennes, rapport détaillé.’},{s:‘Emma D.’,r:5,by:‘Pierre D.’,d:‘10 Avr’,t:‘Vétérinaire de formation, aucune inquiétude. Rex était en parfaite santé.’},{s:‘Julien P.’,r:4,by:‘Camille R.’,d:‘25 Avr’,t:‘Beau jardin, chien bien traité. Communication claire. Je recommande !’},{s:‘Marc B.’,r:5,by:‘Thomas B.’,d:‘28 Avr’,t:‘Service VIP au vrai sens du terme. Vidéos, rapports, suivi. Parfait.’}];
+el.innerHTML=` <div class="page-title">Avis & Notations</div> <div class="page-sub">Avis vérifiés de la communauté DogLink</div> <div class="grid2"> ${reviews.map(r=>`
+<div class="card">
+<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">
+<div class="avatar">${avatarLetter(r.s)}</div>
+<div>
+<div style="font-weight:700;font-size:14px">Avis sur ${r.s}</div>
+<div style="color:#7B7F9E;font-size:12px">Par ${r.by} · ${r.d}</div>
+</div>
+<div style="margin-left:auto"><span class="stars">${stars(r.r)}</span></div>
+</div>
+<p style="color:#999;font-size:13px;line-height:1.75;font-style:italic">”${r.t}”</p>
+</div>`).join('')} </div>`;
 }
 
-return (
-<div>
-<div className="page-title">Messages</div>
-<div className="page-sub" style={{marginBottom:14}}>Discussions avec vos contacts</div>
-<div className="chat-wrap">
-<div className="chat-list">
-<div style={{padding:‘16px’,fontWeight:700,borderBottom:‘1px solid #2A2D40’}}>Conversations</div>
-{DEMO_MSGS.map(m=>(
-<div key={m.id} className={`chat-item${sel?.id===m.id?' sel':''}`} onClick={()=>setSel(m)}>
-<div style={{position:‘relative’}}>
-<Avatar name={m.from} size="sm"/>
-{m.unread>0&&<span style={{position:‘absolute’,top:-2,right:-2,background:’#FF6B4A’,color:‘white’,borderRadius:20,fontSize:9,fontWeight:800,padding:‘1px 4px’}}>{m.unread}</span>}
-</div>
-<div style={{flex:1,minWidth:0}}>
-<div style={{display:‘flex’,justifyContent:‘space-between’}}><b style={{fontSize:13}}>{m.from}</b><span style={{color:’#7B7F9E’,fontSize:11}}>{m.time}</span></div>
-<div style={{color:’#7B7F9E’,fontSize:12,overflow:‘hidden’,textOverflow:‘ellipsis’,whiteSpace:‘nowrap’,marginTop:2}}>{m.preview}</div>
-</div>
-</div>
-))}
-</div>
-<div className="chat-msgs">
-<div className="chat-header">
-<Avatar name={sel?.from} size="sm"/>
-<div><div style={{fontWeight:700,fontSize:15}}>{sel?.from}</div><div style={{color:’#3DD68C’,fontSize:12,fontWeight:600}}>● En ligne</div></div>
-</div>
-<div className="msgs-area">
-{msgs.map(c=>(
-<div key={c.id} className={`msg${c.mine?' mine':''}`}>
-{!c.mine&&<Avatar name={sel?.from} size="sm"/>}
-<div>
-<div className={`msg-bubble${c.mine?' mine':' them'}`}>{c.text}</div>
-<div className=“msg-time” style={{textAlign:c.mine?‘right’:‘left’}}>{c.time}</div>
-</div>
-</div>
-))}
-</div>
-<div className="chat-input">
-<input className=“chat-inp” value={input} onChange={e=>setInput(e.target.value)} placeholder=“Écrire un message…” onKeyDown={e=>e.key===‘Enter’&&send()}/>
-<button className="btn btn-primary" onClick={send}>Envoyer →</button>
-</div>
-</div>
-</div>
-</div>
-);
-}
-
-function Tracking() {
-const [pos, setPos] = useState({x:310,y:250});
-const path = [[310,250],[332,228],[362,218],[392,238],[412,260],[402,292],[372,302],[342,286],[310,268],[310,250]];
-let idx = useRef(0);
-useEffect(()=>{
-const t = setInterval(()=>{idx.current=(idx.current+1)%path.length;setPos({x:path[idx.current][0],y:path[idx.current][1]});},900);
-return ()=>clearInterval(t);
-},[]);
-return (
-<div>
-<div className="page-title">Suivi en temps réel</div>
-<div className="page-sub">Rex · En promenade · Belgique</div>
-<div className=“grid2” style={{alignItems:‘start’}}>
-<div className="track-map">
-<svg width=“100%” height=“100%” viewBox=“0 0 700 480” style={{position:‘absolute’}}>
-<rect width="700" height="480" fill="#080E08"/>
-{Array.from({length:10},(*,i)=><line key={`h${i}`} x1=“0” y1={i*50} x2=“700” y2={i*50} stroke=”#0D1A0D” strokeWidth=“1”/>)}
-{Array.from({length:13},(*,i)=><line key={`v${i}`} x1={i*58} y1=“0” x2={i*58} y2=“480” stroke=”#0D1A0D” strokeWidth=“1”/>)}
-<path d="M0 250 Q175 225 350 240 Q525 258 700 230" stroke="#0A2840" strokeWidth="20" fill="none" opacity=".8"/>
-{[[80,80,110,55],[200,130,90,55],[380,95,100,60],[500,155,80,50],[120,195,95,55],[320,195,85,55],[450,235,110,60],[80,330,90,55],[240,350,105,58],[400,315,90,52]].map(([x,y,w,h],i)=>(
-<rect key={i} x={x} y={y} width={w} height={h} rx="8" fill="#0C1A0C"/>
-))}
-<polyline points="310,250 332,228 362,218" stroke="#3DD68C" strokeWidth="3" fill="none" opacity=".4" strokeDasharray="6,4"/>
-</svg>
-<div style={{position:‘absolute’,left:pos.x,top:pos.y,transform:‘translate(-50%,-50%)’,zIndex:10,transition:‘left .85s ease,top .85s ease’}}>
-<div style={{position:‘relative’}}>
-<div className=“ping” style={{position:‘absolute’,inset:-6,borderRadius:‘50%’,background:’#3DD68C’,opacity:.3}}/>
-<div style={{width:30,height:30,borderRadius:‘50%’,background:’#3DD68C’,border:‘3px solid #070E08’,display:‘flex’,alignItems:‘center’,justifyContent:‘center’,fontSize:15,position:‘relative’}}>🐕</div>
-</div>
-</div>
-<div style={{position:‘absolute’,bottom:14,left:14,background:‘rgba(7,14,8,.92)’,backdropFilter:‘blur(8px)’,borderRadius:12,padding:‘8px 16px’,border:‘1px solid #1D4A30’,display:‘flex’,alignItems:‘center’,gap:8}}>
-<span className="online-dot pulse"/>
-<span style={{fontSize:13,fontWeight:700,color:’#3DD68C’}}>Rex · En direct</span>
-</div>
-</div>
-<div className="track-info">
-{[[‘🕐’,‘Dernière promenade’,‘Il y a 12 min’],[‘📍’,‘Position’,‘Rue centrale, Belgique’],[‘🌡️’,‘Météo’,‘18°C · Nuageux’],[‘💤’,‘État’,‘Actif · En promenade’],[‘🦴’,‘Repas’,‘Donné à 12h00’],[‘❤️’,‘Fréquence cardiaque’,‘72 bpm · Normal’]].map(([ic,lbl,val],i)=>(
-<div key={i} className="tinfo-card">
-<span style={{fontSize:22}}>{ic}</span>
-<div>
-<div style={{color:’#7B7F9E’,fontSize:11,fontWeight:600,letterSpacing:.5}}>{lbl.toUpperCase()}</div>
-<div style={{fontWeight:700,fontSize:14,marginTop:2}}>{val}</div>
-</div>
-</div>
-))}
-</div>
-</div>
-</div>
-);
-}
-
-// ══════════════════════════════════════════════
-// MAIN APP
-// ══════════════════════════════════════════════
-function App() {
-const [user, setUser] = useState(null);
-const [profile, setProfile] = useState(null);
-const [loading, setLoading] = useState(true);
-
-useEffect(()=>{
+// ── INIT ──────────────────────────────────────
 sb.auth.getSession().then(({data:{session}})=>{
-if (session?.user) {
-setUser(session.user);
+if(session?.user){
 sb.from(‘profiles’).select(’*’).eq(‘user_id’,session.user.id).single()
-.then(({data})=>{ setProfile(data); setLoading(false); });
-} else setLoading(false);
-});
-const {data:{subscription}} = sb.auth.onAuthStateChange((_,session)=>{
-if (!session) { setUser(null); setProfile(null); }
-});
-return ()=>subscription.unsubscribe();
-},[]);
-
-async function handleLogout() {
-await sb.auth.signOut();
-setUser(null); setProfile(null);
+.then(({data})=>{ if(data) startApp(session.user,data); });
 }
-
-if (loading) return (
-<div style={{display:‘flex’,alignItems:‘center’,justifyContent:‘center’,height:‘100vh’,background:’#0D0F18’}}>
-<div style={{textAlign:‘center’}}>
-<div style={{fontFamily:‘Fraunces,serif’,fontSize:32,fontWeight:600,marginBottom:12}}>Dog<span style={{color:’#FF6B4A’}}>Link</span></div>
-<div style={{color:’#7B7F9E’,fontSize:14}}>Chargement…</div>
-</div>
-</div>
-);
-
-if (!user || !profile) return <AuthScreen onAuth={(u,p)=>{setUser(u);setProfile(p);}}/>;
-if (profile?.role===‘sitter’) return <SitterApp user={user} profile={profile} onLogout={handleLogout}/>;
-return <OwnerApp user={user} profile={profile} onLogout={handleLogout}/>;
-}
-
-ReactDOM.createRoot(document.getElementById(‘root’)).render(<App/>);
+});
 </script>
 
 </body>
