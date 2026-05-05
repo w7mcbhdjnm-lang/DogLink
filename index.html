@@ -3,695 +3,576 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>DogLink</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0} button,a,[onclick]{cursor:pointer!important;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0D0F18;color:#EEE9FF;overflow-x:hidden}
+button{cursor:pointer;font-family:inherit;border:none;-webkit-appearance:none;touch-action:manipulation}
+input,select,textarea{font-family:inherit;-webkit-appearance:none}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2A2D40;border-radius:4px}
-.hidden{display:none!important}
-/* AUTH */
-#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:99}
-.auth-box{background:#13151F;border:1px solid #2A2D40;border-radius:28px;padding:40px;width:100%;max-width:420px;position:relative;z-index:100}
-.auth-logo{font-family:'Fraunces',serif;font-size:30px;text-align:center;margin-bottom:6px;font-weight:600}
-.auth-logo span{color:#FF6B4A}
-.auth-sub{text-align:center;color:#7B7F9E;font-size:14px;margin-bottom:28px}
-.auth-tabs{display:flex;background:#1C1F2E;border-radius:14px;padding:4px;margin-bottom:24px}
-.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:#7B7F9E;font-weight:600;font-size:14px;cursor:pointer;border-radius:10px;font-family:inherit;transition:all .2s;-webkit-appearance:none;touch-action:manipulation}
-.auth-tab.active{background:#252838;color:#EEE9FF}
-.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.role-btn{padding:18px 14px;border:1.5px solid #2A2D40;border-radius:16px;background:transparent;color:#EEE9FF;cursor:pointer;text-align:center;font-family:inherit;transition:all .2s;-webkit-appearance:none;touch-action:manipulation}
-.role-btn.sel{border-color:#FF6B4A;background:rgba(255,107,74,.08)}
-.role-icon{font-size:28px;display:block;margin-bottom:6px}
-.role-label{font-weight:700;font-size:14px}
-.role-desc{font-size:11px;color:#7B7F9E;margin-top:2px}
-.inp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:12px 16px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px}
-.inp:focus{border-color:#FF6B4A}
-.auth-btn{width:100%;background:linear-gradient(135deg,#FF6B4A,#E05535);color:white;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;margin-top:6px;-webkit-appearance:none;touch-action:manipulation}
-.auth-err{color:#FF6B4A;font-size:13px;text-align:center;margin-top:10px}
-/* APP */
-#app-screen{display:flex;height:100vh}
-.sidebar{width:240px;background:#13151F;border-right:1px solid #2A2D40;display:flex;flex-direction:column;padding:22px 12px;flex-shrink:0}
-.s-logo{font-family:'Fraunces',serif;font-size:24px;font-weight:600;padding-left:10px;margin-bottom:4px}
-.s-logo span{color:#FF6B4A}
-.s-role{font-size:10px;font-weight:700;letter-spacing:1px;padding-left:10px;margin-bottom:20px}
-.s-nav{flex:1;display:flex;flex-direction:column;gap:3px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;color:#7B7F9E;border-left:3px solid transparent;transition:all .2s}
-.nav-item:hover{background:#1C1F2E}
-.nav-item.active{background:#1C1F2E;color:#EEE9FF;border-left-color:#F0C060}
-.nav-badge{margin-left:auto;background:#FF6B4A;color:white;border-radius:20px;font-size:10px;font-weight:800;padding:1px 7px}
-.s-user{border-top:1px solid #2A2D40;padding-top:14px;display:flex;align-items:center;gap:10px;padding-left:6px;margin-top:auto}
-.avatar{width:38px;height:38px;border-radius:50%;background:#252838;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#F0C060;flex-shrink:0}
-.avatar-lg{width:64px;height:64px;font-size:26px}
-.s-uname{font-size:13px;font-weight:700}
-.s-urole{font-size:11px;color:#7B7F9E}
-.logout-btn{background:none;border:none;color:#7B7F9E;cursor:pointer;font-size:11px;font-family:inherit}
-.logout-btn:hover{color:#FF6B4A}
-.main-area{flex:1;overflow-y:auto;padding:30px 34px}
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
-.page-title{font-family:'Fraunces',serif;font-size:26px;font-weight:300;letter-spacing:-1px;margin-bottom:4px}
-.page-sub{color:#7B7F9E;font-size:13px;margin-bottom:24px}
-/* CARDS */
-.card{background:#13151F;border:1px solid #2A2D40;border-radius:20px;padding:22px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.stat-val{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-top:10px}
-.stat-lbl{font-size:12px;color:#7B7F9E;margin-top:3px}
-/* BUTTONS */
-.btn{padding:9px 18px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;border:none;font-family:inherit;transition:all .2s;-webkit-appearance:none;touch-action:manipulation}
-.btn:hover{opacity:.85;transform:translateY(-1px)}
-.btn-primary{background:#FF6B4A;color:white}
-.btn-outline{background:transparent;color:#EEE9FF;border:1.5px solid #2A2D40}
-.btn-green{background:rgba(61,214,140,.15);color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
-.btn-gold{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000}
-.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
-.btn-full{width:100%;padding:13px;font-size:14px;border-radius:14px}
-/* STATUS */
-.status{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
-.s-pending{background:#2A1F08;color:#F0C060;border:1px solid rgba(240,192,96,.3)}
-.s-confirmed{background:#0D2A1A;color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
-.s-done{background:#1A1A1A;color:#555;border:1px solid #333}
-.s-cancelled{background:#2A0D0D;color:#FF6B4A;border:1px solid rgba(255,107,74,.3)}
-/* FORM */
-.form-label{font-size:11px;font-weight:700;color:#7B7F9E;letter-spacing:.8px;display:block;margin-bottom:6px;text-transform:uppercase}
-.form-inp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:12px;padding:11px 15px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px}
-.form-inp:focus{border-color:#FF6B4A}
-textarea.form-inp{resize:vertical;min-height:80px}
-/* TAG */
-.tag{background:rgba(255,255,255,.06);color:#7B7F9E;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
-.premium-badge{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px}
-.stars{color:#F0C060;font-size:13px}
-.online-dot{width:8px;height:8px;border-radius:50%;background:#3DD68C;display:inline-block}
-/* CHAT */
-.chat-wrap{display:grid;grid-template-columns:270px 1fr;height:calc(100vh - 130px);background:#13151F;border-radius:20px;border:1px solid #2A2D40;overflow:hidden}
-.chat-list{border-right:1px solid #2A2D40;overflow-y:auto}
-.chat-item{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;transition:background .15s}
-.chat-item:hover{background:#1C1F2E}
-.chat-item.sel{background:#252838}
-.chat-body{display:flex;flex-direction:column;height:100%}
-.chat-hdr{padding:15px 20px;border-bottom:1px solid #2A2D40;display:flex;align-items:center;gap:12px}
-.msgs{flex:1;padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.msg{display:flex;justify-content:flex-start;gap:10px;align-items:flex-end}
-.msg.mine{justify-content:flex-end}
-.bubble{max-width:60%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.6}
-.bubble.them{background:#1C1F2E;border-radius:18px 18px 18px 4px}
-.bubble.mine{background:linear-gradient(135deg,#FF6B4A,#E05535);border-radius:18px 18px 4px 18px}
-.msg-time{font-size:10px;color:#4A4D60;margin-top:3px}
-.chat-foot{padding:13px 18px;border-top:1px solid #2A2D40;display:flex;gap:10px}
-.chat-inp{flex:1;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:14px;padding:10px 15px;color:#EEE9FF;font-size:14px;font-family:inherit;outline:none}
-.chat-inp:focus{border-color:#FF6B4A}
-/* TRACKING */
-.track-map{background:#070E08;border-radius:20px;border:1px solid #1D4A30;position:relative;height:400px;overflow:hidden}
-/* SITTER CARDS */
-.sitter-card{background:#13151F;border:1px solid #2A2D40;border-radius:20px;padding:20px;cursor:pointer;transition:all .2s}
-.sitter-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.4)}
-.sitter-card.premium{border-color:rgba(240,192,96,.3)}
-/* MISC */
-.divider{height:1px;background:#2A2D40;margin:18px 0}
-.empty{text-align:center;padding:40px;color:#7B7F9E;font-size:14px}
-.empty-ico{font-size:38px;display:block;margin-bottom:10px}
+
+/* ── AUTH ── */
+#auth{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;background:#0D0F18}
+.abox{background:#13151F;border:1px solid #2A2D40;border-radius:24px;padding:36px 32px;width:100%;max-width:400px}
+.alogo{font-family:‘Fraunces’,serif;font-size:28px;font-weight:600;text-align:center;margin-bottom:6px}
+.alogo span{color:#FF6B4A}
+.asub{text-align:center;color:#7B7F9E;font-size:13px;margin-bottom:24px}
+.atabs{display:flex;background:#1C1F2E;border-radius:12px;padding:4px;margin-bottom:22px;gap:4px}
+.atab{flex:1;padding:10px 8px;background:transparent;color:#7B7F9E;font-weight:600;font-size:14px;border-radius:9px;border:none;transition:all .2s;touch-action:manipulation;-webkit-appearance:none;cursor:pointer}
+.atab.on{background:#252838;color:#EEE9FF}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.rbtn{padding:16px 10px;border:1.5px solid #2A2D40;border-radius:14px;background:transparent;color:#EEE9FF;text-align:center;touch-action:manipulation;-webkit-appearance:none;cursor:pointer;transition:all .2s;border:1.5px solid #2A2D40}
+.rbtn.on{border-color:#FF6B4A;background:rgba(255,107,74,.1)}
+.rico{font-size:26px;display:block;margin-bottom:5px}
+.rlbl{font-weight:700;font-size:13px;display:block}
+.rdsc{font-size:11px;color:#7B7F9E;margin-top:2px;display:block}
+.ainp{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:11px;padding:12px 14px;color:#EEE9FF;font-size:14px;outline:none;margin-bottom:11px;-webkit-appearance:none}
+.ainp:focus{border-color:#FF6B4A}
+.asbtn{width:100%;background:linear-gradient(135deg,#FF6B4A,#E05535);color:white;padding:14px;border-radius:13px;font-weight:700;font-size:15px;margin-top:4px;touch-action:manipulation;-webkit-appearance:none;cursor:pointer;border:none}
+.aerr{color:#FF6B4A;font-size:13px;text-align:center;margin-top:10px;min-height:20px}
+
+/* ── APP ── */
+#app{position:fixed;inset:0;display:none;flex-direction:row}
+.sb{width:230px;background:#13151F;border-right:1px solid #2A2D40;display:flex;flex-direction:column;padding:20px 10px;flex-shrink:0;overflow-y:auto}
+.sblogo{font-family:‘Fraunces’,serif;font-size:22px;font-weight:600;padding-left:10px;margin-bottom:3px}
+.sblogo span{color:#FF6B4A}
+.sbrole{font-size:10px;font-weight:700;letter-spacing:1px;padding-left:10px;margin-bottom:18px}
+.sbnav{flex:1;display:flex;flex-direction:column;gap:2px}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:11px;cursor:pointer;font-size:13px;font-weight:600;color:#7B7F9E;border-left:3px solid transparent;touch-action:manipulation}
+.ni:hover,.ni.on{background:#1C1F2E;color:#EEE9FF;border-left-color:#F0C060}
+.nbadge{margin-left:auto;background:#FF6B4A;color:white;border-radius:20px;font-size:10px;font-weight:800;padding:1px 6px}
+.sbu{border-top:1px solid #2A2D40;padding-top:12px;display:flex;align-items:center;gap:9px;padding-left:6px;margin-top:auto}
+.av{width:36px;height:36px;border-radius:50%;background:#252838;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#F0C060;flex-shrink:0}
+.avlg{width:60px;height:60px;font-size:22px}
+.sbun{font-size:13px;font-weight:700}
+.sbur{font-size:11px;color:#7B7F9E}
+.lbtn{background:none;border:none;color:#7B7F9E;cursor:pointer;font-size:11px;font-family:inherit;touch-action:manipulation;padding:2px 0}
+.main{flex:1;overflow-y:auto;padding:28px 32px}
+
+/* ── COMPONENTS ── */
+.ptitle{font-family:‘Fraunces’,serif;font-size:24px;font-weight:300;letter-spacing:-1px;margin-bottom:3px}
+.psub{color:#7B7F9E;font-size:12px;margin-bottom:22px}
+.card{background:#13151F;border:1px solid #2A2D40;border-radius:18px;padding:20px;margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sv{font-family:‘Fraunces’,serif;font-size:24px;font-weight:700;margin-top:8px}
+.sl{font-size:11px;color:#7B7F9E;margin-top:3px}
+.btn{padding:8px 16px;border-radius:11px;font-weight:700;font-size:12px;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;-webkit-appearance:none}
+.bp{background:#FF6B4A;color:white}
+.bo{background:transparent;color:#EEE9FF;border:1.5px solid #2A2D40}
+.bg{background:rgba(61,214,140,.15);color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
+.bsm{padding:6px 12px;font-size:11px;border-radius:9px}
+.bfull{width:100%;padding:12px;font-size:13px;border-radius:13px;margin-bottom:9px}
+.st{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+.stp{background:#2A1F08;color:#F0C060;border:1px solid rgba(240,192,96,.3)}
+.stc{background:#0D2A1A;color:#3DD68C;border:1px solid rgba(61,214,140,.3)}
+.std{background:#1A1A1A;color:#555;border:1px solid #333}
+.fl{font-size:11px;font-weight:700;color:#7B7F9E;letter-spacing:.8px;display:block;margin-bottom:5px;text-transform:uppercase}
+.fi{width:100%;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:11px;padding:10px 13px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;margin-bottom:12px;-webkit-appearance:none}
+.fi:focus{border-color:#FF6B4A}
+textarea.fi{resize:vertical;min-height:75px}
+.tag{background:rgba(255,255,255,.06);color:#7B7F9E;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.pbadge{background:linear-gradient(135deg,#F0C060,#C8852A);color:#1A1000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px}
+.stars{color:#F0C060;font-size:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:#3DD68C;display:inline-block}
+.cw{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 100px);background:#13151F;border-radius:18px;border:1px solid #2A2D40;overflow:hidden}
+.cl{border-right:1px solid #2A2D40;overflow-y:auto}
+.ci{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;touch-action:manipulation}
+.ci.on{background:#252838}
+.cb{display:flex;flex-direction:column;height:100%}
+.ch{padding:13px 18px;border-bottom:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
+.ms{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.mg{display:flex;align-items:flex-end;gap:8px}
+.mg.me{justify-content:flex-end}
+.mb{max-width:60%;padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.6}
+.mb.th{background:#1C1F2E;border-radius:16px 16px 16px 3px}
+.mb.me{background:linear-gradient(135deg,#FF6B4A,#E05535);border-radius:16px 16px 3px 16px}
+.mt{font-size:10px;color:#4A4D60;margin-top:2px}
+.cf{padding:12px 16px;border-top:1px solid #2A2D40;display:flex;gap:8px}
+.ci2{flex:1;background:#1C1F2E;border:1.5px solid #2A2D40;border-radius:13px;padding:9px 13px;color:#EEE9FF;font-size:13px;font-family:inherit;outline:none;-webkit-appearance:none}
+.ci2:focus{border-color:#FF6B4A}
+.tm{background:#070E08;border-radius:18px;border:1px solid #1D4A30;position:relative;height:380px;overflow:hidden}
+.sc{display:flex;flex-direction:column;gap:10px}
+.ic{background:#13151F;border-radius:13px;padding:12px 14px;border:1px solid #2A2D40;display:flex;align-items:center;gap:10px}
+.empty{text-align:center;padding:36px;color:#7B7F9E;font-size:13px}
+.ei{font-size:34px;display:block;margin-bottom:9px}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 @keyframes ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.8);opacity:0}}
 .pulse{animation:pulse 2s infinite}
 .ping{animation:ping 1.3s cubic-bezier(0,0,.2,1) infinite}
-@media(max-width:700px){
-  .sidebar{width:56px;padding:14px 8px}
-  .s-logo,.s-role,.nav-item span:last-child,.s-uname,.s-urole,.logout-btn{display:none}
-  .nav-item{padding:12px;justify-content:center}
-  .main-area{padding:18px 14px}
-  .grid2,.grid3,.grid4{grid-template-columns:1fr}
-  .chat-wrap{grid-template-columns:1fr}
-  .chat-list{display:none}
+@media(max-width:680px){
+.sb{width:50px;padding:12px 6px}
+.sblogo,.sbrole,.ni span:not(:first-child),.sbun,.sbur,.lbtn{display:none}
+.ni{padding:10px;justify-content:center}
+.main{padding:16px 12px}
+.g2,.g3,.g4{grid-template-columns:1fr}
+.cw{grid-template-columns:1fr}.cl{display:none}
 }
 </style>
+
 </head>
 <body>
 
 <!-- AUTH -->
 
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">Dog<span>Link</span></div>
-    <div class="auth-sub">Petsitting Belgique</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login">Se connecter</button>
-      <button class="auth-tab" id="tab-register">S'inscrire</button>
+<div id="auth">
+  <div class="abox">
+    <div class="alogo">Dog<span>Link</span></div>
+    <div class="asub">Petsitting Belgique</div>
+    <div class="atabs">
+      <button class="atab on" id="tl">Se connecter</button>
+      <button class="atab" id="tr">S'inscrire</button>
     </div>
-    <div id="register-fields" class="hidden">
-      <div class="role-grid">
-        <button class="role-btn" id="role-owner">
-          <span class="role-icon">🐕</span>
-          <span class="role-label">Propriétaire</span>
-          <span class="role-desc">Je cherche un petsitter</span>
+    <div id="rfields" style="display:none">
+      <div class="roles">
+        <button class="rbtn" id="ro">
+          <span class="rico">🐕</span>
+          <span class="rlbl">Propriétaire</span>
+          <span class="rdsc">Je cherche un petsitter</span>
         </button>
-        <button class="role-btn" id="role-sitter">
-          <span class="role-icon">
-            <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Personne -->
-              <circle cx="22" cy="10" r="6" fill="#EEE9FF"/>
-              <path d="M22 18 L18 36 L12 52 L18 52 L22 40 L26 52 L32 52 L28 36 L30 26" stroke="#EEE9FF" stroke-width="3" stroke-linecap="round" fill="none"/>
-              <path d="M22 22 L30 30" stroke="#EEE9FF" stroke-width="3" stroke-linecap="round"/>
-              <!-- Laisse -->
-              <path d="M30 30 Q38 34 42 38" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
-              <!-- Chien -->
-              <ellipse cx="47" cy="42" rx="9" ry="5" fill="#EEE9FF" transform="rotate(-10 47 42)"/>
-              <circle cx="54" cy="37" r="5" fill="#EEE9FF"/>
-              <path d="M52 32 Q50 28 53 27" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
-              <path d="M56 32 Q58 28 56 27" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
-              <path d="M40 44 L38 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M45 46 L44 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M50 46 L50 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M55 45 L56 52" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round"/>
-              <!-- Queue -->
-              <path d="M39 40 Q34 34 37 30" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <button class="rbtn" id="rs">
+          <span class="rico">
+            <svg width="30" height="30" viewBox="0 0 60 60" fill="none">
+              <circle cx="18" cy="9" r="5" fill="#EEE9FF"/>
+              <path d="M18 16 L15 30 L10 44 L15 44 L18 34 L21 44 L26 44 L23 30 L25 22" stroke="#EEE9FF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M21 20 L27 26 Q33 30 36 34" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+              <ellipse cx="42" cy="37" rx="8" ry="5" fill="#EEE9FF" transform="rotate(-8 42 37)"/>
+              <circle cx="48" cy="32" r="4.5" fill="#EEE9FF"/>
+              <path d="M46 28 Q44 24 47 23" stroke="#EEE9FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M50 28 Q52 24 50 23" stroke="#EEE9FF" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M36 40 L34 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M41 42 L40 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M46 42 L46 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M51 41 L52 48" stroke="#EEE9FF" stroke-width="2" stroke-linecap="round"/>
+              <path d="M35 36 Q30 30 33 26" stroke="#EEE9FF" stroke-width="1.8" stroke-linecap="round" fill="none"/>
             </svg>
           </span>
-          <span class="role-label">Petsitteur</span>
-          <span class="role-desc">Je garde des chiens</span>
+          <span class="rlbl">Petsitteur</span>
+          <span class="rdsc">Je garde des chiens</span>
         </button>
       </div>
-      <input class="inp" id="auth-name" placeholder="Votre prénom">
+      <input class="ainp" id="aname" placeholder="Votre prénom">
     </div>
-    <input class="inp" id="auth-email" type="email" placeholder="Email">
-    <input class="inp" id="auth-password" type="password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doAuth()">
-    <button class="auth-btn" id="auth-submit-btn">Se connecter →</button>
-    <div class="auth-err hidden" id="auth-err"></div>
+    <input class="ainp" id="aemail" type="email" placeholder="Email" autocomplete="email">
+    <input class="ainp" id="apass" type="password" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="asbtn" id="asubmit">Se connecter →</button>
+    <div class="aerr" id="aerr"></div>
   </div>
 </div>
 
 <!-- APP -->
 
-<div id="app-screen" class="hidden">
-  <aside class="sidebar">
-    <div class="s-logo">Dog<span>Link</span></div>
-    <div class="s-role" id="role-label"></div>
-    <nav class="s-nav" id="sidebar-nav"></nav>
-    <div class="s-user">
-      <div class="avatar" id="user-avatar">?</div>
+<div id="app">
+  <aside class="sb">
+    <div class="sblogo">Dog<span>Link</span></div>
+    <div class="sbrole" id="rlabel"></div>
+    <nav class="sbnav" id="snav"></nav>
+    <div class="sbu">
+      <div class="av" id="uav">?</div>
       <div>
-        <div class="s-uname" id="user-name">Utilisateur</div>
-        <div class="s-urole" id="user-role-display"></div>
-        <button class="logout-btn" onclick="doLogout()">Déconnexion</button>
+        <div class="sbun" id="uname">Utilisateur</div>
+        <div class="sbur" id="urole"></div>
+        <button class="lbtn" id="lout">Déconnexion</button>
       </div>
     </div>
   </aside>
-  <main class="main-area" id="main-area"></main>
+  <main class="main" id="main"></main>
 </div>
 
 <script>
-const SUPA_URL = 'https://mxvzgngtgjovrzfktfhw.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+var SB_URL='https://mxvzgngtgjovrzfktfhw.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14dnpnbmd0Z2pvdnJ6Zmt0Zmh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjUzOTUsImV4cCI6MjA5MzUwMTM5NX0.dvk2FSggHEjRa1_Qh_ThKnZwVgFjgq2v5-ArdH-fVkU';
+var sb=supabase.createClient(SB_URL,SB_KEY);
+var CU=null,CP=null,ROLE='',MODE='login',TRIV=null,TRIDX=0;
+var TRPATH=[[310,210],[332,190],[362,180],[392,198],[412,218],[402,248],[372,258],[342,243],[310,228]];
 
-let currentUser = null, currentProfile = null, currentRole = '', authMode = 'login';
-let trackInterval = null, trackIdx = 0;
-const trackPath = [[310,250],[332,228],[362,218],[392,238],[412,260],[402,292],[372,302],[342,286],[310,268]];
-
-const DEMO_SITTERS = [
-  {id:'d1',name:'Sophie M.',location:'Liège',price:25,rating:4.9,reviews_count:87,bio:'Passionnée par les animaux, je prends soin de vos chiens comme des miens.',tags:['Petits chiens','Chats'],available:true,premium:true},
-  {id:'d2',name:'Julien P.',location:'Namur',price:22,rating:4.8,reviews_count:61,bio:'Grand jardin privé, vos chiens adorent venir chez moi.',tags:['Grands chiens','Jardins'],available:true,premium:true},
-  {id:'d3',name:'Emma D.',location:'Charleroi',price:30,rating:5.0,reviews_count:112,bio:'Vétérinaire de formation, votre chien est entre de bonnes mains.',tags:['Chiots','Vétérinaire'],available:false,premium:true},
-  {id:'d4',name:'Lucas B.',location:'Mons',price:20,rating:4.7,reviews_count:43,bio:'Éducateur canin certifié.',tags:['Éducation','Grandes races'],available:true,premium:false},
-  {id:'d5',name:'Clara R.',location:'Verviers',price:18,rating:4.6,reviews_count:29,bio:'Disponible toute la journée grâce au télétravail.',tags:['Petits chiens','Chats'],available:true,premium:false},
-  {id:'d6',name:'Marc B.',location:'Arlon',price:28,rating:4.9,reviews_count:74,bio:'Compte-rendu quotidien photos/vidéos.',tags:['Service VIP'],available:false,premium:true},
+var SITTERS=[
+  {id:'d1',name:'Sophie M.',location:'Liège',price:25,rating:4.9,rc:87,bio:'Passionnée par les animaux, je prends soin de vos chiens comme des miens.',tags:['Petits chiens','Chats'],avail:true,prem:true},
+  {id:'d2',name:'Julien P.',location:'Namur',price:22,rating:4.8,rc:61,bio:'Grand jardin privé, vos chiens adorent venir chez moi.',tags:['Grands chiens','Jardins'],avail:true,prem:true},
+  {id:'d3',name:'Emma D.',location:'Charleroi',price:30,rating:5.0,rc:112,bio:'Vétérinaire de formation, votre chien est entre de bonnes mains.',tags:['Chiots','Vétérinaire'],avail:false,prem:true},
+  {id:'d4',name:'Lucas B.',location:'Mons',price:20,rating:4.7,rc:43,bio:'Éducateur canin certifié.',tags:['Éducation'],avail:true,prem:false},
+  {id:'d5',name:'Clara R.',location:'Verviers',price:18,rating:4.6,rc:29,bio:'Disponible toute la journée.',tags:['Petits chiens'],avail:true,prem:false},
+  {id:'d6',name:'Marc B.',location:'Arlon',price:28,rating:4.9,rc:74,bio:'Compte-rendu quotidien photos/vidéos.',tags:['Service VIP'],avail:false,prem:true},
 ];
 
-// ── UTILS ──────────────────────────────────────
-function stars(n){return '★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
-function avatarLetter(name){return (name||'?')[0].toUpperCase();}
-function statusBadge(s){
-  const m={pending:['s-pending','En attente'],confirmed:['s-confirmed','Confirmée'],done:['s-done','Terminée'],cancelled:['s-cancelled','Annulée']};
-  return `<span class="status ${(m[s]||['s-done','?'])[0]}">${(m[s]||['','?'])[1]}</span>`;
-}
+// ── UTILS ──
+function st(n){return'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
+function al(name){return(name||'?')[0].toUpperCase();}
+function stbadge(s){var m={pending:['stp','En attente'],confirmed:['stc','Confirmée'],done:['std','Terminée'],cancelled:['std','Annulée']};var x=m[s]||['std','?'];return'<span class="st '+x[0]+'">'+x[1]+'</span>';}
+function el(id){return document.getElementById(id);}
+function html(id,h){var e=el(id);if(e)e.innerHTML=h;}
 
-// ── AUTH ──────────────────────────────────────
+// ── AUTH ──
 function setMode(m){
-  authMode = m;
-  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(m==='login'?i===0:i===1)));
-  document.getElementById('register-fields').classList.toggle('hidden', m==='login');
-  document.getElementById('auth-submit-btn').textContent = m==='login'?'Se connecter →':'Créer mon compte →';
+  MODE=m;
+  el('tl').className='atab'+(m==='login'?' on':'');
+  el('tr').className='atab'+(m==='register'?' on':'');
+  el('rfields').style.display=m==='register'?'block':'none';
+  el('asubmit').textContent=m==='login'?'Se connecter →':'Créer mon compte →';
+  el('aerr').textContent='';
 }
-function selectRole(r){
-  currentRole = r;
-  document.getElementById('role-owner').classList.toggle('sel', r==='owner');
-  document.getElementById('role-sitter').classList.toggle('sel', r==='sitter');
+function selRole(r){
+  ROLE=r;
+  el('ro').className='rbtn'+(r==='owner'?' on':'');
+  el('rs').className='rbtn'+(r==='sitter'?' on':'');
 }
 async function doAuth(){
-  const email = document.getElementById('auth-email').value.trim();
-  const pass = document.getElementById('auth-password').value;
-  const errEl = document.getElementById('auth-err');
-  const btn = document.getElementById('auth-submit-btn');
-  errEl.classList.add('hidden'); btn.textContent='...'; btn.disabled=true;
-  try {
-    if(authMode==='login'){
-      const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
-      if(error) throw error;
-      const {data:profile} = await sb.from('profiles').select('*').eq('user_id',data.user.id).single();
-      startApp(data.user, profile);
-    } else {
-      const name = document.getElementById('auth-name').value.trim();
-      if(!currentRole){throw{message:'Choisissez votre rôle'};}
-      if(!name){throw{message:'Entrez votre prénom'};}
-      const {data,error} = await sb.auth.signUp({email,password:pass});
-      if(error) throw error;
-      await sb.from('profiles').insert({user_id:data.user.id,role:currentRole,name,location:'Belgique'});
-      await new Promise(r=>setTimeout(r,800));
-      const {data:profile} = await sb.from('profiles').select('*').eq('user_id',data.user.id).single();
-      startApp(data.user, profile);
+  var email=el('aemail').value.trim();
+  var pass=el('apass').value;
+  var errEl=el('aerr');
+  var btn=el('asubmit');
+  errEl.textContent='';
+  btn.textContent='...';
+  btn.disabled=true;
+  try{
+    if(MODE==='login'){
+      var r=await sb.auth.signInWithPassword({email:email,password:pass});
+      if(r.error)throw r.error;
+      var p=await sb.from('profiles').select('*').eq('user_id',r.data.user.id).single();
+      startApp(r.data.user,p.data);
+    }else{
+      var name=el('aname').value.trim();
+      if(!ROLE){errEl.textContent='Choisissez votre rôle';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
+      if(!name){errEl.textContent='Entrez votre prénom';btn.textContent='Créer mon compte →';btn.disabled=false;return;}
+      var r2=await sb.auth.signUp({email:email,password:pass});
+      if(r2.error)throw r2.error;
+      await sb.from('profiles').insert({user_id:r2.data.user.id,role:ROLE,name:name,location:'Belgique'});
+      await new Promise(function(res){setTimeout(res,600);});
+      var p2=await sb.from('profiles').select('*').eq('user_id',r2.data.user.id).single();
+      startApp(r2.data.user,p2.data);
     }
-  } catch(e){
-    errEl.textContent = e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message;
-    errEl.classList.remove('hidden');
-    btn.textContent = authMode==='login'?'Se connecter →':'Créer mon compte →';
+  }catch(e){
+    errEl.textContent=e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message;
+    btn.textContent=MODE==='login'?'Se connecter →':'Créer mon compte →';
     btn.disabled=false;
   }
 }
-function startApp(user, profile){
-  currentUser=user; currentProfile=profile;
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.remove('hidden');
-  document.getElementById('user-avatar').textContent = avatarLetter(profile?.name||user.email);
-  document.getElementById('user-name').textContent = profile?.name||'Utilisateur';
-  document.getElementById('user-role-display').textContent = profile?.role==='sitter'?'Petsitteur ✦':'Propriétaire 🐕';
-  document.getElementById('role-label').textContent = profile?.role==='sitter'?'PETSITTEUR':'PROPRIÉTAIRE';
-  document.getElementById('role-label').style.color = profile?.role==='sitter'?'#3DD68C':'#4D8EFF';
+
+// ── APP START ──
+function startApp(user,profile){
+  CU=user;CP=profile;
+  el('auth').style.display='none';
+  el('app').style.display='flex';
+  el('uav').textContent=al(profile&&profile.name?profile.name:user.email);
+  el('uname').textContent=(profile&&profile.name)||'Utilisateur';
+  var isSitter=profile&&profile.role==='sitter';
+  el('urole').textContent=isSitter?'Petsitteur':'Propriétaire';
+  el('rlabel').textContent=isSitter?'PETSITTEUR':'PROPRIÉTAIRE';
+  el('rlabel').style.color=isSitter?'#3DD68C':'#4D8EFF';
   buildNav();
-  showPage(profile?.role==='sitter'?'sitter-dashboard':'owner-dashboard');
+  showPage(isSitter?'sdash':'odash');
 }
 async function doLogout(){
   await sb.auth.signOut();
-  if(trackInterval) clearInterval(trackInterval);
-  currentUser=currentProfile=null;
-  document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('auth-screen').classList.remove('hidden');
+  if(TRIV){clearInterval(TRIV);TRIV=null;}
+  CU=CP=null;
+  el('app').style.display='none';
+  el('auth').style.display='flex';
 }
 
-// ── NAV ──────────────────────────────────────
+// ── NAV ──
 function buildNav(){
-  const role = currentProfile?.role;
-  const navItems = role==='sitter' ? [
-    {id:'sitter-dashboard',icon:'◈',label:'Tableau de bord'},
-    {id:'sitter-bookings',icon:'📅',label:'Réservations'},
-    {id:'messages',icon:'💬',label:'Messages',badge:2},
-    {id:'analytics',icon:'📊',label:'Analytics'},
-    {id:'sitter-profile',icon:'👤',label:'Mon profil'},
-    {id:'tracking',icon:'📡',label:'Suivi Live'},
-  ] : [
-    {id:'owner-dashboard',icon:'◈',label:'Accueil'},
-    {id:'sitters-list',icon:'🐾',label:'Petsitteurs'},
-    {id:'owner-reservations',icon:'📅',label:'Réservations'},
-    {id:'messages',icon:'💬',label:'Messages',badge:2},
-    {id:'tracking',icon:'📡',label:'Suivi Live'},
-    {id:'reviews',icon:'⭐',label:'Avis'},
+  var isSitter=CP&&CP.role==='sitter';
+  var items=isSitter?[
+    {id:'sdash',ic:'◈',lb:'Tableau de bord'},
+    {id:'sbookings',ic:'📅',lb:'Réservations'},
+    {id:'msgs',ic:'💬',lb:'Messages',badge:2},
+    {id:'analytics',ic:'📊',lb:'Analytics'},
+    {id:'sprofile',ic:'👤',lb:'Mon profil'},
+    {id:'tracking',ic:'📡',lb:'Suivi Live'},
+  ]:[
+    {id:'odash',ic:'◈',lb:'Accueil'},
+    {id:'sitters',ic:'🐾',lb:'Petsitteurs'},
+    {id:'oresas',ic:'📅',lb:'Réservations'},
+    {id:'msgs',ic:'💬',lb:'Messages',badge:2},
+    {id:'tracking',ic:'📡',lb:'Suivi Live'},
+    {id:'reviews',ic:'⭐',lb:'Avis'},
   ];
-  const nav = document.getElementById('sidebar-nav');
-  nav.innerHTML = navItems.map(n=>`
-    <div class="nav-item" id="nav-${n.id}" onclick="showPage('${n.id}')">
-      <span style="font-size:17px;width:20px;text-align:center">${n.icon}</span>
-      <span>${n.label}</span>
-      ${n.badge?`<span class="nav-badge">${n.badge}</span>`:''}
-    </div>`).join('');
+  html('snav',items.map(function(n){
+    return'<div class="ni" data-page="'+n.id+'" onclick="showPage(\''+n.id+'\')"><span style="font-size:16px;width:18px;text-align:center">'+n.ic+'</span><span>'+n.lb+'</span>'+(n.badge?'<span class="nbadge">'+n.badge+'</span>':'')+'</div>';
+  }).join(''));
 }
 function showPage(id){
-  if(trackInterval){clearInterval(trackInterval);trackInterval=null;}
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const ni = document.getElementById('nav-'+id);
-  if(ni) ni.classList.add('active');
-  const main = document.getElementById('main-area');
-  main.innerHTML = '';
-  const pages = {
-    'owner-dashboard': renderOwnerDashboard,
-    'sitters-list': renderSittersList,
-    'owner-reservations': renderOwnerReservations,
-    'messages': renderMessages,
-    'tracking': renderTracking,
-    'reviews': renderReviews,
-    'sitter-dashboard': renderSitterDashboard,
-    'sitter-bookings': renderSitterBookings,
-    'analytics': renderAnalytics,
-    'sitter-profile': renderSitterProfile,
-  };
-  if(pages[id]) pages[id](main);
+  if(TRIV){clearInterval(TRIV);TRIV=null;}
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.toggle('on',n.dataset.page===id);});
+  var m=el('main');
+  m.innerHTML='';
+  var pages={odash:odash,sitters:pgSitters,oresas:oresas,msgs:pgMsgs,tracking:pgTracking,reviews:pgReviews,sdash:sdash,sbookings:sbookings,analytics:pgAnalytics,sprofile:pgSprofile};
+  if(pages[id])pages[id](m);
 }
 
-// ── OWNER DASHBOARD ──────────────────────────
-async function renderOwnerDashboard(el){
-  const {data:resa} = await sb.from('reservations').select('*').eq('owner_id',currentProfile?.id||'').order('created_at',{ascending:false});
-  const active = (resa||[]).filter(r=>r.status!=='done'&&r.status!=='cancelled');
-  el.innerHTML = `
-    <div class="page-title">Bonjour, ${currentProfile?.name||'là'} 👋</div>
-    <div class="page-sub">Bienvenue sur DogLink Belgique</div>
-    <div class="grid4" style="margin-bottom:20px">
-      <div class="card"><div style="font-size:24px">📅</div><div class="stat-val" style="color:#4D8EFF">${active.length}</div><div class="stat-lbl">Réservations actives</div></div>
-      <div class="card"><div style="font-size:24px">🐾</div><div class="stat-val" style="color:#3DD68C">${DEMO_SITTERS.filter(s=>s.available).length}</div><div class="stat-lbl">Petsitteurs disponibles</div></div>
-      <div class="card"><div style="font-size:24px">💬</div><div class="stat-val" style="color:#FF6B4A">2</div><div class="stat-lbl">Messages non lus</div></div>
-      <div class="card"><div style="font-size:24px">⭐</div><div class="stat-val" style="color:#F0C060">4.9</div><div class="stat-lbl">Note moyenne</div></div>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <div style="font-weight:700;margin-bottom:16px">Prochaines réservations</div>
-        ${active.length===0?`<div class="empty"><span class="empty-ico">📅</span>Aucune réservation<br><br><button class="btn btn-primary btn-sm" onclick="showPage('sitters-list')">Trouver un petsitteur</button></div>`
-        :active.slice(0,3).map(r=>`
-          <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #2A2D40">
-            <div class="avatar">${avatarLetter(r.sitter_name||'S')}</div>
-            <div style="flex:1"><div style="font-weight:600;font-size:14px">${r.sitter_name||'Petsitteur'}</div><div style="color:#7B7F9E;font-size:12px">${r.type} · ${r.start_date}</div></div>
-            ${statusBadge(r.status)}
-          </div>`).join('')}
-      </div>
-      <div class="card" style="background:linear-gradient(135deg,#0D2A1A,#0A1A12);border:1px solid #1D4A30;cursor:pointer" onclick="showPage('tracking')">
-        <div style="color:#3DD68C;font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">
-          <span class="online-dot pulse"></span>SUIVI EN DIRECT
-        </div>
-        <div style="font-weight:800;font-size:20px;margin-bottom:6px">Rex est en promenade</div>
-        <div style="color:#6BBF8A;font-size:13px;margin-bottom:20px">Dernière mise à jour il y a 2 min</div>
-        <button class="btn btn-green btn-sm">Voir le suivi →</button>
-      </div>
-    </div>`;
+// ── OWNER DASHBOARD ──
+async function odash(el){
+  var r=await sb.from('reservations').select('*').eq('owner_id',(CP&&CP.id)||'').order('created_at',{ascending:false});
+  var resa=r.data||[];
+  var active=resa.filter(function(x){return x.status!=='done'&&x.status!=='cancelled';});
+  el.innerHTML='<div class="ptitle">Bonjour, '+(CP&&CP.name||'là')+' 👋</div><div class="psub">Bienvenue sur DogLink Belgique</div>'
+  +'<div class="g4" style="margin-bottom:16px">'
+  +'<div class="card"><div style="font-size:22px">📅</div><div class="sv" style="color:#4D8EFF">'+active.length+'</div><div class="sl">Réservations actives</div></div>'
+  +'<div class="card"><div style="font-size:22px">🐾</div><div class="sv" style="color:#3DD68C">'+SITTERS.filter(function(s){return s.avail;}).length+'</div><div class="sl">Petsitteurs disponibles</div></div>'
+  +'<div class="card"><div style="font-size:22px">💬</div><div class="sv" style="color:#FF6B4A">2</div><div class="sl">Messages non lus</div></div>'
+  +'<div class="card"><div style="font-size:22px">⭐</div><div class="sv" style="color:#F0C060">4.9</div><div class="sl">Note moyenne</div></div>'
+  +'</div>'
+  +'<div class="g2">'
+  +'<div class="card"><div style="font-weight:700;margin-bottom:14px">Prochaines réservations</div>'
+  +(active.length===0?'<div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="showPage(\'sitters\')">Trouver un petsitteur</button></div>'
+  :active.slice(0,3).map(function(r){return'<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #2A2D40"><div class="av">'+al(r.sitter_name||'S')+'</div><div style="flex:1"><div style="font-weight:600;font-size:13px">'+(r.sitter_name||'Petsitteur')+'</div><div style="color:#7B7F9E;font-size:12px">'+r.type+' · '+r.start_date+'</div></div>'+stbadge(r.status)+'</div>';}).join(''))
+  +'</div>'
+  +'<div class="card" style="background:linear-gradient(135deg,#0D2A1A,#0A1A12);border:1px solid #1D4A30;cursor:pointer" onclick="showPage(\'tracking\')">'
+  +'<div style="color:#3DD68C;font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px"><span class="dot pulse"></span>SUIVI EN DIRECT</div>'
+  +'<div style="font-weight:800;font-size:18px;margin-bottom:6px">Rex est en promenade</div>'
+  +'<div style="color:#6BBF8A;font-size:13px;margin-bottom:16px">Dernière mise à jour il y a 2 min</div>'
+  +'<button class="btn bg bsm">Voir le suivi →</button>'
+  +'</div></div>';
 }
 
-// ── SITTERS LIST ──────────────────────────────
-function renderSittersList(el){
-  el.innerHTML = `
-    <div class="page-title">Petsitteurs</div>
-    <div class="page-sub">${DEMO_SITTERS.length} professionnels en Belgique</div>
-    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-      <input id="search-inp" class="form-inp" placeholder="Rechercher..." style="width:200px;margin:0" oninput="filterSitters()">
-      <button class="btn btn-outline btn-sm" id="flt-all" onclick="setSitterFilter('all')" style="border-color:#FF6B4A;color:#FF6B4A">Tous</button>
-      <button class="btn btn-outline btn-sm" id="flt-avail" onclick="setSitterFilter('available')">● Disponibles</button>
-      <button class="btn btn-outline btn-sm" id="flt-prem" onclick="setSitterFilter('premium')">✦ Premium</button>
-    </div>
-    <div class="grid3" id="sitters-grid"></div>`;
-  renderSittersGrid('all','');
+// ── SITTERS LIST ──
+function pgSitters(el){
+  el.innerHTML='<div class="ptitle">Petsitteurs</div><div class="psub">'+SITTERS.length+' professionnels en Belgique</div>'
+  +'<div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">'
+  +'<input id="sq" class="fi" placeholder="Rechercher..." style="width:180px;margin:0" oninput="filterS()">'
+  +'<button class="btn bo bsm" id="fa" onclick="setF(\'all\')" style="border-color:#FF6B4A;color:#FF6B4A">Tous</button>'
+  +'<button class="btn bo bsm" id="fv" onclick="setF(\'avail\')">Disponibles</button>'
+  +'<button class="btn bo bsm" id="fp" onclick="setF(\'prem\')">✦ Premium</button>'
+  +'</div><div class="g3" id="sg"></div>';
+  renderS('all','');
 }
-let sitFilter='all';
-function setSitterFilter(f){
-  sitFilter=f;
-  ['all','avail','prem'].forEach(x=>{
-    const b=document.getElementById('flt-'+x);
-    if(b){b.style.borderColor=(x===f||('all'===f&&x==='all')||('available'===f&&x==='avail')||('premium'===f&&x==='prem'))?'#FF6B4A':'#2A2D40';b.style.color=(x===f||('all'===f&&x==='all')||('available'===f&&x==='avail')||('premium'===f&&x==='prem'))?'#FF6B4A':'#EEE9FF';}
-  });
-  filterSitters();
+var SF='all';
+function setF(f){
+  SF=f;
+  ['all','avail','prem'].forEach(function(x){var b=el('f'+x[0]);if(b){b.style.borderColor=(x.startsWith(f)||f===x)?'#FF6B4A':'#2A2D40';b.style.color=(x.startsWith(f)||f===x)?'#FF6B4A':'#EEE9FF';}});
+  filterS();
 }
-function filterSitters(){
-  const q=(document.getElementById('search-inp')?.value||'').toLowerCase();
-  renderSittersGrid(sitFilter,q);
+function filterS(){renderS(SF,(el('sq')||{}).value||'');}
+function renderS(f,q){
+  var g=el('sg');if(!g)return;
+  var list=SITTERS.filter(function(s){return(f==='all'||(f==='avail'&&s.avail)||(f==='prem'&&s.prem))&&(s.name.toLowerCase().includes(q.toLowerCase())||s.location.toLowerCase().includes(q.toLowerCase()));});
+  g.innerHTML=list.map(function(s){return'<div class="card" style="cursor:pointer;border:'+(s.prem?'1px solid rgba(240,192,96,.3)':'1px solid #2A2D40')+'" onclick="pgSitterDetail(\''+s.id+'\')">'+(s.prem?'<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><span class="pbadge">✦ PREMIUM</span></div>':'')+'<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><div class="av">'+al(s.name)+'</div><div><div style="font-weight:700;font-size:14px">'+s.name+'</div><div style="color:#7B7F9E;font-size:11px">📍 '+s.location+'</div></div></div><p style="color:#7B7F9E;font-size:12px;line-height:1.6;margin-bottom:10px">'+s.bio.slice(0,65)+'…</p><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+s.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('')+'</div><div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2A2D40;padding-top:10px"><div><span class="stars">'+st(s.rating)+'</span> <b style="font-size:12px">'+s.rating+'</b> <span style="color:#7B7F9E;font-size:11px">('+s.rc+')</span></div><div><b style="font-size:16px">'+s.price+'€</b><span style="color:#7B7F9E;font-size:11px">/j</span></div></div><div style="margin-top:8px;display:flex;align-items:center;gap:5px"><span class="dot" style="background:'+(s.avail?'#3DD68C':'#555')+'"></span><span style="font-size:11px;color:'+(s.avail?'#3DD68C':'#7B7F9E')+';font-weight:600">'+(s.avail?'Disponible':'Occupé')+'</span></div></div>';}).join('');
 }
-function renderSittersGrid(filter,q){
-  const grid=document.getElementById('sitters-grid');
-  if(!grid)return;
-  const filtered=DEMO_SITTERS.filter(s=>(filter==='all'||(filter==='available'&&s.available)||(filter==='premium'&&s.premium))&&(s.name.toLowerCase().includes(q)||s.location.toLowerCase().includes(q)));
-  grid.innerHTML=filtered.map(s=>`
-    <div class="sitter-card${s.premium?' premium':''}" onclick="showSitterDetail('${s.id}')">
-      ${s.premium?'<div style="display:flex;justify-content:flex-end;margin-bottom:10px"><span class="premium-badge">✦ PREMIUM</span></div>':''}
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-        <div class="avatar" style="width:50px;height:50px;font-size:20px">${avatarLetter(s.name)}</div>
-        <div><div style="font-weight:700;font-size:15px">${s.name}</div><div style="color:#7B7F9E;font-size:12px">📍 ${s.location}</div></div>
-      </div>
-      <p style="color:#7B7F9E;font-size:13px;line-height:1.6;margin-bottom:12px">${s.bio.slice(0,70)}…</p>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2A2D40;padding-top:12px">
-        <div><span class="stars">${stars(s.rating)}</span> <b style="font-size:13px">${s.rating}</b> <span style="color:#7B7F9E;font-size:12px">(${s.reviews_count})</span></div>
-        <div><span style="font-weight:800;font-size:18px">${s.price}€</span><span style="color:#7B7F9E;font-size:12px">/j</span></div>
-      </div>
-      <div style="margin-top:8px;display:flex;align-items:center;gap:6px">
-        <span class="online-dot" style="background:${s.available?'#3DD68C':'#555'}"></span>
-        <span style="font-size:12px;color:${s.available?'#3DD68C':'#7B7F9E'};font-weight:600">${s.available?'Disponible':'Occupé'}</span>
-      </div>
-    </div>`).join('');
-}
-function showSitterDetail(id){
-  const s=DEMO_SITTERS.find(x=>x.id===id);
-  if(!s)return;
-  const main=document.getElementById('main-area');
-  main.innerHTML=`
-    <button onclick="showPage('sitters-list')" style="background:none;border:none;cursor:pointer;color:#7B7F9E;font-size:14px;margin-bottom:20px;display:flex;align-items:center;gap:6px;font-family:inherit">← Retour</button>
-    <div class="grid2" style="align-items:start">
-      <div>
-        <div class="card" style="margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px">
-            <div class="avatar avatar-lg">${avatarLetter(s.name)}</div>
-            <div>
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-                <span style="font-family:Fraunces,serif;font-size:22px;font-weight:300">${s.name}</span>
-                ${s.premium?'<span class="premium-badge">✦ PREMIUM</span>':''}
-              </div>
-              <div style="color:#7B7F9E;font-size:13px;margin-bottom:6px">📍 ${s.location}</div>
-              <div><span class="stars">${stars(s.rating)}</span> <b>${s.rating}</b> <span style="color:#7B7F9E;font-size:13px">· ${s.reviews_count} avis</span></div>
-            </div>
-          </div>
-          <p style="color:#AAA;line-height:1.8;margin-bottom:16px">${s.bio}</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-        </div>
-        <div class="card">
-          <div style="font-weight:700;margin-bottom:14px">Services & tarifs</div>
-          ${[['🏠','Garde à domicile',s.price+'€/j'],['🦮','Promenade','15€/sortie'],['🌙','Hébergement nuit',(s.price+8)+'€/nuit'],['🎓','Éducation','30€/séance']].map(([ic,lbl,p],i)=>`
-            <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:${i<3?'1px solid #2A2D40':'none'}">
-              <span style="font-size:14px">${ic} ${lbl}</span>
-              <span style="font-weight:700;color:#F0C060">${p}</span>
-            </div>`).join('')}
-        </div>
-      </div>
-      <div class="card" style="position:sticky;top:20px">
-        <div style="font-weight:800;font-size:22px;margin-bottom:4px">${s.price}€<span style="font-weight:400;font-size:13px;color:#7B7F9E">/jour</span></div>
-        <div style="color:${s.available?'#3DD68C':'#888'};font-size:13px;font-weight:700;margin-bottom:20px">${s.available?'✓ Disponible':'✗ Non disponible'}</div>
-        <div id="book-form">
-          <label class="form-label">Nom de votre chien</label>
-          <input class="form-inp" id="book-dog" placeholder="Rex...">
-          <label class="form-label">Type de service</label>
-          <select class="form-inp" id="book-type">
-            <option>Garde à domicile</option><option>Promenade</option><option>Hébergement nuit</option><option>Éducation</option>
-          </select>
-          <label class="form-label">Date de début</label>
-          <input type="date" class="form-inp" id="book-start">
-          <label class="form-label">Date de fin</label>
-          <input type="date" class="form-inp" id="book-end">
-          <label class="form-label">Notes (optionnel)</label>
-          <textarea class="form-inp" id="book-notes" placeholder="Infos sur votre chien..."></textarea>
+function pgSitterDetail(id){
+  var s=SITTERS.find(function(x){return x.id===id;});if(!s)return;
+  var m=el('main');
+  m.innerHTML='<button onclick="showPage(\'sitters\')" class="btn bo bsm" style="margin-bottom:18px">← Retour</button>'
+  +'<div class="g2" style="align-items:start">'
+  +'<div>'
+  +'<div class="card" style="margin-bottom:12px">'
+  +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"><div class="av avlg">'+al(s.name)+'</div><div>'+(s.prem?'<span class="pbadge">✦ PREMIUM</span><br>':'')+'<span style="font-family:Fraunces,serif;font-size:20px;font-weight:300">'+s.name+'</span><br><span style="color:#7B7F9E;font-size:12px">📍 '+s.location+'</span><br><span class="stars">'+st(s.rating)+'</span> <b>'+s.rating+'</b> <span style="color:#7B7F9E;font-size:12px">('+s.rc+' avis)</span></div></div>'
+  +'<p style="color:#AAA;line-height:1.8;margin-bottom:14px;font-size:13px">'+s.bio+'</p>'
+  +'<div style="display:flex;gap:6px;flex-wrap:wrap">'+s.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('')+'</div>'
+  +'</div>'
+  +'<div class="card">'
+  +'<div style="font-weight:700;margin-bottom:12px;font-size:14px">Services & tarifs</div>'
+  +[['🏠','Garde à domicile',s.price+'€/j'],['🦮','Promenade','15€/sortie'],['🌙','Hébergement nuit',(s.price+8)+'€/nuit'],['🎓','Éducation','30€/séance']].map(function(x,i){return'<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none');}).join('')
+  +'</div>'
+  +'</div>'
+  +'<div class="card" style="position:sticky;top:16px">'
+  +'<div style="font-weight:800;font-size:20px;margin-bottom:3px">'+s.price+'€<span style="font-weight:400;font-size:12px;color:#7B7F9E">/jour</span></div>'
+  +'<div style="color:'+(s.avail?'#3DD68C':'#888')+';font-size:12px;font-weight:700;margin-bottom:18px">'+(s.avail?'✓ Disponible':'✗ Non disponible')+'</div>'
+  +'<div id="bform">'
+  +'<label class="fl">Nom de votre chien</label><input class="fi" id="bdog" placeholder="Rex...">'
+  +'<label class="fl">Type de service</label><select class="fi" id="btype"><option>Garde à domicile</option><option>Promenade</option><option>Hébergement nuit</option><option>Éducation</option></select>'
+  +'<label class="fl">Date de début</label><input type="date" class="fi" id="bstart">'
+  +'<label class="fl">Date de fin</label><input type="date" class="fi" id="bend">'
+  +'<label class="fl">Notes (optionnel)</label><textarea class="fi" id="bnotes" placeholder="Infos sur votre chien..."></textarea>'
 
-```
-      <button class="btn btn-primary btn-full" onclick="doBook('${s.id}','${s.name}',${s.price})" style="margin-bottom:10px">Réserver maintenant</button>
-      <button class="btn btn-outline btn-full" onclick="showPage('messages')">Envoyer un message</button>
-    </div>
-    <div id="book-success" class="hidden" style="text-align:center;padding:20px;color:#3DD68C;font-weight:700">🎉 Réservation envoyée !</div>
-  </div>
-</div>`;
-```
-
++’<button class="btn bp bfull" onclick="doBook(\''+s.id+'\',\''+s.name+'\','+s.price+')">Réserver maintenant</button>’
++’<button class="btn bo bfull" onclick="showPage(\'msgs\')">Envoyer un message</button>’
++’</div>’
++’<div id="bsuc" style="display:none;text-align:center;padding:18px;color:#3DD68C;font-weight:700">🎉 Réservation envoyée !</div>’
++’</div></div>’;
+// Fix services list
+var card=m.querySelectorAll(’.card’)[1];
+if(card){card.innerHTML=’<div style="font-weight:700;margin-bottom:12px;font-size:14px">Services & tarifs</div>’+[[‘🏠’,‘Garde à domicile’,s.price+‘€/j’],[‘🦮’,‘Promenade’,‘15€/sortie’],[‘🌙’,‘Hébergement nuit’,(s.price+8)+‘€/nuit’],[‘🎓’,‘Éducation’,‘30€/séance’]].map(function(x,i){return’<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+'"><span style="font-size:13px">’+x[0]+’ ‘+x[1]+’</span><span style="font-weight:700;color:#F0C060">’+x[2]+’</span></div>’;}).join(’’);}
 }
-async function doBook(sitterId,sitterName,price){
-const dog=document.getElementById(‘book-dog’).value.trim();
-const type=document.getElementById(‘book-type’).value;
-const start=document.getElementById(‘book-start’).value;
-const end=document.getElementById(‘book-end’).value;
-const notes=document.getElementById(‘book-notes’).value;
+async function doBook(sid,sname,price){
+var dog=el(‘bdog’).value.trim(),type=el(‘btype’).value,start=el(‘bstart’).value,end=el(‘bend’).value,notes=el(‘bnotes’).value;
 if(!dog||!start||!end){alert(‘Remplissez tous les champs.’);return;}
-const days=Math.max(1,Math.ceil((new Date(end)-new Date(start))/(86400000)));
-await sb.from(‘reservations’).insert({sitter_id:sitterId,owner_id:currentProfile?.id,sitter_name:sitterName,dog_name:dog,type,start_date:start,end_date:end,notes,price:price*days,status:‘pending’});
-document.getElementById(‘book-form’).classList.add(‘hidden’);
-document.getElementById(‘book-success’).classList.remove(‘hidden’);
-setTimeout(()=>showPage(‘owner-reservations’),2000);
+var days=Math.max(1,Math.ceil((new Date(end)-new Date(start))/86400000));
+await sb.from(‘reservations’).insert({sitter_id:sid,owner_id:CP&&CP.id,sitter_name:sname,dog_name:dog,type:type,start_date:start,end_date:end,notes:notes,price:price*days,status:‘pending’});
+el(‘bform’).style.display=‘none’;el(‘bsuc’).style.display=‘block’;
+setTimeout(function(){showPage(‘oresas’);},2000);
 }
 
-// ── OWNER RESERVATIONS ────────────────────────
-async function renderOwnerReservations(el){
-const {data} = await sb.from(‘reservations’).select(’*’).eq(‘owner_id’,currentProfile?.id||’’).order(‘created_at’,{ascending:false});
-const resa = data||[];
-el.innerHTML=` <div class="page-title">Mes réservations</div> <div class="page-sub">${resa.length} réservation(s)</div> ${resa.length===0?`<div class="card"><div class="empty"><span class="empty-ico">📅</span>Aucune réservation<br><br><button class="btn btn-primary btn-sm" onclick="showPage('sitters-list')">Trouver un petsitteur</button></div></div>`: resa.map(r=>`
-<div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
-<div class="avatar">${avatarLetter(r.sitter_name||‘S’)}</div>
-<div style="flex:1">
-<div style="font-weight:700;font-size:15px;margin-bottom:3px">${r.sitter_name||‘Petsitteur’}</div>
-<div style="color:#7B7F9E;font-size:13px">${r.type} · ${r.dog_name} · ${r.start_date}${r.end_date&&r.end_date!==r.start_date?’ → ‘+r.end_date:’’}</div>
-</div>
-<div style="text-align:right"><div style="font-weight:800;font-size:18px;margin-bottom:6px">${r.price}€</div>${statusBadge(r.status)}</div>
-</div>`).join('')} <div style="margin-top:18px;background:rgba(255,107,74,.06);border-radius:20px;padding:22px;border:1px solid rgba(255,107,74,.2)"> <div style="font-weight:700;margin-bottom:6px">+ Nouvelle réservation</div> <div style="color:#7B7F9E;font-size:13px;margin-bottom:14px">Planifiez une garde, promenade ou hébergement.</div> <button class="btn btn-primary btn-sm" onclick="showPage('sitters-list')">Trouver un petsitteur</button> </div>`;
+// ── OWNER RESERVATIONS ──
+async function oresas(el){
+var r=await sb.from(‘reservations’).select(’*’).eq(‘owner_id’,(CP&&CP.id)||’’).order(‘created_at’,{ascending:false});
+var resa=r.data||[];
+el.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
++(resa.length===0?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation<br><br><button class="btn bp bsm" onclick="showPage(\'sitters\')">Trouver un petsitteur</button></div></div>’
+:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:14px"><div class="av">’+al(r.sitter_name||‘S’)+’</div><div style="flex:1"><div style="font-weight:700;font-size:14px">’+(r.sitter_name||‘Petsitteur’)+’</div><div style="color:#7B7F9E;font-size:12px">’+r.type+’ · ‘+(r.dog_name||’’)+(r.start_date?’ · ‘+r.start_date:’’)+’</div></div><div style="text-align:right"><div style="font-weight:800;font-size:16px;margin-bottom:5px">’+(r.price||0)+‘€</div>’+stbadge(r.status)+’</div></div>’;}).join(’’))
++’<div style="margin-top:14px;background:rgba(255,107,74,.06);border-radius:16px;padding:20px;border:1px solid rgba(255,107,74,.2)"><div style="font-weight:700;margin-bottom:5px">+ Nouvelle réservation</div><div style="color:#7B7F9E;font-size:12px;margin-bottom:12px">Planifiez une garde ou promenade.</div><button class="btn bp bsm" onclick="showPage(\'sitters\')">Trouver un petsitteur</button></div>’;
 }
 
-// ── SITTER DASHBOARD ──────────────────────────
-async function renderSitterDashboard(el){
-const {data} = await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,currentProfile?.id||’’).order(‘created_at’,{ascending:false});
-const resa=data||[];
-const pending=resa.filter(r=>r.status===‘pending’);
-const confirmed=resa.filter(r=>r.status===‘confirmed’);
-const revenue=resa.filter(r=>r.status===‘done’).reduce((s,r)=>s+(r.price||0),0);
-el.innerHTML=` <div class="page-title">Bienvenue, ${currentProfile?.name||'Petsitteur'} 🐾</div> <div class="page-sub">Votre tableau de bord</div> <div class="grid4" style="margin-bottom:20px"> <div class="card"><div style="font-size:24px">📬</div><div class="stat-val" style="color:#F0C060">${pending.length}</div><div class="stat-lbl">Demandes en attente</div></div> <div class="card"><div style="font-size:24px">📅</div><div class="stat-val" style="color:#4D8EFF">${confirmed.length}</div><div class="stat-lbl">Réservations actives</div></div> <div class="card"><div style="font-size:24px">💰</div><div class="stat-val" style="color:#3DD68C">${revenue}€</div><div class="stat-lbl">Revenus totaux</div></div> <div class="card"><div style="font-size:24px">⭐</div><div class="stat-val" style="color:#FF6B4A">5.0</div><div class="stat-lbl">Note moyenne</div></div> </div> ${pending.length>0?`
-<div class="card" style="margin-bottom:16px;border-color:rgba(240,192,96,.3)">
-<div style="font-weight:700;margin-bottom:14px;color:#F0C060">📬 Nouvelles demandes (${pending.length})</div>
-${pending.map(r=>` <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #2A2D40"> <div class="avatar">${avatarLetter(r.dog_name||'C')}</div> <div style="flex:1"> <div style="font-weight:600;font-size:14px">${r.dog_name||'Chien'}</div> <div style="color:#7B7F9E;font-size:12px">${r.type} · ${r.start_date}${r.end_date?' → '+r.end_date:''} · ${r.price}€</div> ${r.notes?`<div style="color:#7B7F9E;font-size:12px">${r.notes}</div>`:''} </div> <button class="btn btn-green btn-sm" onclick="updateResa('${r.id}','confirmed')">✓ Accepter</button> <button class="btn btn-sm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updateResa('${r.id}','cancelled')">✗ Refuser</button> </div>`).join(’’)}
-</div>`:''} <div class="grid2"> <div class="card"> <div style="font-weight:700;margin-bottom:14px">Mon profil public</div> <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"> <div class="avatar avatar-lg">${avatarLetter(currentProfile?.name)}</div> <div> <div style="font-weight:700;font-size:16px">${currentProfile?.name||'Votre nom'}</div> <div style="color:#7B7F9E;font-size:13px">📍 ${currentProfile?.location||'Belgique'}</div> <span class="stars">★★★★★</span> </div> </div> <p style="color:#7B7F9E;font-size:13px;line-height:1.7;margin-bottom:14px">${currentProfile?.bio||'Ajoutez une bio dans votre profil.'}</p> <button class="btn btn-outline btn-sm" onclick="showPage('sitter-profile')">Modifier le profil →</button> </div> <div class="card"> <div style="font-weight:700;margin-bottom:14px">Conseils pour réussir</div> ${['Complétez votre profil à 100%','Répondez aux demandes rapidement','Envoyez des photos à chaque promenade','Demandez des avis après chaque garde'].map((t,i)=>`
-<div style="display:flex;gap:10px;padding:10px 0;border-bottom:${i<3?'1px solid #2A2D40':'none'};font-size:13px">
-<span style="color:#3DD68C;font-weight:700">${i+1}.</span>
-<span style="color:#AAA">${t}</span>
-</div>`).join('')} </div> </div>`;
+// ── SITTER DASHBOARD ──
+async function sdash(el){
+var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’);
+var resa=r.data||[];
+var pending=resa.filter(function(x){return x.status===‘pending’;});
+var confirmed=resa.filter(function(x){return x.status===‘confirmed’;});
+var revenue=resa.filter(function(x){return x.status===‘done’;}).reduce(function(s,x){return s+(x.price||0);},0);
+el.innerHTML=’<div class="ptitle">Bienvenue, ‘+(CP&&CP.name||‘Petsitteur’)+’ 🐾</div><div class="psub">Votre tableau de bord</div>’
++’<div class="g4" style="margin-bottom:16px">’
++’<div class="card"><div style="font-size:22px">📬</div><div class="sv" style="color:#F0C060">’+pending.length+’</div><div class="sl">Demandes en attente</div></div>’
++’<div class="card"><div style="font-size:22px">📅</div><div class="sv" style="color:#4D8EFF">’+confirmed.length+’</div><div class="sl">Réservations actives</div></div>’
++’<div class="card"><div style="font-size:22px">💰</div><div class="sv" style="color:#3DD68C">’+revenue+‘€</div><div class="sl">Revenus totaux</div></div>’
++’<div class="card"><div style="font-size:22px">⭐</div><div class="sv" style="color:#FF6B4A">5.0</div><div class="sl">Note moyenne</div></div>’
++’</div>’
++(pending.length>0?’<div class="card" style="margin-bottom:14px;border-color:rgba(240,192,96,.3)"><div style="font-weight:700;margin-bottom:12px;color:#F0C060">📬 Nouvelles demandes (’+pending.length+’)</div>’+pending.map(function(r){return’<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #2A2D40"><div class="av">’+al(r.dog_name||‘C’)+’</div><div style="flex:1"><div style="font-weight:600;font-size:13px">’+(r.dog_name||‘Chien’)+’</div><div style="color:#7B7F9E;font-size:12px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+(r.price?’ · ‘+r.price+‘€’:’’)+’</div></div><button class="btn bg bsm" onclick="updR(\''+r.id+'\',\'confirmed\',\'sdash\')">✓ OK</button> <button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updR(\''+r.id+'\',\'cancelled\',\'sdash\')">✗</button></div>’;}).join(’’)+’</div>’:’’)
++’<div class="g2">’
++’<div class="card"><div style="font-weight:700;margin-bottom:12px">Mon profil public</div><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="av avlg">’+al(CP&&CP.name)+’</div><div><div style="font-weight:700;font-size:15px">’+(CP&&CP.name||‘Votre nom’)+’</div><div style="color:#7B7F9E;font-size:12px">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div><span class="stars">★★★★★</span></div></div><p style="color:#7B7F9E;font-size:12px;line-height:1.7;margin-bottom:12px">’+(CP&&CP.bio||‘Ajoutez une bio dans votre profil.’)+’</p><button class="btn bo bsm" onclick="showPage(\'sprofile\')">Modifier →</button></div>’
++’<div class="card"><div style="font-weight:700;margin-bottom:12px">Conseils</div>’+[‘Complétez votre profil à 100%’,‘Répondez aux demandes rapidement’,‘Envoyez des photos à chaque promenade’,‘Demandez des avis après chaque garde’].map(function(t,i){return’<div style="display:flex;gap:8px;padding:8px 0;border-bottom:'+(i<3?'1px solid #2A2D40':'none')+';font-size:12px"><span style="color:#3DD68C;font-weight:700">’+(i+1)+’.</span><span style="color:#AAA">’+t+’</span></div>’;}).join(’’)+’</div>’
++’</div>’;
 }
 
-// ── SITTER BOOKINGS ───────────────────────────
-async function renderSitterBookings(el){
-const {data} = await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,currentProfile?.id||’’).order(‘created_at’,{ascending:false});
-const resa=data||[];
-el.innerHTML=` <div class="page-title">Mes réservations</div> <div class="page-sub">${resa.length} réservation(s)</div> ${resa.length===0?`<div class="card"><div class="empty"><span class="empty-ico">📅</span>Aucune réservation pour l’instant.<br>Partagez votre profil pour attirer des clients !</div></div>`: resa.map(r=>`
-<div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
-<div class="avatar">${avatarLetter(r.dog_name||‘C’)}</div>
-<div style="flex:1">
-<div style="font-weight:700;font-size:15px;margin-bottom:3px">${r.dog_name||‘Chien’}</div>
-<div style="color:#7B7F9E;font-size:13px">${r.type} · ${r.start_date}${r.end_date&&r.end_date!==r.start_date?’ → ‘+r.end_date:’’}</div>
-${r.notes?`<div style="color:#7B7F9E;font-size:12px;margin-top:2px">Note : ${r.notes}</div>`:’’}
-</div>
-<div style="text-align:right;margin-right:10px">
-<div style="font-weight:800;font-size:18px;margin-bottom:6px">${r.price}€</div>
-${statusBadge(r.status)}
-</div>
-${r.status===‘pending’?` <div style="display:flex;flex-direction:column;gap:8px"> <button class="btn btn-green btn-sm" onclick="updateResa('${r.id}','confirmed')">✓ Accepter</button> <button class="btn btn-sm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updateResa('${r.id}','cancelled')">✗ Refuser</button> </div>`:’’}
-${r.status===‘confirmed’?`<button class="btn btn-sm" style="background:rgba(61,214,140,.12);color:#3DD68C;border:1px solid rgba(61,214,140,.3)" onclick="updateResa('${r.id}','done')">✓ Terminé</button>`:’’}
-</div>`).join('')}`;
+// ── SITTER BOOKINGS ──
+async function sbookings(el){
+var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’).order(‘created_at’,{ascending:false});
+var resa=r.data||[];
+el.innerHTML=’<div class="ptitle">Mes réservations</div><div class="psub">’+resa.length+’ réservation(s)</div>’
++(resa.length===0?’<div class="card"><div class="empty"><span class="ei">📅</span>Aucune réservation pour l'instant.</div></div>’
+:resa.map(function(r){return’<div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="av">’+al(r.dog_name||‘C’)+’</div><div style="flex:1"><div style="font-weight:700;font-size:14px">’+(r.dog_name||‘Chien’)+’</div><div style="color:#7B7F9E;font-size:12px">’+r.type+(r.start_date?’ · ‘+r.start_date:’’)+(r.notes?’<br>Note: ‘+r.notes:’’)+’</div></div><div style="text-align:right;margin-right:8px"><div style="font-weight:800;font-size:16px;margin-bottom:4px">’+(r.price||0)+‘€</div>’+stbadge(r.status)+’</div>’+(r.status===‘pending’?’<button class="btn bg bsm" onclick="updR(\''+r.id+'\',\'confirmed\',\'sbookings\')">✓ Accepter</button> <button class="btn bsm" style="background:rgba(255,107,74,.12);color:#FF6B4A;border:1px solid rgba(255,107,74,.3)" onclick="updR(\''+r.id+'\',\'cancelled\',\'sbookings\')">✗ Refuser</button>’:’’)+(r.status===‘confirmed’?’<button class="btn bsm" style="background:rgba(61,214,140,.12);color:#3DD68C;border:1px solid rgba(61,214,140,.3)" onclick="updR(\''+r.id+'\',\'done\',\'sbookings\')">✓ Terminé</button>’:’’)+’</div>’;}).join(’’));
 }
-async function updateResa(id,status){
-await sb.from(‘reservations’).update({status}).eq(‘id’,id);
-showPage(currentProfile?.role===‘sitter’?‘sitter-bookings’:‘owner-reservations’);
+async function updR(id,status,page){
+await sb.from(‘reservations’).update({status:status}).eq(‘id’,id);
+showPage(page);
 }
 
-// ── ANALYTICS ─────────────────────────────────
-async function renderAnalytics(el){
-const {data} = await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,currentProfile?.id||’’);
-const done=(data||[]).filter(r=>r.status===‘done’);
-const revenue=done.reduce((s,r)=>s+(r.price||0),0);
-const months=[{m:‘Jan’,v:480},{m:‘Fév’,v:620},{m:‘Mar’,v:590},{m:‘Avr’,v:780},{m:‘Mai’,v:Math.max(revenue,860)}];
-const maxV=Math.max(…months.map(d=>d.v));
-el.innerHTML=` <div class="page-title">Analytics</div> <div class="page-sub">Vos performances</div> <div class="grid4" style="margin-bottom:20px"> <div class="card"><div class="stat-val" style="color:#F0C060">${revenue}€</div><div class="stat-lbl">Revenus totaux</div></div> <div class="card"><div class="stat-val" style="color:#3DD68C">${done.length}</div><div class="stat-lbl">Gardes terminées</div></div> <div class="card"><div class="stat-val" style="color:#4D8EFF">5.0 ★</div><div class="stat-lbl">Note moyenne</div></div> <div class="card"><div class="stat-val" style="color:#FF6B4A">100%</div><div class="stat-lbl">Taux d'acceptation</div></div> </div> <div class="card" style="margin-bottom:16px"> <div style="font-weight:700;margin-bottom:22px">Revenus mensuels (€)</div> <div style="display:flex;align-items:flex-end;gap:14px;height:160px"> ${months.map(d=>`
-<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
-<div style="font-size:11px;color:#7B7F9E;font-weight:700">${d.v}€</div>
-<div style="width:100%;background:linear-gradient(to top,#FF6B4A,#F0C060);border-radius:6px 6px 0 0;height:${Math.round((d.v/maxV)*130)}px"></div>
-<div style="font-size:12px;color:#7B7F9E">${d.m}</div>
-</div>`).join('')} </div> </div> <div class="card"> <div style="font-weight:700;margin-bottom:16px">Gardes récentes</div> ${done.length===0?`<div class="empty">Pas encore de gardes terminées.</div>`:done.map((r,i)=>`
-<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:${i<done.length-1?'1px solid #2A2D40':'none'};font-size:13px">
-<span>${r.dog_name||‘Chien’} · ${r.type}</span>
-<span style="color:#3DD68C;font-weight:700">${r.price}€</span>
-</div>`).join('')} </div>`;
+// ── ANALYTICS ──
+async function pgAnalytics(el){
+var r=await sb.from(‘reservations’).select(’*’).eq(‘sitter_id’,(CP&&CP.id)||’’);
+var done=(r.data||[]).filter(function(x){return x.status===‘done’;});
+var rev=done.reduce(function(s,x){return s+(x.price||0);},0);
+var months=[{m:‘Jan’,v:480},{m:‘Fév’,v:620},{m:‘Mar’,v:590},{m:‘Avr’,v:780},{m:‘Mai’,v:Math.max(rev,860)}];
+var maxV=Math.max.apply(null,months.map(function(d){return d.v;}));
+el.innerHTML=’<div class="ptitle">Analytics</div><div class="psub">Vos performances</div>’
++’<div class="g4" style="margin-bottom:16px">’
++’<div class="card"><div class="sv" style="color:#F0C060">’+rev+‘€</div><div class="sl">Revenus totaux</div></div>’
++’<div class="card"><div class="sv" style="color:#3DD68C">’+done.length+’</div><div class="sl">Gardes terminées</div></div>’
++’<div class="card"><div class="sv" style="color:#4D8EFF">5.0 ★</div><div class="sl">Note moyenne</div></div>’
++’<div class="card"><div class="sv" style="color:#FF6B4A">100%</div><div class="sl">Taux d'acceptation</div></div>’
++’</div>’
++’<div class="card"><div style="font-weight:700;margin-bottom:20px">Revenus mensuels</div><div style="display:flex;align-items:flex-end;gap:12px;height:150px">’
++months.map(function(d){return’<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end"><div style="font-size:11px;color:#7B7F9E;font-weight:700">’+d.v+‘€</div><div style="width:100%;background:linear-gradient(to top,#FF6B4A,#F0C060);border-radius:5px 5px 0 0;height:'+Math.round((d.v/maxV)*120)+'px"></div><div style="font-size:11px;color:#7B7F9E">’+d.m+’</div></div>’;}).join(’’)
++’</div></div>’;
 }
 
-// ── SITTER PROFILE ────────────────────────────
-function renderSitterProfile(el){
-el.innerHTML=` <div class="page-title">Mon profil</div> <div class="page-sub">Visible par tous les propriétaires</div> <div class="grid2" style="align-items:start"> <div class="card"> <div style="font-weight:700;margin-bottom:20px">Informations</div> <label class="form-label">Prénom</label> <input class="form-inp" id="p-name" placeholder="Votre prénom" value="${currentProfile?.name||''}"> <label class="form-label">Localisation</label> <input class="form-inp" id="p-location" placeholder="Ex: Liège, Namur..." value="${currentProfile?.location||''}"> <label class="form-label">Tarif journalier (€)</label> <input type="number" class="form-inp" id="p-price" value="${currentProfile?.price||25}"> <label class="form-label">Bio</label> <textarea class="form-inp" id="p-bio" placeholder="Décrivez votre expérience...">${currentProfile?.bio||''}</textarea> <label class="form-label">Disponibilité</label> <div style="display:flex;gap:10px;margin-bottom:18px"> <button id="p-avail-yes" class="btn btn-green btn-sm${currentProfile?.available!==false?' ':' btn-outline'}" onclick="setAvail(true)">● Disponible</button> <button id="p-avail-no" class="btn btn-sm${currentProfile?.available===false?' btn-primary':' btn-outline'}" onclick="setAvail(false)">Occupé</button> </div> <button class="btn btn-primary btn-full" id="save-profile-btn" onclick="saveProfile()">Sauvegarder</button> </div> <div class="card" id="profile-preview"> <div style="font-weight:700;margin-bottom:16px">Aperçu</div> <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"> <div class="avatar avatar-lg">${avatarLetter(currentProfile?.name)}</div> <div> <div style="font-weight:700;font-size:16px" id="prev-name">${currentProfile?.name||'Votre nom'}</div> <div style="color:#7B7F9E;font-size:13px" id="prev-loc">📍 ${currentProfile?.location||'Belgique'}</div> <span class="stars">★★★★★</span> </div> </div> <p style="color:#7B7F9E;font-size:13px;line-height:1.7" id="prev-bio">${currentProfile?.bio||'Votre bio apparaîtra ici...'}</p> <div style="display:flex;justify-content:space-between;border-top:1px solid #2A2D40;padding-top:14px;margin-top:14px"> <span style="color:#7B7F9E;font-size:13px">Tarif journalier</span> <span style="font-weight:800;font-size:18px" id="prev-price">${currentProfile?.price||25}€</span> </div> </div> </div>`;
-document.getElementById(‘p-name’).oninput=()=>{document.getElementById(‘prev-name’).textContent=document.getElementById(‘p-name’).value||‘Votre nom’;};
-document.getElementById(‘p-location’).oninput=()=>{document.getElementById(‘prev-loc’).textContent=‘📍 ‘+(document.getElementById(‘p-location’).value||‘Belgique’);};
-document.getElementById(‘p-bio’).oninput=()=>{document.getElementById(‘prev-bio’).textContent=document.getElementById(‘p-bio’).value||‘Votre bio…’;};
-document.getElementById(‘p-price’).oninput=()=>{document.getElementById(‘prev-price’).textContent=(document.getElementById(‘p-price’).value||25)+‘€’;};
+// ── SITTER PROFILE ──
+function pgSprofile(el){
+el.innerHTML=’<div class="ptitle">Mon profil</div><div class="psub">Visible par tous les propriétaires</div>’
++’<div class="g2" style="align-items:start">’
++’<div class="card">’
++’<label class="fl">Prénom</label><input class="fi" id="pn" value="'+(CP&&CP.name||'')+'" placeholder="Votre prénom">’
++’<label class="fl">Localisation</label><input class="fi" id="pl" value="'+(CP&&CP.location||'')+'" placeholder="Ex: Liège...">’
++’<label class="fl">Tarif journalier (€)</label><input type="number" class="fi" id="pp" value="'+(CP&&CP.price||25)+'">’
++’<label class="fl">Bio</label><textarea class="fi" id="pb">’+(CP&&CP.bio||’’)+’</textarea>’
++’<label class="fl">Disponibilité</label>’
++’<div style="display:flex;gap:8px;margin-bottom:16px">’
++’<button id="pav1" class="btn bsm '+(CP&&CP.available!==false?'bg':'bo')+'" onclick="setAv(true)">● Disponible</button>’
++’<button id="pav0" class="btn bsm '+(CP&&CP.available===false?'bp':'bo')+'" onclick="setAv(false)">Occupé</button>’
++’</div>’
++’<button class="btn bp bfull" id="psave" onclick="saveP()">Sauvegarder</button>’
++’</div>’
++’<div class="card">’
++’<div style="font-weight:700;margin-bottom:12px">Aperçu</div>’
++’<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><div class="av avlg" id="pavav">’+al(CP&&CP.name)+’</div><div><div style="font-weight:700;font-size:15px" id="pavname">’+(CP&&CP.name||‘Votre nom’)+’</div><div style="color:#7B7F9E;font-size:12px" id="pavloc">📍 ‘+(CP&&CP.location||‘Belgique’)+’</div><span class="stars">★★★★★</span></div></div>’
++’<p style="color:#7B7F9E;font-size:12px;line-height:1.7" id="pavbio">’+(CP&&CP.bio||‘Votre bio…’)+’</p>’
++’<div style="display:flex;justify-content:space-between;border-top:1px solid #2A2D40;padding-top:12px;margin-top:12px"><span style="color:#7B7F9E;font-size:12px">Tarif</span><span style="font-weight:800;font-size:16px" id="pavprice">’+(CP&&CP.price||25)+‘€</span></div>’
++’</div></div>’;
+el.querySelector(’#pn’).oninput=function(){var v=this.value;el.querySelector(’#pavname’).textContent=v||‘Votre nom’;el.querySelector(’#pavav’).textContent=al(v);};
+el.querySelector(’#pl’).oninput=function(){el.querySelector(’#pavloc’).textContent=‘📍 ‘+(this.value||‘Belgique’);};
+el.querySelector(’#pb’).oninput=function(){el.querySelector(’#pavbio’).textContent=this.value||‘Votre bio…’;};
+el.querySelector(’#pp’).oninput=function(){el.querySelector(’#pavprice’).textContent=(this.value||25)+‘€’;};
 }
-let profileAvail = true;
-function setAvail(v){
-profileAvail=v;
-document.getElementById(‘p-avail-yes’).className=‘btn btn-green btn-sm’+(v?’’:’ btn-outline’);
-document.getElementById(‘p-avail-no’).className=‘btn btn-sm’+(v?’’:’ btn-primary’)+(v?’ btn-outline’:’’);
-}
-async function saveProfile(){
-const btn=document.getElementById(‘save-profile-btn’);
-btn.textContent=‘Sauvegarde…’; btn.disabled=true;
-await sb.from(‘profiles’).update({
-name:document.getElementById(‘p-name’).value,
-bio:document.getElementById(‘p-bio’).value,
-location:document.getElementById(‘p-location’).value,
-price:document.getElementById(‘p-price’).value,
-available:profileAvail
-}).eq(‘user_id’,currentUser.id);
-const {data} = await sb.from(‘profiles’).select(’*’).eq(‘user_id’,currentUser.id).single();
-currentProfile=data;
-btn.textContent=‘✓ Sauvegardé !’; btn.style.background=’#3DD68C’;
-setTimeout(()=>{btn.textContent=‘Sauvegarder’;btn.style.background=’’;btn.disabled=false;},2000);
-}
-
-// ── MESSAGES ──────────────────────────────────
-function renderMessages(el){
-const contacts=[{id:‘m1’,name:‘Sophie M.’,time:‘10:23’,preview:‘Votre réservation est confirmée ✅’,unread:2},{id:‘m2’,name:‘Julien P.’,time:‘Hier’,preview:‘Je peux accueillir Rex à partir de 9h’,unread:0},{id:‘m3’,name:‘Emma D.’,time:‘Lun’,preview:‘Rex a été super sage aujourd'hui 🐶’,unread:0}];
-const chatMsgs=[{text:‘Bonjour ! Je suis disponible pour votre chien.’,mine:false,time:‘10:15’},{text:‘Super ! Il s'appelle Rex, 3 ans. 🐕’,mine:true,time:‘10:17’},{text:‘Parfait ! Combien de sorties par jour ?’,mine:false,time:‘10:19’},{text:‘2-3 promenades idéalement.’,mine:true,time:‘10:20’},{text:‘Votre réservation est confirmée ✅’,mine:false,time:‘10:23’}];
-el.innerHTML=` <div class="page-title">Messages</div> <div class="page-sub" style="margin-bottom:12px">Vos conversations</div> <div class="chat-wrap"> <div class="chat-list"> <div style="padding:14px 16px;font-weight:700;border-bottom:1px solid #2A2D40">Conversations</div> ${contacts.map(c=>`
-<div class="chat-item${c.id==='m1'?' sel':''}" onclick="selectChat('${c.id}')">
-<div style="position:relative">
-<div class="avatar" style="width:36px;height:36px;font-size:14px">${avatarLetter(c.name)}</div>
-${c.unread?`<span style="position:absolute;top:-2px;right:-2px;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 4px">${c.unread}</span>`:’’}
-</div>
-<div style="flex:1;min-width:0">
-<div style="display:flex;justify-content:space-between"><b style="font-size:13px">${c.name}</b><span style="color:#7B7F9E;font-size:11px">${c.time}</span></div>
-<div style="color:#7B7F9E;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px">${c.preview}</div>
-</div>
-</div>`).join('')} </div> <div class="chat-body"> <div class="chat-hdr"> <div class="avatar" style="width:36px;height:36px;font-size:14px">S</div> <div><div style="font-weight:700;font-size:15px">Sophie M.</div><div style="color:#3DD68C;font-size:12px;font-weight:600">● En ligne</div></div> </div> <div class="msgs" id="msgs-area"> ${chatMsgs.map(m=>`
-<div class="msg${m.mine?' mine':''}">
-${!m.mine?`<div class="avatar" style="width:30px;height:30px;font-size:12px">S</div>`:’’}
-<div>
-<div class="bubble${m.mine?' mine':' them'}">${m.text}</div>
-<div class="msg-time" style="text-align:${m.mine?'right':'left'}">${m.time}</div>
-</div>
-</div>`).join('')} </div> <div class="chat-foot"> <input class="chat-inp" id="msg-inp" placeholder="Écrire un message…" onkeydown="if(event.key==='Enter')sendMsg()"> <button class="btn btn-primary" onclick="sendMsg()">Envoyer →</button> </div> </div> </div>`;
-}
-function sendMsg(){
-const inp=document.getElementById(‘msg-inp’);
-const txt=inp.value.trim();
-if(!txt)return;
-const area=document.getElementById(‘msgs-area’);
-area.innerHTML+=`<div class="msg mine"><div><div class="bubble mine">${txt}</div><div class="msg-time" style="text-align:right">Maintenant</div></div></div>`;
-inp.value=’’;
-area.scrollTop=area.scrollHeight;
-}
-function selectChat(id){}
-
-// ── TRACKING ──────────────────────────────────
-function renderTracking(el){
-el.innerHTML=` <div class="page-title">Suivi en temps réel</div> <div class="page-sub">Rex · En promenade · Belgique</div> <div class="grid2" style="align-items:start"> <div class="track-map" id="track-map"> <svg width="100%" height="100%" viewBox="0 0 700 400" style="position:absolute"> <rect width="700" height="400" fill="#080E08"/> ${Array.from({length:9},(_,i)=>`<line x1="0" y1="${i*48}" x2="700" y2="${i*48}" stroke="#0D1A0D" stroke-width="1"/>`).join('')} ${Array.from({length:13},(_,i)=>`<line x1="${i*58}" y1="0" x2="${i*58}" y2="400" stroke="#0D1A0D" stroke-width="1"/>`).join('')} <path d="M0 210 Q175 185 350 200 Q525 218 700 190" stroke="#0A2840" stroke-width="18" fill="none" opacity=".8"/> ${[[80,60,110,50],[200,110,90,48],[380,75,100,52],[500,130,80,45],[120,165,95,50],[320,165,85,48],[450,200,110,52],[80,290,90,48],[240,308,105,50],[400,275,90,45]].map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="#0C1A0C"/>`).join('')} <polyline points="310,210 332,190 362,180" stroke="#3DD68C" stroke-width="2.5" fill="none" opacity=".4" stroke-dasharray="5,4"/> </svg> <div id="track-dot" style="position:absolute;left:310px;top:210px;transform:translate(-50%,-50%);z-index:10;transition:left .85s ease,top .85s ease"> <div style="position:relative"> <div class="ping" style="position:absolute;inset:-6px;border-radius:50%;background:#3DD68C;opacity:.3"></div> <div style="width:28px;height:28px;border-radius:50%;background:#3DD68C;border:3px solid #070E08;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative">🐕</div> </div> </div> <div style="position:absolute;bottom:12px;left:12px;background:rgba(7,14,8,.92);border-radius:12px;padding:7px 14px;border:1px solid #1D4A30;display:flex;align-items:center;gap:8px"> <span class="online-dot pulse"></span> <span style="font-size:12px;font-weight:700;color:#3DD68C">Rex · En direct</span> </div> </div> <div style="display:flex;flex-direction:column;gap:12px"> ${[['🕐','Dernière promenade','Il y a 12 min'],['📍','Position','Rue centrale, Belgique'],['🌡️','Météo','18°C · Nuageux'],['💤','État','Actif · En promenade'],['🦴','Repas','Donné à 12h00'],['❤️','Fréquence cardiaque','72 bpm · Normal']].map(([ic,lbl,val])=>`
-<div class="card" style="display:flex;align-items:center;gap:12px;padding:14px 16px">
-<span style="font-size:20px">${ic}</span>
-<div>
-<div style="color:#7B7F9E;font-size:11px;font-weight:600;letter-spacing:.5px">${lbl.toUpperCase()}</div>
-<div style="font-weight:700;font-size:14px;margin-top:2px">${val}</div>
-</div>
-</div>`).join('')} </div> </div>`;
-trackIdx=0;
-trackInterval=setInterval(()=>{
-trackIdx=(trackIdx+1)%trackPath.length;
-const dot=document.getElementById(‘track-dot’);
-if(dot){dot.style.left=trackPath[trackIdx][0]+‘px’;dot.style.top=trackPath[trackIdx][1]+‘px’;}
-},900);
+var pAv=true;
+function setAv(v){pAv=v;el(‘pav1’).className=‘btn bsm ‘+(v?‘bg’:‘bo’);el(‘pav0’).className=‘btn bsm ‘+(v?‘bo’:‘bp’);}
+async function saveP(){
+var btn=el(‘psave’);btn.textContent=’…’;btn.disabled=true;
+await sb.from(‘profiles’).update({name:el(‘pn’).value,bio:el(‘pb’).value,location:el(‘pl’).value,price:el(‘pp’).value,available:pAv}).eq(‘user_id’,CU.id);
+var p=await sb.from(‘profiles’).select(’*’).eq(‘user_id’,CU.id).single();
+CP=p.data;btn.textContent=‘✓ Sauvegardé!’;btn.style.background=’#3DD68C’;
+setTimeout(function(){btn.textContent=‘Sauvegarder’;btn.style.background=’’;btn.disabled=false;},2000);
 }
 
-// ── REVIEWS ────────────────────────────────────
-function renderReviews(el){
-const reviews=[{s:‘Sophie M.’,r:5,by:‘Marie L.’,d:‘3 Avr’,t:‘Sophie est exceptionnelle ! Mon chien n'a jamais été aussi heureux. Photos quotidiennes, rapport détaillé.’},{s:‘Emma D.’,r:5,by:‘Pierre D.’,d:‘10 Avr’,t:‘Vétérinaire de formation, aucune inquiétude. Rex était en parfaite santé.’},{s:‘Julien P.’,r:4,by:‘Camille R.’,d:‘25 Avr’,t:‘Beau jardin, chien bien traité. Communication claire. Je recommande !’},{s:‘Marc B.’,r:5,by:‘Thomas B.’,d:‘28 Avr’,t:‘Service VIP au vrai sens du terme. Vidéos, rapports, suivi. Parfait.’}];
-el.innerHTML=` <div class="page-title">Avis & Notations</div> <div class="page-sub">Avis vérifiés de la communauté DogLink</div> <div class="grid2"> ${reviews.map(r=>`
-<div class="card">
-<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">
-<div class="avatar">${avatarLetter(r.s)}</div>
-<div>
-<div style="font-weight:700;font-size:14px">Avis sur ${r.s}</div>
-<div style="color:#7B7F9E;font-size:12px">Par ${r.by} · ${r.d}</div>
-</div>
-<div style="margin-left:auto"><span class="stars">${stars(r.r)}</span></div>
-</div>
-<p style="color:#999;font-size:13px;line-height:1.75;font-style:italic">”${r.t}”</p>
-</div>`).join('')} </div>`;
+// ── MESSAGES ──
+var CHATMSGS=[{text:‘Bonjour ! Je suis disponible.’,mine:false,time:‘10:15’},{text:‘Super ! Mon chien s'appelle Rex. 🐕’,mine:true,time:‘10:17’},{text:‘Combien de sorties par jour ?’,mine:false,time:‘10:19’},{text:‘2-3 promenades idéalement.’,mine:true,time:‘10:20’},{text:‘Votre réservation est confirmée ✅’,mine:false,time:‘10:23’}];
+function pgMsgs(el){
+var contacts=[{name:‘Sophie M.’,time:‘10:23’,preview:‘Réservation confirmée ✅’,u:2},{name:‘Julien P.’,time:‘Hier’,preview:‘Rex à partir de 9h’,u:0},{name:‘Emma D.’,time:‘Lun’,preview:‘Rex sage aujourd'hui 🐶’,u:0}];
+el.innerHTML=’<div class="ptitle">Messages</div><div class="psub" style="margin-bottom:12px">Vos conversations</div>’
++’<div class="cw">’
++’<div class="cl"><div style="padding:12px 14px;font-weight:700;border-bottom:1px solid #2A2D40;font-size:14px">Conversations</div>’
++contacts.map(function(c,i){return’<div class="ci'+(i===0?' on':'')+'" onclick="selChat(\''+c.name+'\')"><div style="position:relative"><div class="av" style="width:34px;height:34px;font-size:12px">’+al(c.name)+’</div>’+(c.u?’<span style="position:absolute;top:-2px;right:-2px;background:#FF6B4A;color:white;border-radius:20px;font-size:9px;font-weight:800;padding:1px 4px">’+c.u+’</span>’:’’)+’</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between"><b style="font-size:12px">’+c.name+’</b><span style="color:#7B7F9E;font-size:10px">’+c.time+’</span></div><div style="color:#7B7F9E;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+c.preview+’</div></div></div>’;}).join(’’)
++’</div>’
++’<div class="cb">’
++’<div class="ch"><div class="av" style="width:34px;height:34px;font-size:12px">S</div><div><div style="font-weight:700;font-size:14px">Sophie M.</div><div style="color:#3DD68C;font-size:11px;font-weight:600">● En ligne</div></div></div>’
++’<div class="ms" id="msgsarea">’+CHATMSGS.map(function(m){return’<div class="mg'+(m.mine?' me':'')+'">’+(!m.mine?’<div class="av" style="width:28px;height:28px;font-size:11px">S</div>’:’’)+’<div><div class="mb '+(m.mine?'me':'th')+'">’+m.text+’</div><div class="mt" style="text-align:'+(m.mine?'right':'left')+'">’+m.time+’</div></div></div>’;}).join(’’)+’</div>’
++’<div class="cf"><input class="ci2" id="minp" placeholder="Écrire un message…" onkeydown="if(event.key===\'Enter\')sendM()"><button class="btn bp" onclick="sendM()">Envoyer →</button></div>’
++’</div></div>’;
+}
+function selChat(name){}
+function sendM(){
+var inp=el(‘minp’),txt=inp.value.trim();if(!txt)return;
+var area=el(‘msgsarea’);
+area.innerHTML+=’<div class="mg me"><div><div class="mb me">’+txt+’</div><div class="mt" style="text-align:right">Maintenant</div></div></div>’;
+inp.value=’’;area.scrollTop=area.scrollHeight;
 }
 
-// ── INIT ──────────────────────────────────────
-// iOS Safari fix - use addEventListener instead of onclick
-function addTap(id, fn) {
-var el = document.getElementById(id);
-if (!el) return;
-el.addEventListener(‘click’, fn);
-el.addEventListener(‘touchend’, function(e){ e.preventDefault(); fn(); });
+// ── TRACKING ──
+function pgTracking(el){
+el.innerHTML=’<div class="ptitle">Suivi en temps réel</div><div class="psub">Rex · En promenade · Belgique</div>’
++’<div class="g2" style="align-items:start">’
++’<div class="tm" id="tmap">’
++’<svg width="100%" height="100%" viewBox="0 0 700 380" style="position:absolute">’
++’<rect width="700" height="380" fill="#080E08"/>’
++Array.from({length:9},function(*,i){return’<line x1="0" y1="'+(i*44)+'" x2="700" y2="'+(i*44)+'" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
++Array.from({length:13},function(*,i){return’<line x1="'+(i*58)+'" y1="0" x2="'+(i*58)+'" y2="380" stroke="#0D1A0D" stroke-width="1"/>’;}).join(’’)
++’<path d="M0 200 Q175 175 350 190 Q525 208 700 180" stroke="#0A2840" stroke-width="18" fill="none" opacity=".8"/>’
++[[80,55,110,45],[200,100,90,45],[380,70,100,48],[500,120,80,40],[120,155,95,45],[320,155,85,44],[450,190,110,48],[80,270,90,45],[240,288,105,46],[400,255,90,42]].map(function(x){return’<rect x="'+x[0]+'" y="'+x[1]+'" width="'+x[2]+'" height="'+x[3]+'" rx="7" fill="#0C1A0C"/>’;}).join(’’)
++’<polyline points="310,200 332,180 362,170" stroke="#3DD68C" stroke-width="2.5" fill="none" opacity=".4" stroke-dasharray="5,4"/>’
++’</svg>’
++’<div id="tdot" style="position:absolute;left:310px;top:200px;transform:translate(-50%,-50%);z-index:10;transition:left .85s ease,top .85s ease"><div style="position:relative"><div class="ping" style="position:absolute;inset:-5px;border-radius:50%;background:#3DD68C;opacity:.3"></div><div style="width:26px;height:26px;border-radius:50%;background:#3DD68C;border:3px solid #070E08;display:flex;align-items:center;justify-content:center;font-size:13px;position:relative">🐕</div></div></div>’
++’<div style="position:absolute;bottom:12px;left:12px;background:rgba(7,14,8,.92);border-radius:11px;padding:7px 13px;border:1px solid #1D4A30;display:flex;align-items:center;gap:7px"><span class="dot pulse"></span><span style="font-size:12px;font-weight:700;color:#3DD68C">Rex · En direct</span></div>’
++’</div>’
++’<div class="sc">’
++[[‘🕐’,‘Dernière promenade’,‘Il y a 12 min’],[‘📍’,‘Position’,‘Rue centrale, Belgique’],[‘🌡️’,‘Météo’,‘18°C · Nuageux’],[‘💤’,‘État’,‘Actif · En promenade’],[‘🦴’,‘Repas’,‘Donné à 12h00’],[‘❤️’,‘Fréquence cardiaque’,‘72 bpm · Normal’]].map(function(x){return’<div class="ic"><span style="font-size:18px">’+x[0]+’</span><div><div style="color:#7B7F9E;font-size:10px;font-weight:600;letter-spacing:.5px">’+x[1].toUpperCase()+’</div><div style="font-weight:700;font-size:13px;margin-top:1px">’+x[2]+’</div></div></div>’;}).join(’’)
++’</div></div>’;
+TRIDX=0;
+TRIV=setInterval(function(){TRIDX=(TRIDX+1)%TRPATH.length;var d=el.querySelector(’#tdot’);if(d){d.style.left=TRPATH[TRIDX][0]+‘px’;d.style.top=TRPATH[TRIDX][1]+‘px’;}},900);
 }
-addTap(‘tab-login’, function(){ setMode(‘login’); });
-addTap(‘tab-register’, function(){ setMode(‘register’); });
-addTap(‘role-owner’, function(){ selectRole(‘owner’); });
-addTap(‘role-sitter’, function(){ selectRole(‘sitter’); });
-addTap(‘auth-submit-btn’, function(){ doAuth(); });
 
-sb.auth.getSession().then(({data:{session}})=>{
-if(session?.user){
-sb.from(‘profiles’).select(’*’).eq(‘user_id’,session.user.id).single()
-.then(({data})=>{ if(data) startApp(session.user,data); });
+// ── REVIEWS ──
+function pgReviews(el){
+var revs=[{s:‘Sophie M.’,r:5,by:‘Marie L.’,d:‘3 Avr’,t:‘Sophie est exceptionnelle ! Photos quotidiennes, rapport détaillé. Je recommande !’},
+{s:‘Emma D.’,r:5,by:‘Pierre D.’,d:‘10 Avr’,t:‘Vétérinaire de formation, aucune inquiétude. Rex était en parfaite santé.’},
+{s:‘Julien P.’,r:4,by:‘Camille R.’,d:‘25 Avr’,t:‘Beau jardin, chien bien traité. Je recommande !’},
+{s:‘Marc B.’,r:5,by:‘Thomas B.’,d:‘28 Avr’,t:‘Service VIP au vrai sens du terme. Parfait.’}];
+el.innerHTML=’<div class="ptitle">Avis & Notations</div><div class="psub">Avis vérifiés de la communauté</div>’
++’<div class="g2">’+revs.map(function(r){return’<div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><div class="av">’+al(r.s)+’</div><div><div style="font-weight:700;font-size:13px">Avis sur ‘+r.s+’</div><div style="color:#7B7F9E;font-size:11px">Par ‘+r.by+’ · ‘+r.d+’</div></div><div style="margin-left:auto"><span class="stars">’+st(r.r)+’</span></div></div><p style="color:#999;font-size:12px;line-height:1.75;font-style:italic">”’+r.t+’”</p></div>’;}).join(’’)+’</div>’;
 }
+
+// ── INIT ──
+window.addEventListener(‘DOMContentLoaded’, function(){
+// Auth buttons
+el(‘tl’).addEventListener(‘click’,function(){setMode(‘login’);});
+el(‘tr’).addEventListener(‘click’,function(){setMode(‘register’);});
+el(‘ro’).addEventListener(‘click’,function(){selRole(‘owner’);});
+el(‘rs’).addEventListener(‘click’,function(){selRole(‘sitter’);});
+el(‘asubmit’).addEventListener(‘click’,function(){doAuth();});
+el(‘apass’).addEventListener(‘keydown’,function(e){if(e.key===‘Enter’)doAuth();});
+el(‘lout’).addEventListener(‘click’,function(){doLogout();});
+
+// Check session
+sb.auth.getSession().then(function(r){
+var session=r.data.session;
+if(session&&session.user){
+sb.from(‘profiles’).select(’*’).eq(‘user_id’,session.user.id).single().then(function(p){
+if(p.data)startApp(session.user,p.data);
+});
+}
+});
 });
 </script>
 
